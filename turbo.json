@@ -1,0 +1,25 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "dev": {
+      "dependsOn": []
+    },
+    "build": {
+      "outputs": [
+        "dist/**/*"
+      ]
+    },
+    "test": {
+      "dependsOn": [],
+      "outputs": [
+        ".vitest/**/*"
+      ]
+    },
+    "serve": {
+      "dependsOn": [
+        "build"
+      ],
+      "persistent": true
+    }
+  }
+}
