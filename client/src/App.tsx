@@ -5,7 +5,7 @@ export default function App() {
 	const [state, setState] = useState()
 	useEffect(() => {
 		fooBar()
-		fetch("/api")
+		fetch("/api/hello")
 			.then((res) => res.json())
 			.then(setState)
 	}, [])
