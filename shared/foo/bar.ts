@@ -1,4 +1,4 @@
 export function fooBar() {
-	console.log('fooBar')
-	return 'fooBar'
+	console.log("fooBar")
+	return "fooBar"
 }

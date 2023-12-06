@@ -1,19 +1,19 @@
 import { fooBar } from "@shared/foo/bar"
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react"
 
 export default function App() {
-  const [state, setState] = useState()
-  useEffect(() => {
-    fooBar()
-    fetch('/api')
-      .then(res => res.json())
-      .then(setState)
-  }, [])
+	const [state, setState] = useState()
+	useEffect(() => {
+		fooBar()
+		fetch("/api")
+			.then((res) => res.json())
+			.then(setState)
+	}, [])
 
-  return (
-    <div>
-      <h1>Welcome to our Fullstack TypeScript Project!</h1>
-      <pre>{JSON.stringify(state, null, 2)}</pre>
-    </div>
-  )
+	return (
+		<div>
+			<h1>Welcome to our Fullstack TypeScript Project!</h1>
+			<pre>{JSON.stringify(state, null, 2)}</pre>
+		</div>
+	)
 }

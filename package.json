@@ -15,7 +15,14 @@
 		"build:server": "esbuild ./server/src/app.ts --platform=node --target=node20 --format=esm --outdir=dist/server --allow-overwrite --packages=external --bundle --minify-syntax --keep-names",
 		"build": "pnpm build:client && pnpm build:server",
 		"serve": "NODE_ENV=production node dist/server/app.js",
-		"clear": "rm -rf dist; rm -rf node_modules;"
+		"clear": "rm -rf dist; rm -rf node_modules;",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"format": "prettier --check . --config ./.prettierrc --log-level warn",
+		"format:fix": "prettier --write . --config ./.prettierrc --log-level warn",
+		"ts-check:server": "tsc --noEmit --project ./server/tsconfig.json",
+		"ts-check:client": "tsc --noEmit --project ./client/tsconfig.json",
+		"ts-check": "pnpm ts-check:server & pnpm ts-check:client"
 	},
 	"dependencies": {
 		"@fastify/static": "6.12.0",

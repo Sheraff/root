@@ -2,12 +2,7 @@
 	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
 		"baseUrl": ".",
-		"lib": [
-			"WebWorker",
-			"ESNext"
-		]
+		"lib": ["WebWorker", "ESNext"]
 	},
-	"files": [
-		"./service-worker.ts"
-	],
+	"files": ["./service-worker.ts"]
 }

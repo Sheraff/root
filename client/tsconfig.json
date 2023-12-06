@@ -1,29 +1,15 @@
 {
-  "extends": "../tsconfig.base.json",
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "rootDir": "..",
-    "baseUrl": ".",
-    "paths": {
-      "~/*": [
-        "./src/*"
-      ],
-      "@shared/*": [
-        "../shared/*"
-      ]
-    }
-  },
-  "include": [
-    "src/**/*",
-    "../shared/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "sw"
-  ]
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"rootDir": "..",
+		"baseUrl": ".",
+		"paths": {
+			"~/*": ["./src/*"],
+			"@shared/*": ["../shared/*"]
+		}
+	},
+	"include": ["src/**/*", "../shared/**/*.ts"],
+	"exclude": ["../node_modules", "../dist", "sw"]
 }

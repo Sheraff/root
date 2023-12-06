@@ -1,21 +1,35 @@
 {
-	"cSpell.words": [
-		"fastify",
-		"outdir",
-		"pino",
-		"sqlite",
-		"pnpm",
-		"vlcn",
-		"crdt"
-	],
+	"cSpell.words": ["fastify", "outdir", "pino", "sqlite", "pnpm", "vlcn", "crdt"],
 	"search.exclude": {
 		"node_modules": true,
 		"pnpm-lock.yaml": true
 	},
 	"files.exclude": {
-		"**/dist/**": true,
+		"**/dist/**": true
 	},
-	"editor.formatOnSave": true,
 	"npm.packageManager": "pnpm",
 	"typescript.tsdk": "node_modules/typescript/lib",
+	"editor.formatOnSave": true,
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true
+	},
+	"prettier.enable": true,
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[javascriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[javascript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[json]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[jsonc]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	}
 }

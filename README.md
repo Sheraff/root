@@ -1,6 +1,7 @@
 # Fullstack TypeScript Project
 
 ## TODO
+
 - shared package
   - vitest
   - avoid barrel exports (can we get deep imports with auto-completion of paths?)
@@ -14,6 +15,7 @@
 ## Client Package
 
 A typescript React application, with
+
 - PWA & service worker
 - Vitest
 - Vite
@@ -21,6 +23,7 @@ A typescript React application, with
 ## Server Package
 
 A typescript Fastify server, with
+
 - sqlite database
 - vlcn.io CRDT server
 - esbuild
@@ -29,6 +32,7 @@ A typescript Fastify server, with
 ## Root Level
 
 A workspace, with
+
 - pnpm
 - eslint
 - prettier
@@ -43,27 +47,31 @@ pnpm install
 ```
 
 To start the development server, run:
+
 ```shell
 pnpm dev
 ```
+
 In dev mode, all requests go through Vite's dev server, and all `/api` requests are forwarded to the Fastify server.
 
 To serve the production build, run:
+
 ```shell
 pnpm serve
 ```
+
 In production mode, all requests go through the Fastify server.
 
 To build the project for production, run:
+
 ```shell
 pnpm build
 ```
 
 To test the project, run:
+
 ```shell
 pnpm test
 ```
-
-
 
 For more information, refer to the README files in the individual packages.
