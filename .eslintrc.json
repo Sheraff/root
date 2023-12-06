@@ -9,12 +9,8 @@
 		"plugin:@typescript-eslint/recommended"
 	],
 	"ignorePatterns": [
-		"/node_modules/*",
-		"/dist/*",
-		"/.turbo/*",
-		"**/node_modules/*",
-		"**/.turbo/*",
-		"**/dist/*"
+		"node_modules/*",
+		"dist/*"
 	],
 	"rules": {
 		// Add your custom rules here

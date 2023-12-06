@@ -1,9 +1,9 @@
 import fastify from 'fastify'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import apiRoutes from './api'
+import apiRoutes from '~/api'
 import fastifyStatic from '@fastify/static'
-import { fooBar } from 'shared/foo'
+import { fooBar } from "@shared/foo/bar"
 
 fooBar()
 
@@ -24,7 +24,7 @@ const app = fastify({
 if (process.env.NODE_ENV === 'production') {
   const __filename = fileURLToPath(import.meta.url)
   const __dirname = path.dirname(__filename)
-  const clientDistPath = path.join(__dirname, '../../client/dist')
+  const clientDistPath = path.join(__dirname, '../../dist/client')
   app.register(fastifyStatic, {
     root: clientDistPath,
     prefix: '/',
@@ -39,7 +39,7 @@ const start = async () => {
   try {
     await app.listen({
       port: 3000,
-      listenTextResolver: (address) => `Listening on ${address}`
+      listenTextResolver: (address) => process.env.NODE_ENV === 'production' ? `Listening on ${address}` : `API server started`
     })
   } catch (err) {
     app.log.error(err)

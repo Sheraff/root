@@ -1,5 +1,5 @@
+import { fooBar } from "@shared/foo/bar"
 import { useEffect, useState } from 'react'
-import { fooBar } from 'shared/foo'
 
 export default function App() {
   const [state, setState] = useState()

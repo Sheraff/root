@@ -2,16 +2,18 @@
 	"cSpell.words": [
 		"fastify",
 		"outdir",
-		"pino"
+		"pino",
+		"sqlite",
+		"pnpm",
+		"vlcn",
+		"crdt"
 	],
 	"search.exclude": {
-		"**/node_modules": true,
-		"**/*.lock": true
+		"node_modules": true,
+		"pnpm-lock.yaml": true
 	},
 	"files.exclude": {
-		"**/.git": true,
-		// "**/dist/**": true,
-		"**/.turbo/**": true,
+		"**/dist/**": true,
 	},
 	"editor.formatOnSave": true,
 	"npm.packageManager": "pnpm",

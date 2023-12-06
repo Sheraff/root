@@ -1,1 +1,0 @@
-export { fooBar } from './bar'

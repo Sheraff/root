@@ -28,7 +28,7 @@ A typescript Fastify server, with
 
 ## Root Level
 
-A turborepo workspace, with
+A workspace, with
 - pnpm
 - eslint
 - prettier
@@ -46,7 +46,7 @@ To start the development server, run:
 ```shell
 pnpm dev
 ```
-In dev mode, all requests go through Vite's dev server, and all `/api` requests are proxied to the Fastify server.
+In dev mode, all requests go through Vite's dev server, and all `/api` requests are forwarded to the Fastify server.
 
 To serve the production build, run:
 ```shell

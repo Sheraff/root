@@ -2,23 +2,51 @@
 	"name": "fullstack-typescript-project",
 	"version": "1.0.0",
 	"private": true,
+	"type": "module",
 	"scripts": {
-		"dev": "turbo dev --parallel",
-		"build": "turbo build --filter @monorepo/*",
-		"serve": "turbo serve --filter @monorepo/*",
-		"test": "turbo test",
-		"clear": "find . \\( -name node_modules -o -name .turbo -o -name dist \\) -prune -exec rm -rf \\{\\} \\;"
+		"dev:client": "vite --config ./client/vite.config.ts",
+		"dev:server": "tsx watch --tsconfig ./server/tsconfig.json ./server/src/app.ts",
+		"dev": "(trap 'kill 0' SIGINT; pnpm dev:server & pnpm dev:client)",
+		"test:client": "vitest --config ./client/vitest.config.ts",
+		"test:server": "vitest --config ./server/vitest.config.ts",
+		"test:shared": "vitest --config ./shared/vitest.config.ts",
+		"test": "(trap 'kill 0' SIGINT; pnpm test:server & pnpm test:client & pnpm test:shared)",
+		"build:client": "vite build --config ./client/vite.config.ts",
+		"build:server": "esbuild ./server/src/app.ts --platform=node --target=node20 --format=esm --outdir=dist/server --allow-overwrite --packages=external --bundle --minify-syntax --keep-names",
+		"build": "pnpm build:client && pnpm build:server",
+		"serve": "NODE_ENV=production node dist/server/app.js",
+		"clear": "find . \\( -name node_modules -o -name dist \\) -prune -exec rm -rf \\{\\} \\;"
+	},
+	"dependencies": {
+		"@fastify/static": "6.12.0",
+		"fastify": "^4.24.3",
+		"pino-pretty": "10.2.3",
+		"react-dom": "^18.2.0",
+		"react": "^18.2.0"
 	},
 	"devDependencies": {
+		"@types/fastify-static": "^2.2.1",
+		"@types/node": "20.10.3",
+		"@types/react-dom": "18.2.17",
+		"@types/react": "18.2.42",
 		"@typescript-eslint/eslint-plugin": "^6.13.2",
 		"@typescript-eslint/parser": "^6.13.2",
-		"eslint": "^8.55.0",
+		"@vitejs/plugin-react": "^4.2.1",
+		"esbuild": "0.19.8",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-prettier": "^5.0.1",
 		"eslint-plugin-react": "^7.33.2",
-		"prettier": "^3.1.0",
+		"eslint": "^8.55.0",
 		"prettier-eslint": "^16.1.2",
-		"turbo": "1.11.0",
-		"typescript": "^5.3.2"
+		"prettier": "^3.1.0",
+		"tsx": "4.6.2",
+		"typescript": "^5.3.2",
+		"vite-plugin-pwa": "0.17.3",
+		"vite-tsconfig-paths": "4.2.1",
+		"vite": "^5.0.6",
+		"vitest": "^1.0.1"
+	},
+	"engines": {
+		"node": ">=20.9.0"
 	}
 }
