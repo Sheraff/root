@@ -28,6 +28,9 @@ if (process.env.NODE_ENV === "production") {
 	app.register(fastifyStatic, {
 		root: clientDistPath,
 		prefix: "/",
+		setHeaders(res) {
+			res.setHeader("Service-Worker-Allowed", "/")
+		},
 	})
 }
 

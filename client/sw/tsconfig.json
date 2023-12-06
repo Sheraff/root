@@ -1,8 +1,14 @@
 {
 	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
+		"rootDir": "../..",
 		"baseUrl": ".",
-		"lib": ["WebWorker", "ESNext"]
+		"lib": ["WebWorker", "ESNext"],
+		"paths": {
+			"~/*": ["../sw/*"],
+			"@shared/*": ["../../shared/*"]
+		}
 	},
-	"files": ["./service-worker.ts"]
+	"include": ["./*", "./**/*", "../../shared/**/*.ts"],
+	"exclude": ["../../node_modules", "../../dist"]
 }

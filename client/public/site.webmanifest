@@ -1,0 +1,38 @@
+{
+	"name": "fullstack-typescript-project",
+	"short_name": "fullstack-typescript-project",
+	"start_url": "/",
+	"orientation": "portrait",
+	"icons": [
+		{
+			"src": "/vite.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "any"
+		},
+		{
+			"src": "/vite.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "maskable"
+		}
+	],
+	"screenshots": [
+		{
+			"src": "/vite.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"form_factor": "wide",
+			"label": "Just an icon"
+		},
+		{
+			"src": "/vite.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"label": "Just an icon"
+		}
+	],
+	"theme_color": "#e6dde9",
+	"background_color": "#0d0110",
+	"display": "standalone"
+}

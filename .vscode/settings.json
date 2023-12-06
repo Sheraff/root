@@ -1,11 +1,13 @@
 {
-	"cSpell.words": ["fastify", "outdir", "pino", "sqlite", "pnpm", "vlcn", "crdt"],
+	"cSpell.words": ["crdt", "fastify", "outdir", "outfile", "pino", "pnpm", "sqlite", "vlcn"],
 	"search.exclude": {
 		"node_modules": true,
 		"pnpm-lock.yaml": true
 	},
 	"files.exclude": {
-		"**/dist/**": true
+		"**/dist/**": true,
+		"client/public/sw.js": true,
+		"client/public/sw.js.map": true
 	},
 	"npm.packageManager": "pnpm",
 	"typescript.tsdk": "node_modules/typescript/lib",
@@ -30,6 +32,9 @@
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"[jsonc]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[html]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	}
 }

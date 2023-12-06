@@ -1,2 +1,4 @@
 node_modules
 dist
+client/public/sw.js
+client/public/sw.js.map

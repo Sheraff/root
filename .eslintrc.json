@@ -3,7 +3,7 @@
 	"parser": "@typescript-eslint/parser",
 	"plugins": ["@typescript-eslint"],
 	"extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
-	"ignorePatterns": ["node_modules/*", "dist/*"],
+	"ignorePatterns": ["node_modules/*", "dist/*", "client/public/sw*"],
 	"rules": {
 		// Add your custom rules here
 	}
