@@ -2,13 +2,6 @@
 
 ## TODO
 
-- shared package
-  - vitest
-  - avoid barrel exports (can we get deep imports with auto-completion of paths?)
-- PWA
-  - manifest
-  - service worker
-  - avoid workbox please!
 - env
   - right now it's weird that in dev mode it's on 3001, but in prod it's on 3000 (and changing that is in multiple places)
 
