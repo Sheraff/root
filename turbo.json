@@ -2,17 +2,26 @@
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "dev": {
-      "dependsOn": []
+      "dependsOn": [],
+      "cache": false
+    },
+    "shared#build": {
+      "outputs": [
+        "shared/dist/**"
+      ]
     },
     "build": {
       "outputs": [
-        "dist/**/*"
+        "dist/**"
+      ],
+      "dependsOn": [
+        "shared#build"
       ]
     },
     "test": {
       "dependsOn": [],
       "outputs": [
-        ".vitest/**/*"
+        ".vitest/**"
       ]
     },
     "serve": {

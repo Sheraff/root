@@ -3,6 +3,9 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import apiRoutes from './api'
 import fastifyStatic from '@fastify/static'
+import { fooBar } from 'shared/foo'
+
+fooBar()
 
 // Create a Fastify instance
 const app = fastify({

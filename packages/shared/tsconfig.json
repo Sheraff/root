@@ -1,8 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "composite": true,
     "rootDir": "src",
-    "outDir": "dist",
+    "baseUrl": "src",
+    "outDir": "../dist",
     "esModuleInterop": true,
     "moduleResolution": "Node",
     "target": "ESNext",
@@ -12,14 +14,6 @@
     ],
   },
   "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
-  "references": [
-    {
-      "path": "../shared"
-    }
+    "src/**/*",
   ]
 }

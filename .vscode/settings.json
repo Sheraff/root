@@ -3,5 +3,17 @@
 		"fastify",
 		"outdir",
 		"pino"
-	]
+	],
+	"search.exclude": {
+		"**/node_modules": true,
+		"**/*.lock": true
+	},
+	"files.exclude": {
+		"**/.git": true,
+		// "**/dist/**": true,
+		"**/.turbo/**": true,
+	},
+	"editor.formatOnSave": true,
+	"npm.packageManager": "pnpm",
+	"typescript.tsdk": "node_modules/typescript/lib",
 }

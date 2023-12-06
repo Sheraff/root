@@ -1,16 +1,30 @@
 # Fullstack TypeScript Project
 
+## TODO
+- shared package
+  - vitest
+  - avoid barrel exports (can we get deep imports with auto-completion of paths?)
+- PWA
+  - manifest
+  - service worker
+  - avoid workbox please!
+- env
+  - right now it's weird that in dev mode it's on 3001, but in prod it's on 3000 (and changing that is in multiple places)
+
 ## Client Package
 
-A typescript Vite React application, with
+A typescript React application, with
 - PWA & service worker
 - Vitest
+- Vite
 
 ## Server Package
 
 A typescript Fastify server, with
 - sqlite database
 - vlcn.io CRDT server
+- esbuild
+- Vitest
 
 ## Root Level
 
