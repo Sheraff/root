@@ -3,7 +3,10 @@
 ## TODO
 
 - env
-  - right now it's weird that in dev mode it's on 3001, but in prod it's on 3000 (and changing that is in multiple places)
+- finish auth
+  - turn sessions into actual accounts
+  - better utils for "protected" stuff (client & server)
+- vlcn.io
 
 ## Client Package
 
@@ -18,9 +21,10 @@ A typescript React application, with
 A typescript Fastify server, with
 
 - sqlite database
-- vlcn.io CRDT server
+- vlcn.io CRDT server (TODO)
 - esbuild
 - Vitest
+- oauth through 3rd party providers
 
 ## Root Level
 
