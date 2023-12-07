@@ -9,6 +9,6 @@
 			"@shared/*": ["../../shared/*"]
 		}
 	},
-	"include": ["./*", "./**/*", "../../shared/**/*.ts"],
+	"include": ["./*", "./**/*", "../../shared/**/*.ts", "../../types/*.d.ts"],
 	"exclude": ["../../node_modules", "../../dist"]
 }

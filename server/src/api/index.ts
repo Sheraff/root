@@ -12,7 +12,7 @@ export default async function routes(fastify: FastifyInstance) {
 			preHandler: (request, reply, done) => {
 				if (!request.session?.grant) {
 					console.log("no session")
-					console.log(request)
+					// console.log(request)
 					reply.status(401).send({ error: "unauthorized" })
 					return done()
 				}

@@ -1,6 +1,7 @@
 import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
 import viteTsconfigPaths from "vite-tsconfig-paths"
+import ViteSqlLoader from "../scripts/ViteSqlLoader.mjs"
 
 export default defineConfig({
 	plugins: [
@@ -8,6 +9,7 @@ export default defineConfig({
 		viteTsconfigPaths({
 			projects: ["./tsconfig.json"],
 		}),
+		ViteSqlLoader(),
 	],
 	root: "./client",
 	server: {

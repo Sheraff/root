@@ -25,7 +25,8 @@ type TwitchUser = {
 	created_at: string
 }
 
-export function getIdFromGrant(response: Grant["response"]): UserId {
+export function getIdFromGrant(response: Grant["response"]): UserId | undefined {
+	if (!response.profile) return undefined
 	const { data } = response.profile as { data: [TwitchUser] }
 	return {
 		email: data[0].email,

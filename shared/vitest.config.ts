@@ -1,6 +1,9 @@
 import { defineConfig } from "vitest/config"
+// @ts-expect-error -- `shared` package is typed by the main packages, haven't figured out a way to fix this yet
+import ViteSqlLoader from "../scripts/ViteSqlLoader.mjs"
 
 export default defineConfig({
+	plugins: [ViteSqlLoader()],
 	root: "./shared",
 	test: {
 		alias: {

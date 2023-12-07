@@ -3,6 +3,8 @@ import cookie from "@fastify/cookie"
 import session from "@fastify/session"
 import grant from "grant"
 import * as Twitch from "~/auth/twitch"
+import { authDB } from "~/db/authDB"
+import { makeStore } from "~/auth/SessionStore"
 
 export type Grant = {
 	provider: string
@@ -11,7 +13,7 @@ export type Grant = {
 		id_token: string
 		access_token: string
 		refresh_token: string
-		profile: unknown
+		profile?: unknown
 	}
 }
 
@@ -49,11 +51,7 @@ async function auth(fastify: FastifyInstance) {
 		secret: "rostra-gasp-genitive-focal-civility-dairy-alehouse",
 		cookie: { secure: false },
 		// TODO: use DB for session store
-		// store: {
-		// 	destroy(sessionId, callback) {},
-		// 	get(sessionId, callback) {},
-		// 	set(sessionId, session, callback) {},
-		// },
+		store: makeStore(authDB),
 	})
 	const grantPlugin = grant.fastify()
 	const grantInstance = grantPlugin({
@@ -83,9 +81,10 @@ async function auth(fastify: FastifyInstance) {
 					 * - whether the user is logged in
 					 * - which DB to sync / query (for now we assume 1 sqlite DB file per user)
 					 */
-					res.header("Set-Cookie", `user=${data.id}; Path=/; SameSite=Strict`)
-					res.redirect(302, "/")
-					return
+					if (data) {
+						res.header("Set-Cookie", `user=${data.id}; Path=/; SameSite=Strict`)
+						return res.redirect(302, "/")
+					}
 				}
 				default: {
 					res.status(500).send("unknown provider")

@@ -1,11 +1,13 @@
 import viteTsconfigPaths from "vite-tsconfig-paths"
 import { defineConfig } from "vitest/config"
+import ViteSqlLoader from "../scripts/ViteSqlLoader.mjs"
 
 export default defineConfig({
 	plugins: [
 		viteTsconfigPaths({
 			projects: ["./tsconfig.json", "./sw/tsconfig.json"],
 		}),
+		ViteSqlLoader(),
 	],
 	root: "./client",
 	test: {

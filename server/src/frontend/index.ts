@@ -9,7 +9,7 @@ import fastifyStatic from "@fastify/static"
 export default async function frontend(fastify: FastifyInstance) {
 	const __filename = fileURLToPath(import.meta.url)
 	const __dirname = path.dirname(__filename)
-	const clientDistPath = path.join(__dirname, "../../../dist/client")
+	const clientDistPath = path.join(__dirname, "../../dist/client")
 	fastify.register(fastifyStatic, {
 		root: clientDistPath,
 		prefix: "/",
