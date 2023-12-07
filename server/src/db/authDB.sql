@@ -18,10 +18,10 @@ CREATE TABLE
 		user_id TEXT NOT NULL REFERENCES users (id),
 		provider TEXT NOT NULL,
 		provider_user_id TEXT NOT NULL,
-		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		access_token TEXT,
-		refresh_token TEXT,
-		expires_at DATETIME,
-		refresh_token_expires_at DATETIME,
-		id_token TEXT
+		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+		-- access_token TEXT,
+		-- refresh_token TEXT,
+		-- expires_at DATETIME,
+		-- refresh_token_expires_at DATETIME,
+		-- id_token TEXT
 	);

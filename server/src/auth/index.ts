@@ -38,8 +38,7 @@ declare module "fastify" {
  * Auth flow:
  * 1. user clicks on "login with twitch" button, front-end goes to /api/oauth/twitch
  * 2. grant redirects to twitch, twitch redirects to /api/oauth/twitch/callback
- * 3. grant redirects to /api/oauth
- * 4. /api/oauth collects the data it needs from the grant, sets a cookie to scope SQL queries to the user, and redirects to /
+ * 3. grant creates a session (incl. provider, provider id, email, jwt) redirects to /
  *
  * Client-side "am I logged in?" flow:
  * 1. front-end calls /api/session
@@ -47,6 +46,13 @@ declare module "fastify" {
  *
  * Client-side "logout" flow:
  * 1. front-end calls DELETE /api/session
+ *
+ *
+ *
+ * Use "invite codes"
+ * - Only with an invite code an oauth session can be turned into an account.
+ * - User can create an invite code, connect with a ≠ oauth provider, then both are linked to the same account.
+ *
  */
 async function auth(fastify: FastifyInstance) {
 	return fastify
@@ -60,6 +66,7 @@ async function auth(fastify: FastifyInstance) {
 			cookie: { secure: false },
 			// TODO: use DB for session store
 			store: makeStore(authDB),
+			cookieName: "sessionId",
 		})
 		.register(
 			grant.fastify()({
@@ -72,53 +79,48 @@ async function auth(fastify: FastifyInstance) {
 				twitch: Twitch.options,
 			}),
 		)
-		.route({
-			method: "GET",
-			url: "/api/oauth",
-			async handler(req, res) {
-				if (!req.session.grant) {
-					res.redirect(303, "/")
-					return
+		.addHook("onSend", (req, res, payload, done) => {
+			if (!req.session?.grant) {
+				res.setCookie("user", "", { path: "/", sameSite: "strict", maxAge: 0 })
+				return done(null, payload)
+			}
+			let data: UserId | undefined = undefined
+			switch (req.session.grant.provider) {
+				case "twitch": {
+					data = Twitch.getIdFromGrant(req.session.grant.response)
+					break
 				}
+			}
+			if (data) {
+				res.setCookie("user", data.id, { path: "/", sameSite: "strict", maxAge: 2147483647 })
+			} else {
+				res.setCookie("user", "", { path: "/", sameSite: "strict", maxAge: 0 })
+			}
+			return done(null, payload)
+		})
+		.get("/api/session", async function (req, res) {
+			if (req.session.grant) {
 				switch (req.session.grant.provider) {
 					case "twitch": {
 						const data = Twitch.getIdFromGrant(req.session.grant.response)
-						/**
-						 * TODO: do something with data... store in db? communicate something to frontend?
-						 * We need to know
-						 * - whether the user is logged in
-						 * - which DB to sync / query (for now we assume 1 sqlite DB file per user)
-						 */
 						if (data) {
-							res.header("Set-Cookie", `user=${data.id}; Path=/; SameSite=Strict`)
-							return res.redirect(302, "/")
+							return res.send(data)
 						}
 					}
-					default: {
-						res.status(500).send("unknown provider")
-						return
-					}
 				}
-			},
-		})
-		.get("/api/session", async function (req, res) {
-			if (!req.session.grant) {
-				return res.status(401).send({ error: "unauthorized" })
 			}
-			switch (req.session.grant.provider) {
-				case "twitch":
-					return res.send(Twitch.getIdFromGrant(req.session.grant.response))
-			}
-			return res.status(404).send({ error: "unknown provider" })
+			res.status(401).send({ error: "unauthorized" })
+			return
 		})
 		.delete("/api/session", async function (req, res) {
-			res.header("Access-Control-Allow-Origin", "*")
 			req.session.destroy((err) => {
 				if (err) {
 					console.error(err)
-					return res.status(500).send({ error: "internal server error" })
+					res.status(500).send({ error: "internal server error" })
+					return
 				}
-				return res.send({ message: "session destroyed" })
+				res.send({ message: "session destroyed" })
+				return
 			})
 		})
 }

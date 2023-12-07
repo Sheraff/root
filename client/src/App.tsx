@@ -1,7 +1,7 @@
 import { fooBar } from "@shared/foo/bar"
 import { useEffect, useState } from "react"
 
-function LoggedIn({ session }: { session: object }) {
+function LoggedIn() {
 	const [state, setState] = useState<unknown>()
 	useEffect(() => {
 		fetch("/api/protected")
@@ -14,16 +14,9 @@ function LoggedIn({ session }: { session: object }) {
 	}, [])
 	return (
 		<>
-			<div>Logged in as {JSON.stringify(session)}</div>
+			<div>Logged in</div>
+			<button onClick={async () => fetch("/api/session", { method: "DELETE" })}>Logout</button>
 			<pre>{JSON.stringify(state, null, 2)}</pre>
-			<button
-				onClick={async () => {
-					await fetch("/api/session", { method: "DELETE" })
-					window.location.reload()
-				}}
-			>
-				Logout
-			</button>
 		</>
 	)
 }
@@ -39,25 +32,100 @@ function NotLoggedIn() {
 	return (
 		<>
 			<div>Not logged in</div>
-			<pre>{JSON.stringify(state, null, 2)}</pre>
 			<a href="/api/oauth/twitch">Login with twitch</a>
+			<pre>{JSON.stringify(state, null, 2)}</pre>
 		</>
 	)
 }
 
+function getCookies() {
+	const cookies = document.cookie.split(";")
+	const cookieObj: Record<string, string | undefined> = {}
+	cookies.forEach((cookie) => {
+		const [key, value] = cookie.split("=") as [string, string | undefined]
+		cookieObj[key.trim()] = value?.trim()
+	})
+	return cookieObj
+}
+
+declare global {
+	interface Window {
+		cookieStore?: EventTarget
+	}
+}
+
 export default function App() {
-	const [session, setSession] = useState<null | object>(null)
+	const [allowed, setAllowed] = useState<boolean>(() =>
+		navigator.onLine ? false : "user" in getCookies(),
+	)
+	const [loading, setLoading] = useState(() => navigator.onLine)
 	useEffect(() => {
-		fetch("/api/session")
-			.then((res) => (res.ok ? res.json() : null))
-			.then(setSession)
+		const controller = new AbortController()
+		let online = navigator.onLine
+		let checking = false
+		let lastValue = getCookies().user
+
+		const checkSession = async () => {
+			console.log("checkSession", { online, checking })
+			if (!online || checking) return
+			checking = true
+			const res = await fetch("/api/session")
+			checking = false
+			setAllowed(res.status !== 401)
+		}
+
+		addEventListener(
+			"online",
+			() => {
+				online = true
+				checkSession()
+			},
+			{ signal: controller.signal },
+		)
+
+		addEventListener(
+			"offline",
+			() => {
+				online = false
+				setAllowed("user" in getCookies())
+			},
+			{ signal: controller.signal },
+		)
+
+		let doubleEventTimeout: NodeJS.Timeout
+		window.cookieStore?.addEventListener(
+			"change",
+			() => {
+				clearTimeout(doubleEventTimeout)
+				doubleEventTimeout = setTimeout(() => {
+					const value = getCookies().user
+					if (value !== lastValue) {
+						lastValue = value
+						checkSession()
+					}
+				}, 100)
+			},
+			{ signal: controller.signal },
+		)
+
+		if (loading) {
+			checkSession().finally(() => setLoading(false))
+		}
+
+		return () => controller.abort()
 	}, [])
+
+	console.log({ allowed })
 
 	return (
 		<div>
 			<h1>Welcome to our Fullstack TypeScript Project!</h1>
-			{session && <LoggedIn session={session} />}
-			{!session && <NotLoggedIn />}
+			{!loading && (
+				<>
+					{allowed && <LoggedIn />}
+					{!allowed && <NotLoggedIn />}
+				</>
+			)}
 		</div>
 	)
 }

@@ -1,9 +1,8 @@
 import { type FastifyInstance } from "fastify"
 
 export default async function routes(fastify: FastifyInstance) {
-	fastify.get("/api/hello", async (request, reply) => {
+	fastify.get("/api/hello", async () => {
 		console.log("hello world")
-		reply.header("Access-Control-Allow-Origin", "*")
 		return { hello: "world" }
 	})
 	fastify.get(
@@ -20,9 +19,8 @@ export default async function routes(fastify: FastifyInstance) {
 				done()
 			},
 		},
-		(request, reply) => {
+		() => {
 			console.log("hello protected world")
-			reply.header("Access-Control-Allow-Origin", "*")
 			return { hello: "protected world" }
 		},
 	)
