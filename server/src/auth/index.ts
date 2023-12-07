@@ -40,60 +40,87 @@ declare module "fastify" {
  * 2. grant redirects to twitch, twitch redirects to /api/oauth/twitch/callback
  * 3. grant redirects to /api/oauth
  * 4. /api/oauth collects the data it needs from the grant, sets a cookie to scope SQL queries to the user, and redirects to /
+ *
+ * Client-side "am I logged in?" flow:
+ * 1. front-end calls /api/session
+ * 2. /api/session returns the provider, email, and provider user id if the user is logged in, or a 401 if not
+ *
+ * Client-side "logout" flow:
+ * 1. front-end calls DELETE /api/session
  */
 async function auth(fastify: FastifyInstance) {
-	fastify.register(cookie, {
-		// hook: "onRequest", // see lifecycle hooks: https://fastify.dev/docs/latest/Reference/Lifecycle/
-		// logLevel: "info",
-	})
-	fastify.register(session, {
-		// TODO: this should be an env secret
-		secret: "rostra-gasp-genitive-focal-civility-dairy-alehouse",
-		cookie: { secure: false },
-		// TODO: use DB for session store
-		store: makeStore(authDB),
-	})
-	const grantPlugin = grant.fastify()
-	const grantInstance = grantPlugin({
-		defaults: {
-			origin: "http://localhost:3001",
-			transport: "session",
-			state: true,
-			prefix: "/api/oauth",
-		},
-		twitch: Twitch.options,
-	})
-	fastify.register(grantInstance)
-	fastify.route({
-		method: "GET",
-		url: "/api/oauth",
-		handler: async (req, res) => {
-			if (!req.session.grant) {
-				res.redirect(303, "/")
-				return
-			}
-			switch (req.session.grant.provider) {
-				case "twitch": {
-					const data = Twitch.getIdFromGrant(req.session.grant.response)
-					/**
-					 * TODO: do something with data... store in db? communicate something to frontend?
-					 * We need to know
-					 * - whether the user is logged in
-					 * - which DB to sync / query (for now we assume 1 sqlite DB file per user)
-					 */
-					if (data) {
-						res.header("Set-Cookie", `user=${data.id}; Path=/; SameSite=Strict`)
-						return res.redirect(302, "/")
-					}
-				}
-				default: {
-					res.status(500).send("unknown provider")
+	return fastify
+		.register(cookie, {
+			// hook: "onRequest", // see lifecycle hooks: https://fastify.dev/docs/latest/Reference/Lifecycle/
+			// logLevel: "info",
+		})
+		.register(session, {
+			// TODO: this should be an env secret
+			secret: "rostra-gasp-genitive-focal-civility-dairy-alehouse",
+			cookie: { secure: false },
+			// TODO: use DB for session store
+			store: makeStore(authDB),
+		})
+		.register(
+			grant.fastify()({
+				defaults: {
+					origin: "http://localhost:3001",
+					transport: "session",
+					state: true,
+					prefix: "/api/oauth",
+				},
+				twitch: Twitch.options,
+			}),
+		)
+		.route({
+			method: "GET",
+			url: "/api/oauth",
+			async handler(req, res) {
+				if (!req.session.grant) {
+					res.redirect(303, "/")
 					return
 				}
+				switch (req.session.grant.provider) {
+					case "twitch": {
+						const data = Twitch.getIdFromGrant(req.session.grant.response)
+						/**
+						 * TODO: do something with data... store in db? communicate something to frontend?
+						 * We need to know
+						 * - whether the user is logged in
+						 * - which DB to sync / query (for now we assume 1 sqlite DB file per user)
+						 */
+						if (data) {
+							res.header("Set-Cookie", `user=${data.id}; Path=/; SameSite=Strict`)
+							return res.redirect(302, "/")
+						}
+					}
+					default: {
+						res.status(500).send("unknown provider")
+						return
+					}
+				}
+			},
+		})
+		.get("/api/session", async function (req, res) {
+			if (!req.session.grant) {
+				return res.status(401).send({ error: "unauthorized" })
 			}
-		},
-	})
-	return fastify
+			switch (req.session.grant.provider) {
+				case "twitch":
+					return res.send(Twitch.getIdFromGrant(req.session.grant.response))
+			}
+			return res.status(404).send({ error: "unknown provider" })
+		})
+		.delete("/api/session", async function (req, res) {
+			res.header("Access-Control-Allow-Origin", "*")
+			req.session.destroy((err) => {
+				if (err) {
+					console.error(err)
+					return res.status(500).send({ error: "internal server error" })
+				}
+				return res.send({ message: "session destroyed" })
+			})
+		})
 }
 
 export default Object.assign(auth, {
