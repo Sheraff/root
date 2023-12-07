@@ -9,6 +9,7 @@ fooBar()
 // Create a Fastify instance
 const app = fastify({
 	logger: {
+		// TODO: use ≠ loggers for dev and prod, w/ log rotation in prod (or do we want pm2 to handle that?)
 		transport: {
 			target: "pino-pretty",
 			options: {

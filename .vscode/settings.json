@@ -1,5 +1,15 @@
 {
-	"cSpell.words": ["crdt", "fastify", "outdir", "outfile", "pino", "pnpm", "sqlite", "vlcn"],
+	"cSpell.words": [
+		"crdt",
+		"fastify",
+		"outdir",
+		"outfile",
+		"pino",
+		"pnpm",
+		"sqlite",
+		"valibot",
+		"vlcn"
+	],
 	"search.exclude": {
 		"node_modules": true,
 		"pnpm-lock.yaml": true
