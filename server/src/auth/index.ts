@@ -11,6 +11,7 @@ export type Grant = {
 		id_token: string
 		access_token: string
 		refresh_token: string
+		profile: unknown
 	}
 }
 
@@ -75,7 +76,7 @@ async function auth(fastify: FastifyInstance) {
 			}
 			switch (req.session.grant.provider) {
 				case "twitch": {
-					const data = await Twitch.getIdFromGrant(req.session.grant)
+					const data = Twitch.getIdFromGrant(req.session.grant.response)
 					/**
 					 * TODO: do something with data... store in db? communicate something to frontend?
 					 * We need to know
