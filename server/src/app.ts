@@ -1,9 +1,8 @@
 import fastify from "fastify"
-import path from "node:path"
-import { fileURLToPath } from "node:url"
-import apiRoutes from "~/api"
-import fastifyStatic from "@fastify/static"
 import { fooBar } from "@shared/foo/bar"
+import api from "~/api"
+import auth from "~/auth"
+import frontend from "~/frontend"
 
 fooBar()
 
@@ -20,28 +19,24 @@ const app = fastify({
 	},
 })
 
+// Register the auth routes + session management
+app.register(auth)
+
 // in production mode, we serve the client built by Vite
 if (process.env.NODE_ENV === "production") {
-	const __filename = fileURLToPath(import.meta.url)
-	const __dirname = path.dirname(__filename)
-	const clientDistPath = path.join(__dirname, "../../dist/client")
-	app.register(fastifyStatic, {
-		root: clientDistPath,
-		prefix: "/",
-		setHeaders(res) {
-			res.setHeader("Service-Worker-Allowed", "/")
-		},
-	})
+	app.register(frontend)
 }
 
 // Register the API routes
-app.register(apiRoutes)
+app.register(api)
 
 // Start the server
 const start = async () => {
 	try {
 		await app.listen({
-			port: 3000,
+			// TODO: use env var for port (and for switching between private port and public port between dev and prod)
+			port: process.env.NODE_ENV === "production" ? 3001 : 3000,
+			host: "localhost",
 			listenTextResolver: (address) =>
 				process.env.NODE_ENV === "production" ? `Listening on ${address}` : `API server started`,
 		})
