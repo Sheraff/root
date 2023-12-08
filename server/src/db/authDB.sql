@@ -18,20 +18,20 @@ CREATE TABLE
 		user_id TEXT NOT NULL REFERENCES users (id),
 		provider TEXT NOT NULL,
 		provider_user_id TEXT NOT NULL,
-		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		-- access_token TEXT,
 		-- refresh_token TEXT,
 		-- expires_at DATETIME,
 		-- refresh_token_expires_at DATETIME,
 		-- id_token TEXT
+		UNIQUE (user_id, provider, provider_user_id)
 	);
 
 CREATE TABLE
 	IF NOT EXISTS invites (
 		code TEXT NOT NULL PRIMARY KEY,
 		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		expires_at DATETIME NOT NULL,
-		user_id TEXT REFERENCES users (id)
+		expires_at DATETIME NOT NULL
 	);
 
 CREATE INDEX IF NOT EXISTS accounts_session_lookup ON accounts (provider, provider_user_id);

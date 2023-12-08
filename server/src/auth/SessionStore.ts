@@ -3,7 +3,10 @@ import { sql } from "@shared/sql"
 import type BetterSqlite3 from "better-sqlite3"
 import { type Session } from "fastify"
 import { Grant } from "~/auth"
-import * as Twitch from "~/auth/twitch"
+import * as Twitch from "~/auth/providers/twitch"
+import * as Google from "~/auth/providers/google"
+import * as Spotify from "~/auth/providers/spotify"
+import * as Discord from "~/auth/providers/discord"
 
 // 1d = 86400s = 86400000ms
 const oneDay = 86400000
@@ -25,6 +28,12 @@ function getLinkFromGrant(grant: Grant) {
 	switch (grant.provider) {
 		case "twitch":
 			return Twitch.getIdFromGrant(grant.response)
+		case "google":
+			return Google.getIdFromGrant(grant.response)
+		case "spotify":
+			return Spotify.getIdFromGrant(grant.response)
+		case "discord":
+			return Discord.getIdFromGrant(grant.response)
 		default: {
 			console.log(`Unknown provider: ${grant.provider}`)
 		}
@@ -104,6 +113,11 @@ export function makeStore(db: BetterSqlite3.Database): SessionStore {
 			try {
 				const cached = getCache.get(sessionId)
 				early: if (cached) {
+					if (!cached.user !== !session.user) break early
+					if (cached.user && session.user) {
+						if (cached.user.id !== session.user.id) break early
+						if (cached.user.email !== session.user.email) break early
+					}
 					if (cached.grant === session.grant) return callback()
 					if (!cached.grant || !session.grant) break early
 					if (cached.grant.provider !== session.grant.provider) break early

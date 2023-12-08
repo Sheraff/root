@@ -8,6 +8,18 @@ const envSchema = object({
 
 	TWITCH_CLIENT_ID: string([minLength(1)]),
 	TWITCH_CLIENT_SECRET: string([minLength(1)]),
+
+	GOOGLE_CLIENT_ID: string([minLength(1)]),
+	GOOGLE_CLIENT_SECRET: string([minLength(1)]),
+
+	SPOTIFY_CLIENT_ID: string([minLength(1)]),
+	SPOTIFY_CLIENT_SECRET: string([minLength(1)]),
+
+	GITHUB_CLIENT_ID: string([minLength(1)]),
+	GITHUB_CLIENT_SECRET: string([minLength(1)]),
+
+	DISCORD_CLIENT_ID: string([minLength(1)]),
+	DISCORD_CLIENT_SECRET: string([minLength(1)]),
 })
 
 export function parseEnv(env: Record<string, unknown>) {

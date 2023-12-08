@@ -7,7 +7,6 @@ export const options: GrantProvider = {
 	client_secret: env.TWITCH_CLIENT_SECRET,
 	scope: ["openid", "user:read:email"],
 	response: ["tokens", "profile"],
-	callback: "/",
 	nonce: true,
 }
 

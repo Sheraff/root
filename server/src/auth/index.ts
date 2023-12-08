@@ -1,8 +1,11 @@
-import { type FastifyInstance } from "fastify"
+import { FastifyRequest, type FastifyInstance } from "fastify"
 import cookie from "@fastify/cookie"
 import session from "@fastify/session"
 import grant from "grant"
-import * as Twitch from "~/auth/twitch"
+import * as Twitch from "~/auth/providers/twitch"
+import * as Google from "~/auth/providers/google"
+import * as Spotify from "~/auth/providers/spotify"
+import * as Discord from "~/auth/providers/discord"
 import { authDB } from "~/db/authDB"
 import { makeStore } from "~/auth/SessionStore"
 import { makeInviteCodes } from "~/auth/InviteCodes"
@@ -10,6 +13,8 @@ import { maxLength, object, parse, string } from "valibot"
 import { sql } from "@shared/sql"
 import crypto from "node:crypto"
 import { env } from "~/env"
+import { PUBLIC_CONFIG } from "@shared/env/publicConfig"
+import { decrypt, encrypt } from "~/auth/AuthTokens"
 
 export type Grant = {
 	provider: string
@@ -36,6 +41,10 @@ export type UserId = {
 declare module "fastify" {
 	interface Session {
 		grant?: Grant
+		user?: {
+			email: string
+			id: string
+		}
 	}
 }
 
@@ -81,7 +90,7 @@ async function auth(fastify: FastifyInstance) {
 
 	fastify.register(session, {
 		secret: env.SESSION_COOKIE_SECRET,
-		cookie: { secure: false },
+		cookie: { secure: process.env.NODE_ENV === "production" },
 		store: sessionStore,
 		cookieName: "session",
 	})
@@ -93,10 +102,80 @@ async function auth(fastify: FastifyInstance) {
 				transport: "session",
 				state: true,
 				prefix: "/api/oauth/connect",
+				callback: "/api/oauth/finalize",
 			},
 			twitch: Twitch.options,
+			google: Google.options,
+			spotify: Spotify.options,
+			discord: Discord.options,
 		}),
 	)
+
+	fastify.post(
+		"/api/oauth/invite",
+		{
+			schema: {
+				body: {
+					type: "object",
+					properties: {
+						code: { type: "string" },
+					},
+					required: ["code"],
+				},
+			},
+		},
+		function (req, res) {
+			let inviteCode: string
+			try {
+				const parsed = parse(object({ code: string([maxLength(50)]) }), req.body)
+				inviteCode = parsed.code
+			} catch (err) {
+				console.error(err)
+				res.status(400)
+				return res.send({ error: "invalid code format" })
+			}
+			const valid = invitesStore.validate(inviteCode)
+			if (!valid) {
+				res.status(403)
+				return res.send({ error: "invalid code" })
+			}
+			const token = encrypt({ mode: "create" })
+			res.setCookie(PUBLIC_CONFIG.accountCreationCookie, token, {
+				path: "/",
+				sameSite: "lax",
+				maxAge: 3_600,
+			})
+			res.status(200)
+			return res.send({ message: "invite accepted, proceed to /api/oauth/connect/:provider" })
+		},
+	)
+
+	fastify.get("/api/oauth/invite", function (req, res) {
+		if (!req.session?.grant) {
+			res.status(401)
+			return res.send({ error: "unauthorized" })
+		}
+
+		const user = getUserFromSession(req)
+		if (!user) {
+			res.status(401)
+			return res.send({ error: "unauthorized" })
+		}
+		res.setCookie(PUBLIC_CONFIG.userIdCookie, user.id, {
+			path: "/",
+			sameSite: "lax",
+			maxAge: 2147483647,
+		})
+
+		const token = encrypt({ mode: "link", id: user.id })
+		res.setCookie(PUBLIC_CONFIG.accountCreationCookie, token, {
+			path: "/",
+			sameSite: "lax",
+			maxAge: 3_600,
+		})
+		res.status(200)
+		return res.send({ message: "linking accounts, proceed to /api/oauth/connect/:provider" })
+	})
 
 	const createUserStatement = authDB.prepare<{
 		userId: string
@@ -105,6 +184,19 @@ async function auth(fastify: FastifyInstance) {
 		sql`
 		INSERT INTO users
 		VALUES (@userId, @email);`,
+	)
+
+	const checkAccountExistsStatement = authDB.prepare<{
+		userId: string
+		provider: string
+		providerUserId: string
+	}>(
+		sql`
+		SELECT EXISTS(
+			SELECT 1
+			FROM accounts
+			WHERE user_id = @userId AND provider = @provider AND provider_user_id = @providerUserId
+		);`,
 	)
 
 	const createAccountStatement = authDB.prepare<{
@@ -128,82 +220,105 @@ async function auth(fastify: FastifyInstance) {
 		},
 	)
 
-	fastify.post(
-		"/api/oauth/invite",
-		{
-			schema: {
-				body: {
-					type: "object",
-					properties: {
-						code: { type: "string" },
-					},
-					required: ["code"],
-				},
-			},
-		},
-		function (req, res) {
-			if (!req.session?.grant) {
-				res.status(401)
-				return res.send({ error: "unauthorized" })
-			}
-			let sessionData: UserId | undefined = undefined
-			switch (req.session.grant.provider) {
-				case "twitch": {
-					sessionData = Twitch.getIdFromGrant(req.session.grant.response)
-					break
-				}
-			}
-			if (!sessionData) {
-				res.status(401)
-				return res.send({ error: "unauthorized" })
-			}
-			let inviteCode: string
-			try {
-				const parsed = parse(object({ code: string([maxLength(50)]) }), req.body)
-				inviteCode = parsed.code
-			} catch (err) {
-				console.error(err)
-				res.status(400)
-				return res.send({ error: "invalid code format" })
-			}
-			const valid = invitesStore.validate(inviteCode)
-			if (!valid) {
-				res.status(403)
-				return res.send({ error: "invalid code" })
-			}
-			try {
-				if (valid.user_id) {
-					const accountId = crypto.randomUUID()
-					createAccountStatement.run({
-						accountId,
-						userId: valid.user_id,
-						provider: sessionData.provider,
-						providerUserId: sessionData.id,
-					})
-					res.status(200)
-					return res.send({ message: "account linked" })
-				} else {
-					const userId = crypto.randomUUID()
-					const accountId = crypto.randomUUID()
-					createUserAccount(
-						{ userId, email: sessionData.email },
-						{
-							userId,
-							accountId,
-							provider: sessionData.provider,
-							providerUserId: sessionData.id,
-						},
-					)
-					res.status(200)
-					return res.send({ message: "account created" })
-				}
-			} catch (err) {
-				console.error(err)
-				res.status(500)
-				return res.send({ error: "internal server error" })
+	const linkUserAccount = authDB.transaction(
+		(account: { accountId: string; userId: string; provider: string; providerUserId: string }) => {
+			const exists = checkAccountExistsStatement.get(account)
+			if (!exists) {
+				createAccountStatement.run(account)
 			}
 		},
 	)
+
+	fastify.get("/api/oauth/finalize", function (req, res) {
+		res.setCookie(PUBLIC_CONFIG.accountCreationCookie, "", {
+			path: "/",
+			sameSite: "lax",
+			maxAge: 0,
+		})
+
+		// check session, obtained after oauth flow
+		if (!req.session?.grant) {
+			res.status(401)
+			return res.send({ error: "unauthorized", debug: "no session" })
+		}
+		let sessionData: UserId | undefined = undefined
+		switch (req.session.grant.provider) {
+			case "twitch": {
+				sessionData = Twitch.getIdFromGrant(req.session.grant.response)
+				break
+			}
+			case "google": {
+				sessionData = Google.getIdFromGrant(req.session.grant.response)
+				break
+			}
+			case "spotify": {
+				sessionData = Spotify.getIdFromGrant(req.session.grant.response)
+				break
+			}
+			case "discord": {
+				sessionData = Discord.getIdFromGrant(req.session.grant.response)
+				break
+			}
+		}
+		if (!sessionData) {
+			res.status(401)
+			return res.send({ error: "unauthorized", debug: "no session data" })
+		}
+
+		// check if user already exists
+		const user = getUserFromSession(req)
+		if (user) {
+			res.setCookie(PUBLIC_CONFIG.userIdCookie, user.id, {
+				path: "/",
+				sameSite: "lax",
+				maxAge: 2147483647,
+			})
+			linkUserAccount({
+				accountId: crypto.randomUUID(),
+				userId: user.id,
+				provider: sessionData.provider,
+				providerUserId: sessionData.id,
+			})
+			console.log("user already exists, linking account")
+			return res.redirect(302, "/")
+		}
+
+		// check account creation cookie, obtained from invite flow
+		const token = req.cookies[PUBLIC_CONFIG.accountCreationCookie]
+		if (!token) {
+			res.status(401)
+			return res.send({ error: "unauthorized", debug: "no account creation cookie" })
+		}
+		const result = decrypt<{ mode: "create" } | { mode: "link"; id: string }>(token)
+		if ("error" in result) {
+			res.status(401)
+			return res.send({ error: "unauthorized", debug: "invalid account creation cookie" })
+		}
+
+		if (result.success.mode === "create") {
+			const userId = crypto.randomUUID()
+			const accountId = crypto.randomUUID()
+			createUserAccount(
+				{ userId, email: sessionData.email },
+				{
+					userId,
+					accountId,
+					provider: sessionData.provider,
+					providerUserId: sessionData.id,
+				},
+			)
+			return res.redirect(302, "/")
+		} else {
+			const accountId = crypto.randomUUID()
+			linkUserAccount({
+				accountId,
+				userId: result.success.id,
+				provider: sessionData.provider,
+				providerUserId: sessionData.id,
+			})
+			return res.redirect(302, "/")
+		}
+	})
 
 	const userFromSessionStatement = authDB.prepare<{
 		id: string
@@ -216,30 +331,43 @@ async function auth(fastify: FastifyInstance) {
 			WHERE sessions.id = @id AND datetime('now') < datetime(expires_at)`,
 	)
 
-	fastify.addHook("onSend", (req, res, payload, done) => {
-		if (!req.session?.grant) {
-			res.setCookie("user", "", { path: "/", sameSite: "strict", maxAge: 0 })
-			return done(null, payload)
-		}
+	const getUserFromSession = (req: FastifyRequest) => {
+		if (req.session.user) return req.session.user
+
 		const user = userFromSessionStatement.get({ id: req.session.sessionId }) as
 			| { id: string; email: string }
 			| undefined
+
 		if (user) {
-			res.setCookie("user", user.id, { path: "/", sameSite: "strict", maxAge: 2147483647 })
+			req.session.set("user", user)
+			req.session.save()
+			return user
+		}
+
+		return undefined
+	}
+
+	fastify.addHook("onSend", (req, res, payload, done) => {
+		if (!req.session?.grant) {
+			res.setCookie(PUBLIC_CONFIG.userIdCookie, "", { path: "/", sameSite: "lax", maxAge: 0 })
 			return done(null, payload)
 		}
-		let data: UserId | undefined = undefined
-		switch (req.session.grant.provider) {
-			case "twitch": {
-				data = Twitch.getIdFromGrant(req.session.grant.response)
-				break
-			}
+		if (req.session.user) {
+			return done(null, payload)
 		}
-		if (data) {
-			res.setCookie("user", "", { path: "/", sameSite: "strict", maxAge: 2147483647 })
-		} else {
-			res.setCookie("user", "", { path: "/", sameSite: "strict", maxAge: 0 })
+
+		const user = getUserFromSession(req)
+
+		if (user) {
+			res.setCookie(PUBLIC_CONFIG.userIdCookie, user.id, {
+				path: "/",
+				sameSite: "lax",
+				maxAge: 2147483647,
+			})
+			return done(null, payload)
 		}
+
+		res.setCookie(PUBLIC_CONFIG.userIdCookie, "", { path: "/", sameSite: "lax", maxAge: 0 })
 		return done(null, payload)
 	})
 
@@ -259,6 +387,24 @@ async function auth(fastify: FastifyInstance) {
 			switch (req.session.grant.provider) {
 				case "twitch": {
 					const session = Twitch.getIdFromGrant(req.session.grant.response)
+					if (session) {
+						return res.send({ session })
+					}
+				}
+				case "google": {
+					const session = Google.getIdFromGrant(req.session.grant.response)
+					if (session) {
+						return res.send({ session })
+					}
+				}
+				case "spotify": {
+					const session = Spotify.getIdFromGrant(req.session.grant.response)
+					if (session) {
+						return res.send({ session })
+					}
+				}
+				case "discord": {
+					const session = Discord.getIdFromGrant(req.session.grant.response)
 					if (session) {
 						return res.send({ session })
 					}

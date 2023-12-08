@@ -23,8 +23,7 @@ function generateCode(existingCodes: string[]) {
 }
 
 function fillInvites(invites: Invite[], insert: (invite: Invite) => void) {
-	const freeInvitesCount = invites.filter((i) => !i.user_id).length
-	const delta = FREE_INVITES - freeInvitesCount
+	const delta = FREE_INVITES - invites.length
 	if (delta <= 0) return
 
 	const codes = invites.map((i) => i.code)
@@ -43,7 +42,6 @@ type Invite = {
 	code: string
 	created_at: string
 	expires_at: string
-	user_id?: string
 }
 
 export function makeInviteCodes(db: BetterSqlite3.Database) {
@@ -75,7 +73,7 @@ export function makeInviteCodes(db: BetterSqlite3.Database) {
 	}>(
 		sql`
 			INSERT INTO invites
-			VALUES (@code, @created_at, @expires_at, NULL)`,
+			VALUES (@code, @created_at, @expires_at)`,
 	)
 
 	/*
