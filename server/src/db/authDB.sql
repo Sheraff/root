@@ -25,3 +25,13 @@ CREATE TABLE
 		-- refresh_token_expires_at DATETIME,
 		-- id_token TEXT
 	);
+
+CREATE TABLE
+	IF NOT EXISTS invites (
+		code TEXT NOT NULL PRIMARY KEY,
+		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		expires_at DATETIME NOT NULL,
+		user_id TEXT REFERENCES users (id)
+	);
+
+CREATE INDEX IF NOT EXISTS accounts_session_lookup ON accounts (provider, provider_user_id);

@@ -1,7 +1,7 @@
 import { fooBar } from "@shared/foo/bar"
 import { useEffect, useState } from "react"
 
-function LoggedIn() {
+function LoggedIn({ userId }: { userId: string }) {
 	const [state, setState] = useState<unknown>()
 	useEffect(() => {
 		fetch("/api/protected")
@@ -14,9 +14,47 @@ function LoggedIn() {
 	}, [])
 	return (
 		<>
-			<div>Logged in</div>
-			<button onClick={async () => fetch("/api/session", { method: "DELETE" })}>Logout</button>
+			<div>Logged in as {userId}</div>
+			<button onClick={async () => fetch("/api/oauth/session", { method: "DELETE" })}>
+				Logout
+			</button>
 			<pre>{JSON.stringify(state, null, 2)}</pre>
+		</>
+	)
+}
+
+function CreateAccount({ session }: { session: NoAccountUser["session"] }) {
+	return (
+		<>
+			<div>
+				Creating account as {session.email} with {session.provider} (id {session.id})
+			</div>
+			<button onClick={async () => fetch("/api/oauth/session", { method: "DELETE" })}>
+				Cancel account creation
+			</button>
+			<form
+				onSubmit={async (event) => {
+					event.preventDefault()
+					const code = event.currentTarget.code.value
+					const res = await fetch("/api/oauth/invite", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({ code }),
+					})
+					console.log("fetching...", res.ok, res.status, res.statusText)
+					const json = await res.json()
+					console.log(json)
+				}}
+			>
+				<input
+					type="text"
+					name="code"
+					required
+					minLength={17}
+					maxLength={17}
+				/>
+				<button type="submit">Submit</button>
+			</form>
 		</>
 	)
 }
@@ -32,7 +70,7 @@ function NotLoggedIn() {
 	return (
 		<>
 			<div>Not logged in</div>
-			<a href="/api/oauth/twitch">Login with twitch</a>
+			<a href="/api/oauth/connect/twitch">Login with twitch</a>
 			<pre>{JSON.stringify(state, null, 2)}</pre>
 		</>
 	)
@@ -54,11 +92,14 @@ declare global {
 	}
 }
 
+type UnAuthenticatedUser = undefined
+type NoAccountUser = { session: { id: string; email: string; provider: string } }
+type AuthenticatedUser = { user: { id: string; email: string } }
+
 export default function App() {
-	const [allowed, setAllowed] = useState<boolean>(() =>
-		navigator.onLine ? false : "user" in getCookies(),
-	)
-	const [loading, setLoading] = useState(() => navigator.onLine)
+	const [userId, setUserId] = useState<string | undefined>(() => getCookies().user)
+	const [profile, setProfile] = useState<AuthenticatedUser | NoAccountUser | UnAuthenticatedUser>()
+
 	useEffect(() => {
 		const controller = new AbortController()
 		let online = navigator.onLine
@@ -69,9 +110,20 @@ export default function App() {
 			console.log("checkSession", { online, checking })
 			if (!online || checking) return
 			checking = true
-			const res = await fetch("/api/session")
+			const res = await fetch("/api/oauth/session")
 			checking = false
-			setAllowed(res.status !== 401)
+			if (res.status === 401) {
+				setUserId(undefined)
+				setProfile(undefined)
+				return
+			}
+			const json = (await res.json()) as AuthenticatedUser | NoAccountUser
+			setProfile(json)
+			if ("user" in json) {
+				setUserId(json.user.id)
+			} else {
+				setUserId(undefined)
+			}
 		}
 
 		addEventListener(
@@ -87,7 +139,7 @@ export default function App() {
 			"offline",
 			() => {
 				online = false
-				setAllowed("user" in getCookies())
+				setUserId(getCookies().user)
 			},
 			{ signal: controller.signal },
 		)
@@ -108,24 +160,19 @@ export default function App() {
 			{ signal: controller.signal },
 		)
 
-		if (loading) {
-			checkSession().finally(() => setLoading(false))
+		if (online) {
+			checkSession()
 		}
 
 		return () => controller.abort()
 	}, [])
 
-	console.log({ allowed })
-
 	return (
 		<div>
 			<h1>Welcome to our Fullstack TypeScript Project!</h1>
-			{!loading && (
-				<>
-					{allowed && <LoggedIn />}
-					{!allowed && <NotLoggedIn />}
-				</>
-			)}
+			{userId && <LoggedIn userId={userId} />}
+			{!userId && profile && "session" in profile && <CreateAccount session={profile.session} />}
+			{!userId && !(profile && "session" in profile) && <NotLoggedIn />}
 		</div>
 	)
 }

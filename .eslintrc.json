@@ -6,6 +6,7 @@
 	"ignorePatterns": ["node_modules/*", "dist/*", "client/public/sw*"],
 	"rules": {
 		// Add your custom rules here
-		"no-fallthrough": "off"
+		"no-fallthrough": "off",
+		"no-constant-condition": "off"
 	}
 }
