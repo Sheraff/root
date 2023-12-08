@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev:client": "vite --config ./client/vite.config.ts",
 		"dev:sw": "esbuild ./client/sw/index.ts --outfile=./client/public/sw.js --sourcemap --bundle --watch --loader:.sql=text",
-		"dev:server": "esbuild-dev --watch --platform=node --target=node20 --format=esm --sourcemap --allow-overwrite --packages=external --keep-names --loader:.sql=text ./server/src/app.ts",
+		"dev:server": "esbuild-dev --node:--env-file=.env --watch --platform=node --target=node20 --format=esm --sourcemap --allow-overwrite --packages=external --keep-names --loader:.sql=text ./server/src/app.ts",
 		"dev": "(trap 'kill 0' SIGINT; pnpm dev:server & pnpm dev:client & pnpm dev:sw)",
 		"test:client": "vitest --config ./client/vitest.config.ts",
 		"test:server": "vitest --config ./server/vitest.config.ts",
@@ -29,7 +29,7 @@
 	},
 	"dependencies": {
 		"@fastify/cookie": "^9.2.0",
-		"@fastify/session": "^10.6.1",
+		"@fastify/session": "^10.7.0",
 		"@fastify/static": "6.12.0",
 		"better-sqlite3": "^9.2.2",
 		"dotenv": "^16.3.1",
@@ -41,7 +41,7 @@
 		"valibot": "0.22.0"
 	},
 	"devDependencies": {
-		"@hyrious/esbuild-dev": "^0.10.4",
+		"@hyrious/esbuild-dev": "^0.10.5",
 		"@types/better-sqlite3": "^7.6.8",
 		"@types/node": "20.10.4",
 		"@types/react": "18.2.42",
@@ -59,7 +59,7 @@
 		"prettier-eslint": "^16.1.2",
 		"typescript": "^5.3.3",
 		"vite": "^5.0.6",
-		"vite-tsconfig-paths": "4.2.1",
+		"vite-tsconfig-paths": "4.2.2",
 		"vitest": "^1.0.2"
 	},
 	"engines": {

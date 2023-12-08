@@ -9,6 +9,7 @@ export default defineConfig({
 		}),
 		ViteSqlLoader(),
 	],
+	envDir: "..",
 	root: "./server",
 	test: {
 		exclude: ["node_modules", "dist", "client"],

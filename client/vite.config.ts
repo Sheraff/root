@@ -2,6 +2,8 @@ import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
 import viteTsconfigPaths from "vite-tsconfig-paths"
 import ViteSqlLoader from "../scripts/ViteSqlLoader.mjs"
+import { config } from "dotenv"
+config()
 
 export default defineConfig({
 	plugins: [
@@ -12,13 +14,14 @@ export default defineConfig({
 		ViteSqlLoader(),
 	],
 	root: "./client",
+	envDir: "..",
 	server: {
-		port: 3001,
+		port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
 		strictPort: true,
 		// in dev mode, we use Vite's proxy to send all API requests to the backend
 		proxy: {
 			"/api": {
-				target: "http://localhost:3000",
+				target: `http://localhost:${process.env.DEV_PROXY_SERVER_PORT ?? 8123}`,
 				changeOrigin: true,
 				secure: false,
 			},

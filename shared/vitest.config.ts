@@ -5,6 +5,7 @@ import ViteSqlLoader from "../scripts/ViteSqlLoader.mjs"
 export default defineConfig({
 	plugins: [ViteSqlLoader()],
 	root: "./shared",
+	envDir: "..",
 	test: {
 		alias: {
 			"@shared": "./shared",

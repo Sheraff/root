@@ -12,8 +12,8 @@ importers:
         specifier: ^9.2.0
         version: 9.2.0
       '@fastify/session':
-        specifier: ^10.6.1
-        version: 10.6.1
+        specifier: ^10.7.0
+        version: 10.7.0
       '@fastify/static':
         specifier: 6.12.0
         version: 6.12.0
@@ -43,8 +43,8 @@ importers:
         version: 0.22.0
     devDependencies:
       '@hyrious/esbuild-dev':
-        specifier: ^0.10.4
-        version: 0.10.4(esbuild@0.19.8)
+        specifier: ^0.10.5
+        version: 0.10.5(esbuild@0.19.8)
       '@types/better-sqlite3':
         specifier: ^7.6.8
         version: 7.6.8
@@ -97,8 +97,8 @@ importers:
         specifier: ^5.0.6
         version: 5.0.6(@types/node@20.10.4)
       vite-tsconfig-paths:
-        specifier: 4.2.1
-        version: 4.2.1(typescript@5.3.3)(vite@5.0.6)
+        specifier: 4.2.2
+        version: 4.2.2(typescript@5.3.3)(vite@5.0.6)
       vitest:
         specifier: ^1.0.2
         version: 1.0.2(@types/node@20.10.4)
@@ -1888,8 +1888,8 @@ packages:
       mime: 3.0.0
     dev: false
 
-  /@fastify/session@10.6.1:
-    resolution: {integrity: sha512-S8qonAVTyF1h9+b8Ht76DhrFRERUO3wGBPBXDt2BFnteuJjcnEJVSqhhvOv1CpnbpJjmsyfgBpTOLcPWRNmjyg==}
+  /@fastify/session@10.7.0:
+    resolution: {integrity: sha512-ECA75gnyaxcyIukgyO2NGT3XdbLReNl/pTKrrkRfDc6pVqNtdptwwfx9KXrIMOfsO4B3m84eF3wZ9GgnebiZ4w==}
     dependencies:
       fastify-plugin: 4.5.1
       safe-stable-stringify: 2.4.3
@@ -1926,8 +1926,8 @@ packages:
     resolution: {integrity: sha512-dvuCeX5fC9dXgJn9t+X5atfmgQAzUOWqS1254Gh0m6i8wKd10ebXkfNKiRK+1GWi/yTvvLDHpoxLr0xxxeslWw==}
     dev: true
 
-  /@hyrious/esbuild-dev@0.10.4(esbuild@0.19.8):
-    resolution: {integrity: sha512-o0GmjEIDDWboxmePy95vGomYnINDqvkXAWpi+sQDneHM9dYT4GEEnmabNKXuXwHfWlYwyfKrVrJWR1aPDDEWvA==}
+  /@hyrious/esbuild-dev@0.10.5(esbuild@0.19.8):
+    resolution: {integrity: sha512-f8ODDk7AP29tR+MKN29a8x4IpMs2LIYEK/eOY34oD5xjqtj+gP6cx4rrcnP4R9cZKKGMlLFDm0RN51eSqOnMlg==}
     engines: {node: ^14.18 || >=16}
     hasBin: true
     peerDependencies:
@@ -6435,8 +6435,8 @@ packages:
       - typescript
     dev: true
 
-  /vite-tsconfig-paths@4.2.1(typescript@5.3.3)(vite@5.0.6):
-    resolution: {integrity: sha512-GNUI6ZgPqT3oervkvzU+qtys83+75N/OuDaQl7HmOqFTb0pjZsuARrRipsyJhJ3enqV8beI1xhGbToR4o78nSQ==}
+  /vite-tsconfig-paths@4.2.2(typescript@5.3.3)(vite@5.0.6):
+    resolution: {integrity: sha512-dq0FjyxHHDnp0uS3P12WEOX2W7NeuLzX9AWP38D7Zw2CTbFErapwQVlCiT5DMJcVWKQ1MMdTe92PZl/rBQ7qcw==}
     peerDependencies:
       vite: '*'
     peerDependenciesMeta:

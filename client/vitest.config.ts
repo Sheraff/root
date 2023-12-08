@@ -9,6 +9,7 @@ export default defineConfig({
 		}),
 		ViteSqlLoader(),
 	],
+	envDir: "..",
 	root: "./client",
 	test: {
 		// include: ['**/client/*.{test,spec}.?(c|m)[jt]s?(x)'],

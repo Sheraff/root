@@ -9,6 +9,7 @@ import { makeInviteCodes } from "~/auth/InviteCodes"
 import { maxLength, object, parse, string } from "valibot"
 import { sql } from "@shared/sql"
 import crypto from "node:crypto"
+import { env } from "~/env"
 
 export type Grant = {
 	provider: string
@@ -79,12 +80,10 @@ async function auth(fastify: FastifyInstance) {
 	})
 
 	fastify.register(session, {
-		// TODO: this should be an env secret
-		secret: "rostra-gasp-genitive-focal-civility-dairy-alehouse",
+		secret: env.SESSION_COOKIE_SECRET,
 		cookie: { secure: false },
-		// TODO: use DB for session store
 		store: sessionStore,
-		cookieName: "sessionId",
+		cookieName: "session",
 	})
 
 	fastify.register(

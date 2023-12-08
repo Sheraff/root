@@ -3,6 +3,7 @@ import { fooBar } from "@shared/foo/bar"
 import api from "~/api"
 import auth from "~/auth"
 import frontend from "~/frontend"
+import { env } from "~/env"
 
 fooBar()
 
@@ -33,10 +34,10 @@ app.register(api)
 
 // Start the server
 const start = async () => {
+	const port = process.env.NODE_ENV === "production" ? env.PORT : env.DEV_PROXY_SERVER_PORT ?? 8123
 	try {
 		await app.listen({
-			// TODO: use env var for port (and for switching between private port and public port between dev and prod)
-			port: process.env.NODE_ENV === "production" ? 3001 : 3000,
+			port,
 			host: "localhost",
 			listenTextResolver: (address) =>
 				process.env.NODE_ENV === "production" ? `Listening on ${address}` : `API server started`,
