@@ -3,6 +3,7 @@
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",
+	"main": "main.tsx",
 	"scripts": {
 		"dev": "vite",
 		"test": "vitest",
@@ -11,7 +12,8 @@
 		"lint": "eslint . --config ../.eslintrc.json",
 		"lint:fix": "eslint . --config ../.eslintrc.json --fix",
 		"format": "prettier --check . --config ../.prettierrc --log-level warn",
-		"format:fix": "prettier --write . --config ../.prettierrc --log-level warn"
+		"format:fix": "prettier --write . --config ../.prettierrc --log-level warn",
+		"clear": "rm -rf node_modules; rm -rf .turbo; rm public/sw.js; rm public/sw.js.map"
 	},
 	"engines": {
 		"node": ">=20.9.0"

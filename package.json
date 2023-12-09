@@ -8,12 +8,12 @@
 		"test": "FORCE_COLOR=1 turbo test",
 		"build": "FORCE_COLOR=1 turbo build",
 		"serve": "NODE_ENV=production node --env-file=.env dist/server/app.mjs",
-		"clear": "rm -rf dist; find . \\( -name node_modules -o -name .turbo \\) -prune -exec rm -rf \\{\\} \\;",
 		"lint": "FORCE_COLOR=1 turbo lint",
 		"lint:fix": "FORCE_COLOR=1 turbo lint:fix",
 		"format": "FORCE_COLOR=1 turbo format",
 		"format:fix": "FORCE_COLOR=1 turbo format:fix",
-		"ts-check": "FORCE_COLOR=1 turbo ts-check"
+		"ts-check": "FORCE_COLOR=1 turbo ts-check",
+		"clear": "turbo clear; rm -rf dist; rm -rf node_modules; rm -rf .turbo;"
 	},
 	"dependencies": {
 		"@fastify/cookie": "^9.2.0",
@@ -39,10 +39,8 @@
 		"esbuild": "0.19.8",
 		"eslint": "^8.55.0",
 		"eslint-config-prettier": "^9.1.0",
-		"eslint-plugin-prettier": "^5.0.1",
 		"eslint-plugin-react": "^7.33.2",
 		"prettier": "^3.1.0",
-		"prettier-eslint": "^16.1.2",
 		"turbo": "1.11.1",
 		"typescript": "^5.3.3",
 		"vite": "^5.0.7",

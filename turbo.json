@@ -13,7 +13,10 @@
 		"lint": {},
 		"lint:fix": {},
 		"format": {},
-		"format:fix": {}
+		"format:fix": {},
+		"clear": {
+			"cache": false
+		}
 	},
 	"globalDotEnv": [".env"]
 }
