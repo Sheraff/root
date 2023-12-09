@@ -13,6 +13,7 @@
 		"format": "FORCE_COLOR=1 turbo format",
 		"format:fix": "FORCE_COLOR=1 turbo format:fix",
 		"ts-check": "FORCE_COLOR=1 turbo ts-check",
+		"deps": "knip",
 		"clear": "turbo clear; rm -rf dist; rm -rf node_modules; rm -rf .turbo;"
 	},
 	"dependencies": {
@@ -39,7 +40,7 @@
 		"esbuild": "0.19.8",
 		"eslint": "^8.55.0",
 		"eslint-config-prettier": "^9.1.0",
-		"eslint-plugin-react": "^7.33.2",
+		"knip": "^3.7.0",
 		"prettier": "^3.1.0",
 		"turbo": "1.11.1",
 		"typescript": "^5.3.3",

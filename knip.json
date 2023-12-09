@@ -1,0 +1,12 @@
+{
+	"$schema": "https://unpkg.com/knip@3/schema-jsonc.json",
+	"ignoreDependencies": [
+		// used by fastify, with just a string reference, no import
+		"pino-pretty"
+	],
+	"ignore": [
+		"scripts/**/*",
+		// this one makes me sad, maybe this should be reported to knip?
+		"shared/**/*"
+	]
+}
