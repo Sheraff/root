@@ -26,9 +26,24 @@
 			color: rgb(212, 205, 205);
 			background-color: rgb(2, 24, 13);
 		}
+		#root:not(:empty) + #offline {
+			display: none;
+		}
+		#root:empty + #offline {
+			animation: backwards 5s ease-in fadeIn;
+		}
+		@keyframes fadeIn {
+			from {
+				opacity: 0;
+			}
+		}
 	</style>
 	<body>
 		<div id="root"></div>
+		<div id="offline">
+			<p>This content is shown if the app failed to load...</p>
+			<p><button onclick="window.location.reload()">Reload Page</button></p>
+		</div>
 		<script
 			type="module"
 			src="./main.tsx"
