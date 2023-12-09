@@ -1,7 +1,7 @@
 import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
 import viteTsconfigPaths from "vite-tsconfig-paths"
-import ViteSqlLoader from "../scripts/ViteSqlLoader.mjs"
+import { ViteRawLoader } from "../scripts/ViteRawLoader.mjs"
 import { config } from "dotenv"
 config()
 
@@ -11,7 +11,7 @@ export default defineConfig({
 		viteTsconfigPaths({
 			projects: ["./tsconfig.json"],
 		}),
-		ViteSqlLoader(),
+		ViteRawLoader(),
 	],
 	root: "./client",
 	envDir: "..",

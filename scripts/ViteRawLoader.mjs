@@ -7,16 +7,19 @@ import { extname } from "node:path"
 /**
  * @returns {import('vite').Plugin}
  */
-export default function ViteSqlLoader() {
+export function ViteRawLoader() {
 	return {
-		name: "vite-plugin-sql-loader",
+		name: "vite-plugin-raw-loader",
 		async load(url) {
-			if (extname(url) !== ".sql") return
-			const input = readFileSync(url, "utf8")
-			return `export default const sql = ${JSON.stringify(input)}`
+			this.setAssetSource
+			const extension = extname(url)
+			if (extension === ".sql") {
+				const input = readFileSync(url, "utf8")
+				return `export default const string = \`${input}\``
+			}
 		},
 		// handleHotUpdate({ file, server }) {
-		// 	if (extname(file) !== ".sql") return
+		// 	if (extname(file) !== ".string") return
 		// 	server.ws.send({ type: "update", updates: [{ type: "js-update" }] })
 		// },
 	}

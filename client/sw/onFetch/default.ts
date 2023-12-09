@@ -1,11 +1,5 @@
 import { CACHES } from "~/config"
-
-const STATIC_OFFLINE_PAGE = `
-<body>
-	<p>This content is served while you are offline
-	<p><button onclick="window.location.reload()">reload page</button>
-</body>
-`
+import indexHtml from "../../index.html"
 
 export function defaultFetch(event: FetchEvent, request: Request) {
 	event.respondWith(
@@ -23,7 +17,7 @@ export function defaultFetch(event: FetchEvent, request: Request) {
 				const matchedResponse = await caches.match(event.request.url, { cacheName: CACHES.assets })
 				if (matchedResponse) return matchedResponse
 				console.error(new Error(`[SW] no matched response for ${event.request.url}`, { cause: e }))
-				return new Response(STATIC_OFFLINE_PAGE, {
+				return new Response(indexHtml, {
 					status: 200,
 					headers: {
 						"Content-Type": "text/html; charset=utf-8",
