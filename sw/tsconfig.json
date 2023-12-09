@@ -1,8 +1,7 @@
 {
 	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
-		"jsx": "react-jsx",
-		"lib": ["dom", "dom.iterable", "esnext"],
+		"lib": ["WebWorker", "ESNext"],
 		"rootDir": "..",
 		"baseUrl": ".",
 		"paths": {
@@ -10,6 +9,6 @@
 			"@shared/*": ["../shared/*"]
 		}
 	},
-	"include": ["src/**/*", "types/*.d.ts", "../shared/**/*.ts", "../types/*.d.ts", "./main.tsx"],
+	"include": ["src/**/*", "types/*.d.ts", "../shared/**/*.ts", "../types/*.d.ts"],
 	"exclude": ["../node_modules", "../dist"]
 }

@@ -1,9 +1,24 @@
-import { defineConfig } from "vite"
+import { type PluginOption, defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
 import viteTsconfigPaths from "vite-tsconfig-paths"
 import { ViteRawLoader } from "../scripts/ViteRawLoader.mjs"
 import { config } from "dotenv"
 config()
+
+function SwHotReload(): PluginOption {
+	return {
+		name: "sw-hot-reload",
+		handleHotUpdate({ file, server }) {
+			if (file.endsWith("sw.js")) {
+				console.log("Locale file updated")
+				server.ws.send({
+					type: "custom",
+					event: "sw-rebuild",
+				})
+			}
+		},
+	}
+}
 
 export default defineConfig({
 	plugins: [
@@ -12,6 +27,7 @@ export default defineConfig({
 			projects: ["./tsconfig.json"],
 		}),
 		ViteRawLoader(),
+		SwHotReload(),
 	],
 	root: "./client",
 	envDir: "..",

@@ -9,13 +9,16 @@ import fastifyStatic from "@fastify/static"
 export default async function frontend(fastify: FastifyInstance) {
 	const __filename = fileURLToPath(import.meta.url)
 	const __dirname = path.dirname(__filename)
-	const clientDistPath = path.join(__dirname, "../../dist/client")
 	fastify.register(fastifyStatic, {
-		root: clientDistPath,
+		root: path.join(__dirname, "../../dist/client"),
 		prefix: "/",
-		setHeaders(res) {
-			res.setHeader("Service-Worker-Allowed", "/")
-		},
+	})
+	fastify.get("/sw.js", function (req, reply) {
+		reply.header("Service-Worker-Allowed", "/")
+		reply.sendFile("sw.js", path.join(__dirname, "../../dist/sw"))
+	})
+	fastify.get("/sw.js.map", function (req, reply) {
+		reply.sendFile("sw.js.map", path.join(__dirname, "../../dist/sw"))
 	})
 	return fastify
 }

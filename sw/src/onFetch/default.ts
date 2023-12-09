@@ -1,5 +1,5 @@
 import { CACHES } from "~/config"
-import indexHtml from "../../index.html"
+import indexHtml from "../../../client/index.html"
 
 export function defaultFetch(event: FetchEvent, request: Request) {
 	event.respondWith(

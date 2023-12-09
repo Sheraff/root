@@ -1,24 +1,28 @@
 import { onFetch } from "~/onFetch"
 import { CACHES } from "~/config"
 
-declare var self: ServiceWorkerGlobalScope // eslint-disable-line no-var
 export {}
 
-self.addEventListener("install", (event) => {
+declare global {
+	var sw: ServiceWorkerGlobalScope // eslint-disable-line no-var
+}
+globalThis.sw = self as unknown as ServiceWorkerGlobalScope
+
+sw.addEventListener("install", (event) => {
 	event.waitUntil(
 		(async () => {
 			console.log("[SW] installing...")
 
 			const cache = await caches.open(CACHES.assets)
 			await cache.add("/")
-			await self.skipWaiting()
+			await sw.skipWaiting()
 
 			console.log("[SW] installed.")
 		})(),
 	)
 })
 
-self.addEventListener("activate", (event) => {
+sw.addEventListener("activate", (event) => {
 	event.waitUntil(
 		(async () => {
 			console.log("[SW] activating...")
@@ -33,12 +37,12 @@ self.addEventListener("activate", (event) => {
 			)
 
 			// immediately claim clients to avoid de-sync
-			await self.clients.claim()
+			await sw.clients.claim()
 
 			console.log("[SW] activated.")
 		})(),
 	)
 })
 
-self.addEventListener("fetch", onFetch)
-// self.addEventListener("message", onMessage)
+sw.addEventListener("fetch", onFetch)
+// sw.addEventListener("message", onMessage)
