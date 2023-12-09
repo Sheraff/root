@@ -67,7 +67,7 @@ async function auth(fastify: FastifyInstance) {
 		cookie: { secure: process.env.NODE_ENV === "production", sameSite: "lax" },
 		store: sessionStore,
 		cookieName: "session",
-		saveUninitialized: false,
+		saveUninitialized: true,
 		logLevel: "info",
 	})
 

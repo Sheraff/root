@@ -10,6 +10,14 @@
 			"@shared/*": ["../shared/*"]
 		}
 	},
-	"include": ["src/**/*", "types/*.d.ts", "../shared/**/*.ts", "../types/*.d.ts", "./main.tsx"],
-	"exclude": ["../node_modules", "../dist"]
+	"include": [
+		"src/**/*",
+		"types/*.d.ts",
+		"../types/*.d.ts",
+		"main.tsx",
+		"../shared/*",
+		"../shared/**/*"
+	],
+	"exclude": ["node_modules"],
+	"references": [{ "path": "../shared" }]
 }

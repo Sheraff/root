@@ -42,6 +42,12 @@ const start = async () => {
 			listenTextResolver: (address) =>
 				process.env.NODE_ENV === "production" ? `Listening on ${address}` : `API server started`,
 		})
+		process.on("SIGINT", async () => {
+			console.log("SIGINT received, shutting down...")
+			await app.close()
+			console.log("Server shut down, exiting.")
+			process.exit(0)
+		})
 	} catch (err) {
 		app.log.error(err)
 		process.exit(1)

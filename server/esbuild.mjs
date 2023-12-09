@@ -4,10 +4,11 @@
 
 import * as esbuild from "esbuild"
 import { spawn } from "node:child_process"
+import { join } from "node:path"
 
 /** @type {import("esbuild").BuildOptions} */
 const options = {
-	entryPoints: ["server/src/app.ts"],
+	entryPoints: ["src/app.ts"],
 	platform: "node",
 	target: "node20",
 	format: "esm",
@@ -25,8 +26,11 @@ const options = {
 }
 
 async function build() {
-	options.outdir = "dist/server"
+	options.outdir = "../dist/server"
 	options.minifySyntax = true
+	options.define = {
+		"process.env.ROOT": `"${join(process.cwd(), "..")}"`,
+	}
 	await esbuild.build(options)
 }
 
@@ -43,25 +47,24 @@ async function watch() {
 						const running = childProcess
 						running.kill("SIGINT")
 						running.on("exit", () => {
+							console.log("Previous server process exited.")
 							if (childProcess === running) childProcess = null
 						})
 					}
 				})
 				build.onEnd(() => {
+					process.env.ROOT = join(process.cwd(), "..")
 					const run = () =>
 						spawn(
 							"node",
-							["--env-file=.env", "--enable-source-maps", "node_modules/.cache/server/app.mjs"],
-							{ stdio: "inherit" },
+							["--env-file=../.env", "--enable-source-maps", "node_modules/.cache/server/app.mjs"],
+							{ stdio: "inherit", env: process.env },
 						)
 					if (childProcess) {
 						childProcess.on("exit", () => (childProcess = run()))
 					} else {
 						childProcess = run()
 					}
-				})
-				process.on("SIGINT", () => {
-					if (childProcess) childProcess.kill("SIGINT")
 				})
 			},
 		},
@@ -71,6 +74,7 @@ async function watch() {
 	process.on("SIGINT", async () => {
 		console.log("Stopping server esbuild...")
 		await context.dispose()
+		process.exit(0)
 	})
 }
 

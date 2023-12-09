@@ -1,0 +1,10 @@
+{
+	"$schema": "https://turbo.build/schema.json",
+	"extends": ["//"],
+	"pipeline": {
+		"ts-check": {
+			"inputs": ["*", "**/*", "../types/**"],
+			"outputs": ["node_modules/.cache/ts-check"]
+		}
+	}
+}

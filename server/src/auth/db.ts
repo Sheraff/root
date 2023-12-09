@@ -4,14 +4,22 @@ import { existsSync, mkdirSync } from "node:fs"
 import path from "node:path"
 import type { FastifyInstance } from "fastify"
 
-const dir = path.join(process.cwd(), "db")
+const projectRoot = process.env.ROOT
+
+if (!projectRoot) {
+	throw new Error("ROOT environment variable not set.")
+}
+
+const dir = path.join(projectRoot, "db")
 
 if (!existsSync(dir)) {
 	mkdirSync(dir)
 }
 
 export function makeAuthDb(fastify: FastifyInstance) {
-	const authDB = new Database(path.join(dir, "auth.sqlite3"), {
+	const name = path.join(dir, "auth.sqlite3")
+	fastify.log.info(`Creating auth database @ ${name}`)
+	const authDB = new Database(name, {
 		verbose: (main, ...rest) => {
 			if (rest.length) {
 				fastify.log.info(main, "", ...rest)
@@ -24,8 +32,9 @@ export function makeAuthDb(fastify: FastifyInstance) {
 	authDB.exec(schemaContent)
 
 	fastify.addHook("onClose", () => {
-		fastify.log.info("Closing auth database...")
+		console.log("Closing auth database...")
 		authDB.close()
+		console.log("Auth database closed.")
 	})
 
 	return authDB

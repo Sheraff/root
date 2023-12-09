@@ -4,3 +4,4 @@ client/public/sw.js
 client/public/sw.js.map
 .env
 *.sqlite*
+.turbo

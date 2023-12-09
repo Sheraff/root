@@ -1,4 +1,4 @@
-import { fooBar } from "@shared/foo/bar"
+import { fooBar } from "~/foo/bar"
 
 export function helloWorld() {
 	console.log("helloWorld")

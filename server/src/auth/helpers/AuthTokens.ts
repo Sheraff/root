@@ -5,7 +5,7 @@
  *  https://gist.github.com/AndiDittrich/4629e7db04819244e843
  */
 
-import crypto, { type CipherGCMTypes } from "crypto"
+import crypto, { type CipherGCMTypes } from "node:crypto"
 import { env } from "~/env"
 
 const ALGORITHM: CipherGCMTypes = "aes-256-gcm"

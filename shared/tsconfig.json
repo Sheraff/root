@@ -1,0 +1,20 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"outDir": "node_modules/.cache/ts-check",
+		"esModuleInterop": true,
+		"moduleResolution": "Node",
+		"lib": ["ESNext"],
+		"composite": true,
+		"incremental": true,
+		"paths": {
+			"~/*": ["./*"]
+		}
+	},
+	"watchOptions": {
+		"excludeDirectories": ["**/node_modules"]
+	},
+	"include": ["**/*.ts", "../types/*.d.ts"],
+	"exclude": ["node_modules"]
+}

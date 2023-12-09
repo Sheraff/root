@@ -8,7 +8,7 @@ import { join } from "node:path"
 
 /** @type {import("esbuild").BuildOptions} */
 const options = {
-	entryPoints: ["sw/src/index.ts"],
+	entryPoints: ["src/index.ts"],
 	bundle: true,
 	sourcemap: true,
 	keepNames: true,
@@ -24,9 +24,9 @@ const injectViteHtml = {
 	setup(build) {
 		build.onResolve({ filter: /index\.html$/ }, (args) => {
 			const requested = join(args.resolveDir, args.path)
-			const target = join(process.cwd(), "client/index.html")
+			const target = join(process.cwd(), "../client/index.html")
 			if (requested !== target) return
-			return { path: "dist/client/index.html", namespace: "source-vite-index" }
+			return { path: "../dist/client/index.html", namespace: "source-vite-index" }
 		})
 		build.onLoad({ filter: /.*/, namespace: "source-vite-index" }, async (args) => {
 			const path = join(process.cwd(), args.path)
@@ -37,19 +37,20 @@ const injectViteHtml = {
 }
 
 async function build() {
-	options.outfile = "dist/client/sw.js"
+	options.outfile = "../dist/sw/sw.js"
 	options.minifySyntax = true
 	options.plugins = [injectViteHtml]
 	await esbuild.build(options)
 }
 
 async function watch() {
-	options.outfile = "client/public/sw.js"
+	options.outfile = "../client/public/sw.js"
 	const context = await esbuild.context(options)
 	await context.watch()
 	process.on("SIGINT", async () => {
 		console.log("Stopping SW esbuild...")
 		await context.dispose()
+		process.exit(0)
 	})
 }
 

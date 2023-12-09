@@ -1,0 +1,14 @@
+{
+	"$schema": "https://turbo.build/schema.json",
+	"extends": ["//"],
+	"pipeline": {
+		"build": {
+			"outputs": ["dist/sw/*"],
+			"dependsOn": ["client#build", "shared#ts-check"]
+		},
+		"ts-check": {
+			"dependsOn": ["shared#ts-check"],
+			"inputs": ["*", "**/*", "../shared/**", "../types/**"]
+		}
+	}
+}

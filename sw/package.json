@@ -1,0 +1,22 @@
+{
+	"name": "sw",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "node ./esbuild.mjs",
+		"build": "node ./esbuild.mjs --build",
+		"ts-check": "tsc --noEmit",
+		"lint": "eslint . --config ../.eslintrc.json",
+		"lint:fix": "eslint . --config ../.eslintrc.json --fix",
+		"format": "prettier --check . --config ../.prettierrc --log-level warn",
+		"format:fix": "prettier --write . --config ../.prettierrc --log-level warn"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"esbuild": "0.19.8"
+	},
+	"engines": {
+		"node": ">=20.9.0"
+	}
+}

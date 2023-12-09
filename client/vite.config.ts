@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react"
 import viteTsconfigPaths from "vite-tsconfig-paths"
 import { ViteRawLoader } from "../scripts/ViteRawLoader.mjs"
 import { config } from "dotenv"
-config()
+config({ path: "../.env" })
 
 function SwHotReload(): PluginOption {
 	return {
@@ -21,15 +21,7 @@ function SwHotReload(): PluginOption {
 }
 
 export default defineConfig({
-	plugins: [
-		react(),
-		viteTsconfigPaths({
-			projects: ["./tsconfig.json"],
-		}),
-		ViteRawLoader(),
-		SwHotReload(),
-	],
-	root: "./client",
+	plugins: [react(), viteTsconfigPaths(), ViteRawLoader(), SwHotReload()],
 	envDir: "..",
 	server: {
 		port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
@@ -48,7 +40,6 @@ export default defineConfig({
 		outDir: "../dist/client",
 		sourcemap: true,
 		target: "esnext",
-		assetsInlineLimit: 0,
 	},
 	esbuild: {
 		minifyIdentifiers: false,
