@@ -87,22 +87,7 @@ async function auth(fastify: FastifyInstance) {
 	const createUserStatement = authDB.prepare<{
 		userId: string
 		email: string
-	}>(
-		sql`
-		INSERT INTO users
-		VALUES (@userId, @email);`,
-	)
-
-	const checkAccountExistsStatement = authDB.prepare<{
-		userId: string
-		provider: string
-		providerUserId: string
-	}>(
-		sql`
-		SELECT 1
-		FROM accounts
-		WHERE user_id = @userId AND provider = @provider AND provider_user_id = @providerUserId;`,
-	)
+	}>(sql`INSERT INTO users VALUES (@userId, @email);`)
 
 	const createAccountStatement = authDB.prepare<{
 		accountId: string
@@ -110,9 +95,16 @@ async function auth(fastify: FastifyInstance) {
 		provider: string
 		providerUserId: string
 	}>(
-		sql`
-		INSERT INTO accounts
-		VALUES (@accountId, @userId, @provider, @providerUserId, datetime('now'));`,
+		sql`INSERT INTO accounts VALUES (@accountId, @userId, @provider, @providerUserId, datetime('now'));`,
+	)
+
+	const createAccountWhereNotExistsStatement = authDB.prepare<{
+		accountId: string
+		userId: string
+		provider: string
+		providerUserId: string
+	}>(
+		sql`INSERT OR IGNORE INTO accounts VALUES (@accountId, @userId, @provider, @providerUserId, datetime('now'))`,
 	)
 
 	const createUserAccount = authDB.transaction(
@@ -125,24 +117,14 @@ async function auth(fastify: FastifyInstance) {
 		},
 	)
 
-	const linkUserAccount = authDB.transaction(
-		(account: { accountId: string; userId: string; provider: string; providerUserId: string }) => {
-			const exists = checkAccountExistsStatement.get(account)
-			if (!exists) {
-				createAccountStatement.run(account)
-			}
-		},
-	)
-
 	const userFromSessionStatement = authDB.prepare<{
 		id: string
 	}>(
-		sql`
-		SELECT users.id as id, users.email as email
-		FROM sessions
-		INNER JOIN accounts ON sessions.provider_user_id = accounts.provider_user_id AND sessions.provider = accounts.provider
-		INNER JOIN users ON accounts.user_id = users.id
-		WHERE sessions.id = @id AND datetime('now') < datetime(expires_at)`,
+		sql`SELECT users.id as id, users.email as email
+			FROM sessions
+			INNER JOIN accounts ON sessions.provider_user_id = accounts.provider_user_id AND sessions.provider = accounts.provider
+			INNER JOIN users ON accounts.user_id = users.id
+			WHERE sessions.id = @id AND datetime('now') < datetime(expires_at)`,
 	)
 
 	function getUserFromSession(req: FastifyRequest) {
@@ -159,11 +141,10 @@ async function auth(fastify: FastifyInstance) {
 		provider: string
 		id: string
 	}>(
-		sql`
-		SELECT users.id as id, users.email as email
-		FROM accounts
-		INNER JOIN users ON accounts.user_id = users.id
-		WHERE accounts.provider_user_id = @id AND accounts.provider = @provider`,
+		sql`SELECT users.id as id, users.email as email
+			FROM accounts
+			INNER JOIN users ON accounts.user_id = users.id
+			WHERE accounts.provider_user_id = @id AND accounts.provider = @provider`,
 	)
 
 	fastify.post(
@@ -248,7 +229,7 @@ async function auth(fastify: FastifyInstance) {
 			getUserFromSession(req) ||
 			(userFromGrantStatement.get(grantData) as { id: string; email: string } | undefined)
 		if (user) {
-			linkUserAccount({
+			createAccountWhereNotExistsStatement.run({
 				accountId: crypto.randomUUID(),
 				userId: user.id,
 				provider: grantData.provider,
@@ -297,7 +278,7 @@ async function auth(fastify: FastifyInstance) {
 			return res.redirect(302, "/")
 		} else {
 			const accountId = crypto.randomUUID()
-			linkUserAccount({
+			createAccountWhereNotExistsStatement.run({
 				accountId,
 				userId: result.success.id,
 				provider: grantData.provider,

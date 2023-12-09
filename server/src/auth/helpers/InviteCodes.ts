@@ -45,36 +45,21 @@ type Invite = {
 }
 
 export function makeInviteCodes(db: BetterSqlite3.Database) {
-	const getAllStatement = db.prepare(
-		sql`
-			SELECT *
-			FROM invites`,
-	)
+	const getAllStatement = db.prepare(sql`SELECT * FROM invites`)
 
 	const deleteExpiredStatement = db.prepare(
-		sql`
-			DELETE FROM invites
-			WHERE datetime('now') > datetime(expires_at)`,
+		sql`DELETE FROM invites WHERE datetime('now') > datetime(expires_at)`,
 	)
 
 	const deleteReturnStatement = db.prepare<{
 		code: string
-	}>(
-		sql`
-			DELETE FROM invites
-			WHERE code = @code
-			RETURNING *`,
-	)
+	}>(sql`DELETE FROM invites WHERE code = @code RETURNING *`)
 
 	const insertStatement = db.prepare<{
 		code: string
 		created_at: string
 		expires_at: string
-	}>(
-		sql`
-			INSERT INTO invites
-			VALUES (@code, @created_at, @expires_at)`,
-	)
+	}>(sql`INSERT INTO invites VALUES (@code, @created_at, @expires_at)`)
 
 	/*
 	 * 1. Delete all codes that are expired
