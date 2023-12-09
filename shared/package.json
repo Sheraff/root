@@ -12,13 +12,6 @@
 		"format": "prettier --check . --config ../.prettierrc --log-level warn",
 		"format:fix": "prettier --write . --config ../.prettierrc --log-level warn"
 	},
-	"dependencies": {
-		"valibot": "0.22.0"
-	},
-	"devDependencies": {
-		"vite-tsconfig-paths": "4.2.2",
-		"vitest": "^1.0.2"
-	},
 	"engines": {
 		"node": ">=20.9.0"
 	}
