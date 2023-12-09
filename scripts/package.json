@@ -1,0 +1,13 @@
+{
+	"name": "scripts",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./ViteRawLoader.mjs": "./ViteRawLoader.mjs"
+	},
+	"scripts": {},
+	"engines": {
+		"node": ">=20.9.0"
+	}
+}

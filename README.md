@@ -1,4 +1,4 @@
-# Fullstack TypeScript Project
+# Fullstack TypeScript Offline-First PWA Template
 
 ## TODO
 
@@ -7,12 +7,13 @@
   - turn sessions into actual accounts
   - better utils for "protected" stuff (client & server)
 - vlcn.io
+- fix imports from /scripts (type issue in /shared)
+- fix knip (doesn't detect imports from /shared)
 
 ## Client Package
 
 A typescript React application, with
 
-- PWA & service worker
 - Vitest
 - Vite
 
@@ -26,6 +27,13 @@ A typescript Fastify server, with
 - Vitest
 - oauth through 3rd party providers
 
+## Service Worker Package
+
+A typescript service worker, with
+
+- esbuild
+- Hot Module Reloading
+
 ## Root Level
 
 A workspace, with
@@ -33,7 +41,8 @@ A workspace, with
 - pnpm
 - eslint
 - prettier
-- tsconfig
+- knip
+- turbo
 
 ## Getting Started
 
