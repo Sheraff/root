@@ -3,7 +3,7 @@ import cookie from "@fastify/cookie"
 import session from "@fastify/session"
 import grant from "grant"
 import { grantOptions, getGrantData, type RawGrant } from "~/auth/providers"
-import { authDB } from "~/auth/db"
+import { makeAuthDb } from "~/auth/db"
 import { makeStore } from "~/auth/helpers/SessionStore"
 import { makeInviteCodes } from "~/auth/helpers/InviteCodes"
 import { maxLength, object, parse, string } from "valibot"
@@ -53,6 +53,7 @@ declare module "fastify" {
  *
  */
 async function auth(fastify: FastifyInstance) {
+	const authDB = makeAuthDb(fastify)
 	const sessionStore = makeStore(authDB)
 	const invitesStore = makeInviteCodes(authDB)
 
@@ -81,6 +82,88 @@ async function auth(fastify: FastifyInstance) {
 			},
 			...grantOptions,
 		}),
+	)
+
+	const createUserStatement = authDB.prepare<{
+		userId: string
+		email: string
+	}>(
+		sql`
+		INSERT INTO users
+		VALUES (@userId, @email);`,
+	)
+
+	const checkAccountExistsStatement = authDB.prepare<{
+		userId: string
+		provider: string
+		providerUserId: string
+	}>(
+		sql`
+		SELECT 1
+		FROM accounts
+		WHERE user_id = @userId AND provider = @provider AND provider_user_id = @providerUserId;`,
+	)
+
+	const createAccountStatement = authDB.prepare<{
+		accountId: string
+		userId: string
+		provider: string
+		providerUserId: string
+	}>(
+		sql`
+		INSERT INTO accounts
+		VALUES (@accountId, @userId, @provider, @providerUserId, datetime('now'));`,
+	)
+
+	const createUserAccount = authDB.transaction(
+		(
+			user: { userId: string; email: string },
+			account: { accountId: string; userId: string; provider: string; providerUserId: string },
+		) => {
+			createUserStatement.run(user)
+			createAccountStatement.run(account)
+		},
+	)
+
+	const linkUserAccount = authDB.transaction(
+		(account: { accountId: string; userId: string; provider: string; providerUserId: string }) => {
+			const exists = checkAccountExistsStatement.get(account)
+			if (!exists) {
+				createAccountStatement.run(account)
+			}
+		},
+	)
+
+	const userFromSessionStatement = authDB.prepare<{
+		id: string
+	}>(
+		sql`
+		SELECT users.id as id, users.email as email
+		FROM sessions
+		INNER JOIN accounts ON sessions.provider_user_id = accounts.provider_user_id AND sessions.provider = accounts.provider
+		INNER JOIN users ON accounts.user_id = users.id
+		WHERE sessions.id = @id AND datetime('now') < datetime(expires_at)`,
+	)
+
+	function getUserFromSession(req: FastifyRequest) {
+		if (req.session.user) return req.session.user
+
+		const user = userFromSessionStatement.get({ id: req.session.sessionId }) as
+			| { id: string; email: string }
+			| undefined
+
+		return user
+	}
+
+	const userFromGrantStatement = authDB.prepare<{
+		provider: string
+		id: string
+	}>(
+		sql`
+		SELECT users.id as id, users.email as email
+		FROM accounts
+		INNER JOIN users ON accounts.user_id = users.id
+		WHERE accounts.provider_user_id = @id AND accounts.provider = @provider`,
 	)
 
 	fastify.post(
@@ -265,85 +348,3 @@ export default Object.assign(auth, {
 	 */
 	[Symbol.for("skip-override")]: true,
 })
-
-const createUserStatement = authDB.prepare<{
-	userId: string
-	email: string
-}>(
-	sql`
-		INSERT INTO users
-		VALUES (@userId, @email);`,
-)
-
-const checkAccountExistsStatement = authDB.prepare<{
-	userId: string
-	provider: string
-	providerUserId: string
-}>(
-	sql`
-		SELECT 1
-		FROM accounts
-		WHERE user_id = @userId AND provider = @provider AND provider_user_id = @providerUserId;`,
-)
-
-const createAccountStatement = authDB.prepare<{
-	accountId: string
-	userId: string
-	provider: string
-	providerUserId: string
-}>(
-	sql`
-		INSERT INTO accounts
-		VALUES (@accountId, @userId, @provider, @providerUserId, datetime('now'));`,
-)
-
-const createUserAccount = authDB.transaction(
-	(
-		user: { userId: string; email: string },
-		account: { accountId: string; userId: string; provider: string; providerUserId: string },
-	) => {
-		createUserStatement.run(user)
-		createAccountStatement.run(account)
-	},
-)
-
-const linkUserAccount = authDB.transaction(
-	(account: { accountId: string; userId: string; provider: string; providerUserId: string }) => {
-		const exists = checkAccountExistsStatement.get(account)
-		if (!exists) {
-			createAccountStatement.run(account)
-		}
-	},
-)
-
-const userFromSessionStatement = authDB.prepare<{
-	id: string
-}>(
-	sql`
-		SELECT users.id as id, users.email as email
-		FROM sessions
-		INNER JOIN accounts ON sessions.provider_user_id = accounts.provider_user_id AND sessions.provider = accounts.provider
-		INNER JOIN users ON accounts.user_id = users.id
-		WHERE sessions.id = @id AND datetime('now') < datetime(expires_at)`,
-)
-
-function getUserFromSession(req: FastifyRequest) {
-	if (req.session.user) return req.session.user
-
-	const user = userFromSessionStatement.get({ id: req.session.sessionId }) as
-		| { id: string; email: string }
-		| undefined
-
-	return user
-}
-
-const userFromGrantStatement = authDB.prepare<{
-	provider: string
-	id: string
-}>(
-	sql`
-		SELECT users.id as id, users.email as email
-		FROM accounts
-		INNER JOIN users ON accounts.user_id = users.id
-		WHERE accounts.provider_user_id = @id AND accounts.provider = @provider`,
-)

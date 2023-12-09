@@ -10,7 +10,7 @@ function SwHotReload(): PluginOption {
 		name: "sw-hot-reload",
 		handleHotUpdate({ file, server }) {
 			if (file.endsWith("sw.js")) {
-				console.log("Locale file updated")
+				console.log("SW rebuild detected, registering new worker...")
 				server.ws.send({
 					type: "custom",
 					event: "sw-rebuild",
