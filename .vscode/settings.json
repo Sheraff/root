@@ -53,5 +53,8 @@
 	},
 	"explorer.fileNesting.patterns": {
 		"*package.json": "${capture}.eslint*, ${capture}.prettier*, ${capture}pnpm*, ${capture}turbo*, ${capture}tsconfig.json, ${capture}vite.config.ts, ${capture}vitest.config.ts, ${capture}.gitignore, ${capture}esbuild.mjs, ${capture}knip.json"
+	},
+	"files.associations": {
+		"*.json": "jsonc"
 	}
 }
