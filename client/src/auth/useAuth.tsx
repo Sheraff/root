@@ -1,18 +1,25 @@
 import { PUBLIC_CONFIG } from "@shared/env/publicConfig"
 import { useEffect, useState } from "react"
+import { type Provider, providers } from "~/auth/providers"
 
 type States =
 	| {
 			type: "unauthenticated"
 			submitInviteCode: (inviteCode: string) => Promise<Response>
 			signIn: (provider: string) => void
+			providers: Array<Provider>
 	  }
-	| { type: "creating-account"; createAccount: (provider: string) => void }
+	| {
+			type: "creating-account"
+			createAccount: (provider: string) => void
+			providers: Array<Provider>
+	  }
 	| {
 			type: "signed-in"
 			userId: string
 			signOut: () => Promise<Response>
 			linkAccount: (provider: string) => void
+			providers: Array<Provider>
 	  }
 
 let cookieCache: Map<string, string | undefined> | null = null
@@ -109,6 +116,7 @@ export function useAuth(): States {
 			userId,
 			signOut,
 			linkAccount,
+			providers,
 		}
 	}
 
@@ -116,6 +124,7 @@ export function useAuth(): States {
 		return {
 			type: "creating-account",
 			createAccount,
+			providers,
 		}
 	}
 
@@ -123,5 +132,6 @@ export function useAuth(): States {
 		type: "unauthenticated",
 		submitInviteCode,
 		signIn,
+		providers,
 	}
 }

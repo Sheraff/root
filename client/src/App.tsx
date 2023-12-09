@@ -1,25 +1,49 @@
 import { useEffect, useState } from "react"
+import { type Provider } from "~/auth/providers"
 import { useAuth } from "~/auth/useAuth"
+
+function Demo() {
+	const [protectedRes, setProtectedRes] = useState<unknown>()
+	useEffect(() => {
+		fetch("/api/protected")
+			.then((res) => res.json())
+			.then(setProtectedRes)
+			.catch((e) => {
+				console.error(e)
+				setProtectedRes({ error: String(e) })
+			})
+	}, [])
+	const [openRes, setOpenRes] = useState<unknown>()
+	useEffect(() => {
+		fetch("/api/hello")
+			.then((res) => res.json())
+			.then(setOpenRes)
+			.catch((e) => {
+				console.error(e)
+				setOpenRes({ error: String(e) })
+			})
+	}, [])
+	return (
+		<>
+			<h2>Open</h2>
+			<pre>{JSON.stringify(openRes, null, 2)}</pre>
+			<h2>Protected</h2>
+			<pre>{JSON.stringify(protectedRes, null, 2)}</pre>
+		</>
+	)
+}
 
 function LoggedIn({
 	userId,
 	signOut,
 	linkAccount,
+	providers,
 }: {
 	userId: string
 	signOut: () => void
 	linkAccount: (provider: string) => void
+	providers: Array<Provider>
 }) {
-	const [state, setState] = useState<unknown>()
-	useEffect(() => {
-		fetch("/api/protected")
-			.then((res) => res.json())
-			.then(setState)
-			.catch((e) => {
-				console.error(e)
-				setState({ error: String(e) })
-			})
-	}, [])
 	return (
 		<>
 			<div>Logged in as {userId}</div>
@@ -28,25 +52,41 @@ function LoggedIn({
 			<hr />
 			<div>
 				<p>Link accounts</p>
-				<button onClick={() => linkAccount("google")}>Google</button>
-				<button onClick={() => linkAccount("spotify")}>Spotify</button>
-				<button onClick={() => linkAccount("twitch")}>Twitch</button>
-				<button onClick={() => linkAccount("discord")}>Discord</button>
+				{providers.map((provider) => (
+					<button
+						key={provider.key}
+						onClick={() => linkAccount(provider.key)}
+						style={{ backgroundColor: provider.color, color: provider.textColor }}
+					>
+						{provider.name}
+					</button>
+				))}
 			</div>
 			<hr />
-			<pre>{JSON.stringify(state, null, 2)}</pre>
+			<Demo />
 		</>
 	)
 }
 
-function CreateAccount({ createAccount }: { createAccount: (provider: string) => void }) {
+function CreateAccount({
+	createAccount,
+	providers,
+}: {
+	createAccount: (provider: string) => void
+	providers: Array<Provider>
+}) {
 	return (
 		<>
 			<div>Create Account</div>
-			<button onClick={() => createAccount("google")}>Google</button>
-			<button onClick={() => createAccount("spotify")}>Spotify</button>
-			<button onClick={() => createAccount("twitch")}>Twitch</button>
-			<button onClick={() => createAccount("discord")}>Discord</button>
+			{providers.map((provider) => (
+				<button
+					key={provider.key}
+					onClick={() => createAccount(provider.key)}
+					style={{ backgroundColor: provider.color, color: provider.textColor }}
+				>
+					{provider.name}
+				</button>
+			))}
 		</>
 	)
 }
@@ -54,9 +94,11 @@ function CreateAccount({ createAccount }: { createAccount: (provider: string) =>
 function NotLoggedIn({
 	submitInviteCode,
 	signIn,
+	providers,
 }: {
 	submitInviteCode: (code: string) => void
 	signIn: (provider: string) => void
+	providers: Array<Provider>
 }) {
 	return (
 		<>
@@ -81,10 +123,17 @@ function NotLoggedIn({
 			</form>
 			<hr />
 			<div>Sign in</div>
-			<button onClick={() => signIn("google")}>Google</button>
-			<button onClick={() => signIn("spotify")}>Spotify</button>
-			<button onClick={() => signIn("twitch")}>Twitch</button>
-			<button onClick={() => signIn("discord")}>Discord</button>
+			{providers.map((provider) => (
+				<button
+					key={provider.key}
+					onClick={() => signIn(provider.key)}
+					style={{ backgroundColor: provider.color, color: provider.textColor }}
+				>
+					{provider.name}
+				</button>
+			))}
+			<hr />
+			<Demo />
 		</>
 	)
 }
@@ -96,26 +145,25 @@ export default function App() {
 		<div>
 			<h1>Welcome to our Fullstack TypeScript Project!</h1>
 			{state.type === "signed-in" && (
-				<>
-					<LoggedIn
-						userId={state.userId}
-						signOut={state.signOut}
-						linkAccount={state.linkAccount}
-					/>
-				</>
+				<LoggedIn
+					userId={state.userId}
+					signOut={state.signOut}
+					linkAccount={state.linkAccount}
+					providers={state.providers}
+				/>
 			)}
 			{state.type === "creating-account" && (
-				<>
-					<CreateAccount createAccount={state.createAccount} />
-				</>
+				<CreateAccount
+					createAccount={state.createAccount}
+					providers={state.providers}
+				/>
 			)}
 			{state.type === "unauthenticated" && (
-				<>
-					<NotLoggedIn
-						submitInviteCode={state.submitInviteCode}
-						signIn={state.signIn}
-					/>
-				</>
+				<NotLoggedIn
+					submitInviteCode={state.submitInviteCode}
+					signIn={state.signIn}
+					providers={state.providers}
+				/>
 			)}
 		</div>
 	)

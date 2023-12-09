@@ -17,6 +17,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"skipDefaultLibCheck": true,
 		"skipLibCheck": true,
-		"noUncheckedIndexedAccess": true
+		"noUncheckedIndexedAccess": true,
+		"verbatimModuleSyntax": true
 	}
 }
