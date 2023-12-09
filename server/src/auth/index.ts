@@ -2,61 +2,47 @@ import { FastifyRequest, type FastifyInstance } from "fastify"
 import cookie from "@fastify/cookie"
 import session from "@fastify/session"
 import grant from "grant"
-import * as Twitch from "~/auth/providers/twitch"
-import * as Google from "~/auth/providers/google"
-import * as Spotify from "~/auth/providers/spotify"
-import * as Discord from "~/auth/providers/discord"
-import { authDB } from "~/db/authDB"
-import { makeStore } from "~/auth/SessionStore"
-import { makeInviteCodes } from "~/auth/InviteCodes"
+import { grantOptions, getGrantData, type RawGrant } from "~/auth/providers"
+import { authDB } from "~/auth/db"
+import { makeStore } from "~/auth/helpers/SessionStore"
+import { makeInviteCodes } from "~/auth/helpers/InviteCodes"
 import { maxLength, object, parse, string } from "valibot"
 import { sql } from "@shared/sql"
 import crypto from "node:crypto"
 import { env } from "~/env"
 import { PUBLIC_CONFIG } from "@shared/env/publicConfig"
-import { decrypt, encrypt } from "~/auth/AuthTokens"
-
-export type Grant = {
-	provider: string
-	state: string
-	response: {
-		id_token: string
-		access_token: string
-		refresh_token: string
-		profile?: unknown
-	}
-}
-
-/**
- * We assume that every oauth server will be able to provide
- * - an email address (careful, this might not be validated by the server, thus might not be enough to sync multiple providers based on same email)
- * - an id-provider pair that is unique to the user (and could allow to re-retrieve the data)
- */
-export type UserId = {
-	email: string
-	provider: string
-	id: string
-}
+import { decrypt, encrypt } from "~/auth/helpers/AuthTokens"
 
 declare module "fastify" {
 	interface Session {
-		grant?: Grant
+		/** Only temporarily added between /api/oauth/connect/:provider/callback and /api/oauth/finalize. */
+		grant?: RawGrant
 		user?: {
 			email: string
 			id: string
 		}
+		provider?: string
+		provider_user_id?: string
+		provider_email?: string
 	}
 }
 
 /**
  * Auth flow:
- * 1. user clicks on "login with twitch" button, front-end goes to /api/oauth/twitch
- * 2. grant redirects to twitch, twitch redirects to /api/oauth/twitch/callback
- * 3. grant creates a session (incl. provider, provider id, email, jwt) redirects to /
- * 4. user provides an invite code, front-end calls /api/oauth/invite, if code is valid, account is created from session (and user is created if needed)
+ * 1. user provides an invite code, front-end calls /api/oauth/invite, if code is valid, an empty encrypted token is left in a cookie
+ * 2. user clicks on "login with twitch" button, front-end goes to /api/oauth/connect/twitch
+ * 3. grant redirects to twitch, twitch redirects to /api/oauth/connect/twitch/callback
+ * 4. grant creates a session (incl. provider, provider id, email, jwt) redirects to /api/oauth/finalize
+ * 5. we check the session & the encrypted token in the cookie, if valid, we create an account and redirect to /
+ *
+ * Linking accounts flow:
+ * 1. user is logged in, clicks on "link account to X" button, front-end calls /api/oauth/invite, we check session, an encrypted token with user id is left in a cookie
+ * 2. client navigates to /api/oauth/connect/X, ... (same as above) ... redirects to /api/oauth/finalize
+ * 3. we check the session & the encrypted token in the cookie, if valid, we link the account and redirect to /
  *
  * Client-side "am I logged in?" flow:
- * 1. front-end calls /api/oauth/session
+ * 1. assume user is logged in if there is a "user" cookie (it's ok being wrong here, we'll check more securely on the server)
+ * 1. regularly call /api/oauth/session (cookie change, offline-to-online change, etc.)
  * 2. /api/oauth/session returns either
  * 	- a { user } object if the user is logged in
  * 	- a { session } object if the user has an oauth session but no account
@@ -64,19 +50,6 @@ declare module "fastify" {
  *
  * Client-side "logout" flow:
  * 1. front-end calls DELETE /api/oauth/session
- *
- *
- * TODO: invert order of account creation
- * 	=> provide invite first (validate on server, store nonce in cookie)
- * 	=> then redirect to "pick your provider" page
- * 	=> after oauth flow, land on /api/oauth/finalize, check nonce in cookie, if valid, create account
- * 	=> then redirect to /
- *
- * TODO: linking accounts
- * 	=> if user is logged in, show "link your account" button, clicking it stores nonce in a cookie and logs out the user
- * 	=> then redirect to "pick your provider" page
- * 	=> after oauth flow, land on /api/oauth/finalize, check nonce in cookie, if valid, link account
- * 	=> then redirect to /
  *
  */
 async function auth(fastify: FastifyInstance) {
@@ -90,9 +63,11 @@ async function auth(fastify: FastifyInstance) {
 
 	fastify.register(session, {
 		secret: env.SESSION_COOKIE_SECRET,
-		cookie: { secure: process.env.NODE_ENV === "production" },
+		cookie: { secure: process.env.NODE_ENV === "production", sameSite: "lax" },
 		store: sessionStore,
 		cookieName: "session",
+		saveUninitialized: false,
+		logLevel: "info",
 	})
 
 	fastify.register(
@@ -104,10 +79,7 @@ async function auth(fastify: FastifyInstance) {
 				prefix: "/api/oauth/connect",
 				callback: "/api/oauth/finalize",
 			},
-			twitch: Twitch.options,
-			google: Google.options,
-			spotify: Spotify.options,
-			discord: Discord.options,
+			...grantOptions,
 		}),
 	)
 
@@ -130,7 +102,7 @@ async function auth(fastify: FastifyInstance) {
 				const parsed = parse(object({ code: string([maxLength(50)]) }), req.body)
 				inviteCode = parsed.code
 			} catch (err) {
-				console.error(err)
+				fastify.log.error(err)
 				res.status(400)
 				return res.send({ error: "invalid code format" })
 			}
@@ -151,23 +123,13 @@ async function auth(fastify: FastifyInstance) {
 	)
 
 	fastify.get("/api/oauth/invite", function (req, res) {
-		if (!req.session?.grant) {
+		const userId = req.session.user?.id
+		if (!userId) {
 			res.status(401)
 			return res.send({ error: "unauthorized" })
 		}
 
-		const user = getUserFromSession(req)
-		if (!user) {
-			res.status(401)
-			return res.send({ error: "unauthorized" })
-		}
-		res.setCookie(PUBLIC_CONFIG.userIdCookie, user.id, {
-			path: "/",
-			sameSite: "lax",
-			maxAge: 2147483647,
-		})
-
-		const token = encrypt({ mode: "link", id: user.id })
+		const token = encrypt({ mode: "link", id: userId })
 		res.setCookie(PUBLIC_CONFIG.accountCreationCookie, token, {
 			path: "/",
 			sameSite: "lax",
@@ -176,58 +138,6 @@ async function auth(fastify: FastifyInstance) {
 		res.status(200)
 		return res.send({ message: "linking accounts, proceed to /api/oauth/connect/:provider" })
 	})
-
-	const createUserStatement = authDB.prepare<{
-		userId: string
-		email: string
-	}>(
-		sql`
-		INSERT INTO users
-		VALUES (@userId, @email);`,
-	)
-
-	const checkAccountExistsStatement = authDB.prepare<{
-		userId: string
-		provider: string
-		providerUserId: string
-	}>(
-		sql`
-		SELECT EXISTS(
-			SELECT 1
-			FROM accounts
-			WHERE user_id = @userId AND provider = @provider AND provider_user_id = @providerUserId
-		);`,
-	)
-
-	const createAccountStatement = authDB.prepare<{
-		accountId: string
-		userId: string
-		provider: string
-		providerUserId: string
-	}>(
-		sql`
-		INSERT INTO accounts
-		VALUES (@accountId, @userId, @provider, @providerUserId, datetime('now'));`,
-	)
-
-	const createUserAccount = authDB.transaction(
-		(
-			user: { userId: string; email: string },
-			account: { accountId: string; userId: string; provider: string; providerUserId: string },
-		) => {
-			createUserStatement.run(user)
-			createAccountStatement.run(account)
-		},
-	)
-
-	const linkUserAccount = authDB.transaction(
-		(account: { accountId: string; userId: string; provider: string; providerUserId: string }) => {
-			const exists = checkAccountExistsStatement.get(account)
-			if (!exists) {
-				createAccountStatement.run(account)
-			}
-		},
-	)
 
 	fastify.get("/api/oauth/finalize", function (req, res) {
 		res.setCookie(PUBLIC_CONFIG.accountCreationCookie, "", {
@@ -239,47 +149,34 @@ async function auth(fastify: FastifyInstance) {
 		// check session, obtained after oauth flow
 		if (!req.session?.grant) {
 			res.status(401)
-			return res.send({ error: "unauthorized", debug: "no session" })
+			fastify.log.warn("no session")
+			return res.send({ error: "unauthorized" })
 		}
-		let sessionData: UserId | undefined = undefined
-		switch (req.session.grant.provider) {
-			case "twitch": {
-				sessionData = Twitch.getIdFromGrant(req.session.grant.response)
-				break
-			}
-			case "google": {
-				sessionData = Google.getIdFromGrant(req.session.grant.response)
-				break
-			}
-			case "spotify": {
-				sessionData = Spotify.getIdFromGrant(req.session.grant.response)
-				break
-			}
-			case "discord": {
-				sessionData = Discord.getIdFromGrant(req.session.grant.response)
-				break
-			}
-		}
-		if (!sessionData) {
+		const grantData = getGrantData(req.session.grant)
+		req.session.set("grant", null)
+		if (!grantData) {
 			res.status(401)
-			return res.send({ error: "unauthorized", debug: "no session data" })
+			fastify.log.warn("no session data")
+			return res.send({ error: "unauthorized" })
 		}
 
-		// check if user already exists
-		const user = getUserFromSession(req)
+		// check if user already exists for this session
+		const user =
+			getUserFromSession(req) ||
+			(userFromGrantStatement.get(grantData) as { id: string; email: string } | undefined)
 		if (user) {
-			res.setCookie(PUBLIC_CONFIG.userIdCookie, user.id, {
-				path: "/",
-				sameSite: "lax",
-				maxAge: 2147483647,
-			})
 			linkUserAccount({
 				accountId: crypto.randomUUID(),
 				userId: user.id,
-				provider: sessionData.provider,
-				providerUserId: sessionData.id,
+				provider: grantData.provider,
+				providerUserId: grantData.id,
 			})
-			console.log("user already exists, linking account")
+			if (!req.session.user) {
+				req.session.set("user", user)
+				req.session.set("provider", grantData.provider)
+				req.session.set("provider_user_id", grantData.id)
+				req.session.set("provider_email", grantData.email)
+			}
 			return res.redirect(302, "/")
 		}
 
@@ -287,138 +184,65 @@ async function auth(fastify: FastifyInstance) {
 		const token = req.cookies[PUBLIC_CONFIG.accountCreationCookie]
 		if (!token) {
 			res.status(401)
-			return res.send({ error: "unauthorized", debug: "no account creation cookie" })
+			fastify.log.warn("no account creation cookie")
+			return res.send({ error: "unauthorized" })
 		}
 		const result = decrypt<{ mode: "create" } | { mode: "link"; id: string }>(token)
 		if ("error" in result) {
 			res.status(401)
-			return res.send({ error: "unauthorized", debug: "invalid account creation cookie" })
+			fastify.log.warn("invalid account creation cookie")
+			return res.send({ error: "unauthorized" })
 		}
+
+		req.session.set("provider", grantData.provider)
+		req.session.set("provider_user_id", grantData.id)
+		req.session.set("provider_email", grantData.email)
 
 		if (result.success.mode === "create") {
 			const userId = crypto.randomUUID()
 			const accountId = crypto.randomUUID()
 			createUserAccount(
-				{ userId, email: sessionData.email },
+				{ userId, email: grantData.email },
 				{
 					userId,
 					accountId,
-					provider: sessionData.provider,
-					providerUserId: sessionData.id,
+					provider: grantData.provider,
+					providerUserId: grantData.id,
 				},
 			)
+			req.session.set("user", { id: userId, email: grantData.email })
 			return res.redirect(302, "/")
 		} else {
 			const accountId = crypto.randomUUID()
 			linkUserAccount({
 				accountId,
 				userId: result.success.id,
-				provider: sessionData.provider,
-				providerUserId: sessionData.id,
+				provider: grantData.provider,
+				providerUserId: grantData.id,
 			})
+			req.session.set("user", { id: result.success.id, email: grantData.email })
 			return res.redirect(302, "/")
 		}
 	})
 
-	const userFromSessionStatement = authDB.prepare<{
-		id: string
-	}>(
-		sql`
-			SELECT users.id as id, users.email as email
-			FROM sessions
-			INNER JOIN accounts ON sessions.provider_user_id = accounts.provider_user_id AND sessions.provider = accounts.provider
-			INNER JOIN users ON accounts.user_id = users.id
-			WHERE sessions.id = @id AND datetime('now') < datetime(expires_at)`,
-	)
-
-	const getUserFromSession = (req: FastifyRequest) => {
-		if (req.session.user) return req.session.user
-
-		const user = userFromSessionStatement.get({ id: req.session.sessionId }) as
-			| { id: string; email: string }
-			| undefined
-
-		if (user) {
-			req.session.set("user", user)
-			req.session.save()
-			return user
-		}
-
-		return undefined
-	}
-
 	fastify.addHook("onSend", (req, res, payload, done) => {
-		if (!req.session?.grant) {
-			res.setCookie(PUBLIC_CONFIG.userIdCookie, "", { path: "/", sameSite: "lax", maxAge: 0 })
-			return done(null, payload)
-		}
-		if (req.session.user) {
-			return done(null, payload)
-		}
-
-		const user = getUserFromSession(req)
-
-		if (user) {
-			res.setCookie(PUBLIC_CONFIG.userIdCookie, user.id, {
+		if (req.session?.user) {
+			res.setCookie(PUBLIC_CONFIG.userIdCookie, req.session.user.id, {
 				path: "/",
 				sameSite: "lax",
 				maxAge: 2147483647,
 			})
 			return done(null, payload)
+		} else {
+			res.setCookie(PUBLIC_CONFIG.userIdCookie, "", { path: "/", sameSite: "lax", maxAge: 0 })
+			return done(null, payload)
 		}
-
-		res.setCookie(PUBLIC_CONFIG.userIdCookie, "", { path: "/", sameSite: "lax", maxAge: 0 })
-		return done(null, payload)
-	})
-
-	fastify.get("/api/oauth/session", function (req, res) {
-		if (!req.session) {
-			res.status(401)
-			return res.send({ error: "unauthorized" })
-		}
-		const user = userFromSessionStatement.get({ id: req.session.sessionId }) as
-			| { id: string; email: string }
-			| undefined
-		if (user) {
-			return res.send({ user })
-		}
-
-		if (req.session.grant) {
-			switch (req.session.grant.provider) {
-				case "twitch": {
-					const session = Twitch.getIdFromGrant(req.session.grant.response)
-					if (session) {
-						return res.send({ session })
-					}
-				}
-				case "google": {
-					const session = Google.getIdFromGrant(req.session.grant.response)
-					if (session) {
-						return res.send({ session })
-					}
-				}
-				case "spotify": {
-					const session = Spotify.getIdFromGrant(req.session.grant.response)
-					if (session) {
-						return res.send({ session })
-					}
-				}
-				case "discord": {
-					const session = Discord.getIdFromGrant(req.session.grant.response)
-					if (session) {
-						return res.send({ session })
-					}
-				}
-			}
-		}
-		res.status(401)
-		return res.send({ error: "unauthorized" })
 	})
 
 	fastify.delete("/api/oauth/session", function (req, res) {
 		req.session.destroy((err) => {
 			if (err) {
-				console.error(err)
+				fastify.log.error(err)
 				res.status(500)
 				return res.send({ error: "internal server error" })
 			}
@@ -441,3 +265,85 @@ export default Object.assign(auth, {
 	 */
 	[Symbol.for("skip-override")]: true,
 })
+
+const createUserStatement = authDB.prepare<{
+	userId: string
+	email: string
+}>(
+	sql`
+		INSERT INTO users
+		VALUES (@userId, @email);`,
+)
+
+const checkAccountExistsStatement = authDB.prepare<{
+	userId: string
+	provider: string
+	providerUserId: string
+}>(
+	sql`
+		SELECT 1
+		FROM accounts
+		WHERE user_id = @userId AND provider = @provider AND provider_user_id = @providerUserId;`,
+)
+
+const createAccountStatement = authDB.prepare<{
+	accountId: string
+	userId: string
+	provider: string
+	providerUserId: string
+}>(
+	sql`
+		INSERT INTO accounts
+		VALUES (@accountId, @userId, @provider, @providerUserId, datetime('now'));`,
+)
+
+const createUserAccount = authDB.transaction(
+	(
+		user: { userId: string; email: string },
+		account: { accountId: string; userId: string; provider: string; providerUserId: string },
+	) => {
+		createUserStatement.run(user)
+		createAccountStatement.run(account)
+	},
+)
+
+const linkUserAccount = authDB.transaction(
+	(account: { accountId: string; userId: string; provider: string; providerUserId: string }) => {
+		const exists = checkAccountExistsStatement.get(account)
+		if (!exists) {
+			createAccountStatement.run(account)
+		}
+	},
+)
+
+const userFromSessionStatement = authDB.prepare<{
+	id: string
+}>(
+	sql`
+		SELECT users.id as id, users.email as email
+		FROM sessions
+		INNER JOIN accounts ON sessions.provider_user_id = accounts.provider_user_id AND sessions.provider = accounts.provider
+		INNER JOIN users ON accounts.user_id = users.id
+		WHERE sessions.id = @id AND datetime('now') < datetime(expires_at)`,
+)
+
+function getUserFromSession(req: FastifyRequest) {
+	if (req.session.user) return req.session.user
+
+	const user = userFromSessionStatement.get({ id: req.session.sessionId }) as
+		| { id: string; email: string }
+		| undefined
+
+	return user
+}
+
+const userFromGrantStatement = authDB.prepare<{
+	provider: string
+	id: string
+}>(
+	sql`
+		SELECT users.id as id, users.email as email
+		FROM accounts
+		INNER JOIN users ON accounts.user_id = users.id
+		WHERE accounts.provider_user_id = @id AND accounts.provider = @provider`,
+)

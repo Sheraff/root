@@ -1,5 +1,5 @@
 import { type GrantProvider } from "grant"
-import { Grant, UserId } from "~/auth"
+import { type GrantData, type RawGrant } from "~/auth/providers"
 import { env } from "~/env"
 
 export const options: GrantProvider = {
@@ -29,7 +29,7 @@ type DiscordUser = {
 	verified: boolean
 }
 
-export function getIdFromGrant(response: Grant["response"]): UserId | undefined {
+export function getIdFromGrant(response: RawGrant["response"]): GrantData | undefined {
 	if (!response.profile) return undefined
 	const data = response.profile as DiscordUser
 	return {

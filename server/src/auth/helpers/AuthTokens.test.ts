@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { decrypt, encrypt } from "~/auth/AuthTokens"
+import { decrypt, encrypt } from "~/auth/helpers/AuthTokens"
 
 describe("AuthTokens", () => {
 	it("decrypts what it encrypts", () => {

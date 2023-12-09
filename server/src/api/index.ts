@@ -2,26 +2,21 @@ import { type FastifyInstance } from "fastify"
 
 export default async function routes(fastify: FastifyInstance) {
 	fastify.get("/api/hello", async () => {
-		console.log("hello world")
+		fastify.log.info("hello world")
 		return { hello: "world" }
 	})
-	fastify.get(
-		"/api/protected",
-		{
-			preHandler: (request, reply, done) => {
-				if (!request.session?.grant) {
-					console.log("no session")
-					// console.log(request)
-					reply.status(401).send({ error: "unauthorized" })
-					return done()
-				}
-				// TODO: what do we need to check to make sure the user is authorized?
-				done()
-			},
+	fastify.get("/api/protected", {
+		onRequest(request, reply, done) {
+			if (!request.session?.user) {
+				fastify.log.warn("no session")
+				reply.status(401).send({ error: "unauthorized" })
+				return done()
+			}
+			done()
 		},
-		() => {
-			console.log("hello protected world")
+		handler() {
+			fastify.log.info("hello protected world")
 			return { hello: "protected world" }
 		},
-	)
+	})
 }

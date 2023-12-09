@@ -1,5 +1,5 @@
 import Database from "better-sqlite3"
-import schemaContent from "~/db/authDB.sql"
+import schemaContent from "./model.sql"
 import { existsSync, mkdirSync } from "node:fs"
 import path from "node:path"
 

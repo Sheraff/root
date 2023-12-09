@@ -19,11 +19,6 @@ CREATE TABLE
 		provider TEXT NOT NULL,
 		provider_user_id TEXT NOT NULL,
 		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		-- access_token TEXT,
-		-- refresh_token TEXT,
-		-- expires_at DATETIME,
-		-- refresh_token_expires_at DATETIME,
-		-- id_token TEXT
 		UNIQUE (user_id, provider, provider_user_id)
 	);
 
@@ -35,3 +30,5 @@ CREATE TABLE
 	);
 
 CREATE INDEX IF NOT EXISTS accounts_session_lookup ON accounts (provider, provider_user_id);
+
+CREATE INDEX IF NOT EXISTS accounts_user_id ON accounts (user_id);

@@ -1,7 +1,7 @@
 /**
  *  Cryptography Functions
  *
- *  Forked from AndiDittrich/AesUtil.js
+ *  Forked from
  *  https://gist.github.com/AndiDittrich/4629e7db04819244e843
  */
 

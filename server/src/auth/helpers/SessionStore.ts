@@ -2,11 +2,6 @@ import { type SessionStore } from "@fastify/session"
 import { sql } from "@shared/sql"
 import type BetterSqlite3 from "better-sqlite3"
 import { type Session } from "fastify"
-import { Grant } from "~/auth"
-import * as Twitch from "~/auth/providers/twitch"
-import * as Google from "~/auth/providers/google"
-import * as Spotify from "~/auth/providers/spotify"
-import * as Discord from "~/auth/providers/discord"
 
 // 1d = 86400s = 86400000ms
 const oneDay = 86400000
@@ -22,22 +17,6 @@ type Entry = {
 	provider_user_id: string | null
 	provider_email: string | null
 	created_at: string
-}
-
-function getLinkFromGrant(grant: Grant) {
-	switch (grant.provider) {
-		case "twitch":
-			return Twitch.getIdFromGrant(grant.response)
-		case "google":
-			return Google.getIdFromGrant(grant.response)
-		case "spotify":
-			return Spotify.getIdFromGrant(grant.response)
-		case "discord":
-			return Discord.getIdFromGrant(grant.response)
-		default: {
-			console.log(`Unknown provider: ${grant.provider}`)
-		}
-	}
 }
 
 class Cache<T> {
@@ -109,31 +88,7 @@ export function makeStore(db: BetterSqlite3.Database): SessionStore {
 
 	return {
 		async set(sessionId, session, callback) {
-			if (!session.grant) return callback()
 			try {
-				const cached = getCache.get(sessionId)
-				early: if (cached) {
-					if (!cached.user !== !session.user) break early
-					if (cached.user && session.user) {
-						if (cached.user.id !== session.user.id) break early
-						if (cached.user.email !== session.user.email) break early
-					}
-					if (cached.grant === session.grant) return callback()
-					if (!cached.grant || !session.grant) break early
-					if (cached.grant.provider !== session.grant.provider) break early
-					if (cached.grant.state !== session.grant.state) break early
-					if (cached.grant.response === session.grant.response) return callback()
-					if (!cached.grant.response || !session.grant.response) break early
-					if (cached.grant.response.access_token !== session.grant.response.access_token)
-						break early
-					if (cached.grant.response.refresh_token !== session.grant.response.refresh_token)
-						break early
-					if (cached.grant.response.id_token !== session.grant.response.id_token) break early
-					if (cached.grant.response.profile === session.grant.response.profile) return callback()
-					if (!cached.grant.response.profile || !session.grant.response.profile) break early
-					return callback()
-				}
-				const link = getLinkFromGrant(session.grant) ?? { provider: null, id: null, email: null }
 				const age = session.cookie.maxAge ?? oneDay
 				const now = new Date()
 				const expires_at = new Date(now.getTime() + age).toISOString()
@@ -142,9 +97,9 @@ export function makeStore(db: BetterSqlite3.Database): SessionStore {
 					session: JSON.stringify(session),
 					expires_at,
 					created_at: now.toISOString(),
-					provider: link.provider,
-					provider_user_id: link.id,
-					provider_email: link.email,
+					provider: session.provider ?? null,
+					provider_user_id: session.provider_user_id ?? null,
+					provider_email: session.provider_email ?? null,
 				}
 				setStatement.run(entry)
 				getCache.set(sessionId, session)

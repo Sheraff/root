@@ -1,6 +1,6 @@
 import { type GrantProvider } from "grant"
-import { Grant, UserId } from "~/auth"
 import { env } from "~/env"
+import { type GrantData, type RawGrant } from "~/auth/providers"
 
 export const options: GrantProvider = {
 	client_id: env.TWITCH_CLIENT_ID,
@@ -24,7 +24,7 @@ type TwitchUser = {
 	created_at: string
 }
 
-export function getIdFromGrant(response: Grant["response"]): UserId | undefined {
+export function getIdFromGrant(response: RawGrant["response"]): GrantData | undefined {
 	if (!response.profile) return undefined
 	const { data } = response.profile as { data: [TwitchUser] }
 	return {

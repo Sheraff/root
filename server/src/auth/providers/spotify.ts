@@ -1,6 +1,6 @@
 import { type GrantProvider } from "grant"
-import { Grant, UserId } from "~/auth"
 import { env } from "~/env"
+import { type GrantData, type RawGrant } from "~/auth/providers"
 
 export const options: GrantProvider = {
 	client_id: env.SPOTIFY_CLIENT_ID,
@@ -33,7 +33,7 @@ type SpotifyUser = {
 	email: string
 }
 
-export function getIdFromGrant(response: Grant["response"]): UserId | undefined {
+export function getIdFromGrant(response: RawGrant["response"]): GrantData | undefined {
 	if (!response.profile) return undefined
 	const data = response.profile as SpotifyUser
 	return {

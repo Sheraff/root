@@ -11,7 +11,6 @@ type States =
 	| {
 			type: "signed-in"
 			userId: string
-			profile?: { email: string }
 			signOut: () => Promise<Response>
 			linkAccount: (provider: string) => void
 	  }
@@ -83,46 +82,9 @@ export function useAuth(): States {
 	const [creatingAccount, setCreatingAccount] = useState(() =>
 		getCookie(PUBLIC_CONFIG.accountCreationCookie),
 	)
-	const [profile, setProfile] = useState<{ email: string } | undefined>()
 
 	useEffect(() => {
 		const controller = new AbortController()
-		let online = navigator.onLine
-		let checking = false
-		let lastValue = getCookie(PUBLIC_CONFIG.userIdCookie)
-
-		const checkSession = async () => {
-			console.log("checkSession", { online, checking })
-			if (!online || checking) return
-			checking = true
-			const res = await fetch("/api/oauth/session")
-			checking = false
-			if (res.status === 401) {
-				setUserId(undefined)
-				setProfile(undefined)
-				return
-			}
-			const json = (await res.json()) as { email: string }
-			setProfile(json)
-		}
-
-		addEventListener(
-			"online",
-			() => {
-				online = true
-				checkSession()
-			},
-			{ signal: controller.signal },
-		)
-
-		addEventListener(
-			"offline",
-			() => {
-				online = false
-				setUserId(getCookie(PUBLIC_CONFIG.userIdCookie))
-			},
-			{ signal: controller.signal },
-		)
 
 		let doubleEventTimeout: NodeJS.Timeout
 		cookieStore.addEventListener(
@@ -131,20 +93,12 @@ export function useAuth(): States {
 				clearCookieCache()
 				clearTimeout(doubleEventTimeout)
 				doubleEventTimeout = setTimeout(() => {
-					const value = getCookie(PUBLIC_CONFIG.userIdCookie)
-					if (value !== lastValue) {
-						lastValue = value
-						checkSession()
-					}
+					setUserId(getCookie(PUBLIC_CONFIG.userIdCookie))
 					setCreatingAccount(getCookie(PUBLIC_CONFIG.accountCreationCookie))
 				}, 10)
 			},
 			{ signal: controller.signal },
 		)
-
-		if (online) {
-			checkSession()
-		}
 
 		return () => controller.abort()
 	}, [])
@@ -153,7 +107,6 @@ export function useAuth(): States {
 		return {
 			type: "signed-in",
 			userId,
-			profile,
 			signOut,
 			linkAccount,
 		}
