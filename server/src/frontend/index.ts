@@ -13,12 +13,5 @@ export default async function frontend(fastify: FastifyInstance) {
 		root: path.join(__dirname, "../../dist/client"),
 		prefix: "/",
 	})
-	fastify.get("/sw.js", function (req, reply) {
-		reply.header("Service-Worker-Allowed", "/")
-		reply.sendFile("sw.js", path.join(__dirname, "../../dist/sw"))
-	})
-	fastify.get("/sw.js.map", function (req, reply) {
-		reply.sendFile("sw.js.map", path.join(__dirname, "../../dist/sw"))
-	})
 	return fastify
 }

@@ -42,9 +42,6 @@ importers:
         specifier: 0.22.0
         version: 0.22.0
     devDependencies:
-      '@hyrious/esbuild-dev':
-        specifier: ^0.10.5
-        version: 0.10.5(esbuild@0.19.8)
       '@types/better-sqlite3':
         specifier: ^7.6.8
         version: 7.6.8
@@ -1924,16 +1921,6 @@ packages:
 
   /@humanwhocodes/object-schema@2.0.1:
     resolution: {integrity: sha512-dvuCeX5fC9dXgJn9t+X5atfmgQAzUOWqS1254Gh0m6i8wKd10ebXkfNKiRK+1GWi/yTvvLDHpoxLr0xxxeslWw==}
-    dev: true
-
-  /@hyrious/esbuild-dev@0.10.5(esbuild@0.19.8):
-    resolution: {integrity: sha512-f8ODDk7AP29tR+MKN29a8x4IpMs2LIYEK/eOY34oD5xjqtj+gP6cx4rrcnP4R9cZKKGMlLFDm0RN51eSqOnMlg==}
-    engines: {node: ^14.18 || >=16}
-    hasBin: true
-    peerDependencies:
-      esbuild: '>=0.17'
-    dependencies:
-      esbuild: 0.19.8
     dev: true
 
   /@jest/schemas@29.6.3:
