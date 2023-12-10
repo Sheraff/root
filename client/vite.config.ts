@@ -37,6 +37,15 @@ export default defineConfig({
 			},
 		},
 	},
+	optimizeDeps: {
+		exclude: [
+			// wasm gets lost if this package is optimized by vite
+			"@vlcn.io/crsqlite-wasm",
+		],
+		esbuildOptions: {
+			target: "esnext",
+		},
+	},
 	build: {
 		emptyOutDir: true,
 		outDir: "../dist/client",

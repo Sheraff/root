@@ -5,6 +5,8 @@
 import * as esbuild from "esbuild"
 import { spawn } from "node:child_process"
 import { join } from "node:path"
+import { cp } from "node:fs/promises"
+import { watch as chokidar } from "chokidar"
 
 /** @type {import("esbuild").BuildOptions} */
 const options = {
@@ -32,9 +34,10 @@ async function build() {
 		"process.env.ROOT": `"${join(process.cwd(), "..")}"`,
 	}
 	await esbuild.build(options)
+	await cp("../shared/schemas", "../dist/schemas", { recursive: true })
 }
 
-async function watch() {
+async function makeEsbuildWatcher() {
 	options.outdir = "node_modules/.cache/server"
 	options.plugins = [
 		{
@@ -52,7 +55,8 @@ async function watch() {
 						})
 					}
 				})
-				build.onEnd(() => {
+				build.onEnd(async () => {
+					await cp("../shared/schemas", "node_modules/.cache/schemas", { recursive: true })
 					process.env.ROOT = join(process.cwd(), "..")
 					const run = () =>
 						spawn(
@@ -70,10 +74,38 @@ async function watch() {
 		},
 	]
 	const context = await esbuild.context(options)
+	return context
+}
+
+async function makeChokidarWatcher() {
+	const watcher = chokidar("../shared/schemas", {
+		ignoreInitial: true,
+		persistent: true,
+		atomic: true,
+		awaitWriteFinish: {
+			stabilityThreshold: 50,
+		},
+	})
+	await new Promise((resolve) => watcher.once("ready", resolve))
+	return watcher
+}
+
+async function watch() {
+	const [context, watcher] = await Promise.all([makeEsbuildWatcher(), makeChokidarWatcher()])
+	/** @type {NodeJS.Timeout | null} */
+	let debounce = null
+	watcher.on("all", (event, path) => {
+		if (debounce) clearTimeout(debounce)
+		console.log(`File ${path} modified (${event}), rebuilding server esbuild...`)
+		debounce = setTimeout(() => {
+			debounce = null
+			context.rebuild()
+		}, 100)
+	})
 	await context.watch()
 	process.on("SIGINT", async () => {
 		console.log("Stopping server esbuild...")
-		await context.dispose()
+		await Promise.all([context.dispose(), watcher.close()])
 		process.exit(0)
 	})
 }

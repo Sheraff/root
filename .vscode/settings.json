@@ -1,13 +1,19 @@
 {
 	"cSpell.words": [
+		"automigrate",
 		"crdt",
+		"crsql",
+		"crsqlite",
+		"cryb",
 		"datetime",
 		"fastify",
+		"fract",
 		"knip",
 		"outdir",
 		"outfile",
 		"pino",
 		"pnpm",
+		"siteid",
 		"sqlite",
 		"valibot",
 		"vlcn"

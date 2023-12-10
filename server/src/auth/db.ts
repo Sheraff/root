@@ -1,25 +1,13 @@
 import Database from "better-sqlite3"
-import schemaContent from "./model.sql"
-import { existsSync, mkdirSync } from "node:fs"
+import schemaContent from "./schema.sql"
 import path from "node:path"
 import type { FastifyInstance } from "fastify"
-
-const projectRoot = process.env.ROOT
-
-if (!projectRoot) {
-	throw new Error("ROOT environment variable not set.")
-}
-
-const dir = path.join(projectRoot, "db")
-
-if (!existsSync(dir)) {
-	mkdirSync(dir)
-}
+import { DB_ROOT } from "~/utils/dbRoot"
 
 export function makeAuthDb(fastify: FastifyInstance) {
-	const name = path.join(dir, "auth.sqlite3")
+	const name = path.join(DB_ROOT, "auth.sqlite3")
 	fastify.log.info(`Creating auth database @ ${name}`)
-	const authDB = new Database(name, {
+	const db = new Database(name, {
 		verbose: (main, ...rest) => {
 			if (rest.length) {
 				fastify.log.info(main, "", ...rest)
@@ -28,14 +16,15 @@ export function makeAuthDb(fastify: FastifyInstance) {
 			}
 		},
 	})
-	authDB.pragma("journal_mode = WAL")
-	authDB.exec(schemaContent)
+	db.pragma("journal_mode = WAL")
+	db.pragma("synchronous = NORMAL")
+	db.exec(schemaContent)
 
 	fastify.addHook("onClose", () => {
 		console.log("Closing auth database...")
-		authDB.close()
+		db.close()
 		console.log("Auth database closed.")
 	})
 
-	return authDB
+	return db
 }

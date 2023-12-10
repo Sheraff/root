@@ -4,6 +4,7 @@ import api from "~/api"
 import auth from "~/auth"
 import frontend from "~/frontend"
 import { env } from "~/env"
+import crsqlite from "~/crsqlite"
 
 fooBar()
 
@@ -21,16 +22,33 @@ const app = fastify({
 	},
 })
 
-// Register the auth routes + session management
+/**
+ * Register the auth routes + session management.
+ * Reserves the following routes:
+ * - GET /api/oauth/connect/:provider
+ * - GET /api/oauth/connect/:provider/callback
+ * - GET /api/oauth/finalize
+ * - GET /api/oauth/invite
+ * - POST /api/oauth/invite
+ * - DELETE /api/oauth/session
+ */
 app.register(auth)
+
+/**
+ * Register the DB Sync routes.
+ * Reserves the following routes:
+ * - GET /api/changes/:name
+ * - POST /api/changes/:name
+ */
+app.register(crsqlite)
+
+// Register the API routes
+app.register(api)
 
 // in production mode, we serve the client built by Vite
 if (process.env.NODE_ENV === "production") {
 	app.register(frontend)
 }
-
-// Register the API routes
-app.register(api)
 
 // Start the server
 const start = async () => {

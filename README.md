@@ -2,11 +2,14 @@
 
 ## TODO
 
-- env
 - finish auth
-  - turn sessions into actual accounts
   - better utils for "protected" stuff (client & server)
-- vlcn.io
+- database
+  - figure out migrations story
+  - we shouldn't need dynamic schema imports, use regular import, and hash content for "schema name"
+    - this would also allow us to remove chokidar entirely
+  - better DX (sync hook, db provider, ...)
+    - bonus: replace vlcn `useQuery` with React-Query (and same for mutations)
 - fix imports from /scripts (type issue in /shared)
 - fix knip (doesn't detect imports from /shared)
 
@@ -16,13 +19,14 @@ A typescript React application, with
 
 - Vitest
 - Vite
+- SQLite (vlcn.io CRDTs)
 
 ## Server Package
 
 A typescript Fastify server, with
 
 - sqlite database
-- vlcn.io CRDT server (TODO)
+- SQLite (vlcn.io CRDTs)
 - esbuild
 - Vitest
 - oauth through 3rd party providers
@@ -38,11 +42,12 @@ A typescript service worker, with
 
 A workspace, with
 
-- pnpm
-- eslint
-- prettier
-- knip
-- turbo
+- pnpm (package manager / script runner)
+- eslint (code quality)
+- prettier (code formatting)
+- knip (dead code elimination)
+- turbo (monorepo manager / script cache)
+- valibot (data validation)
 
 ## Getting Started
 
@@ -80,4 +85,16 @@ To test the project, run:
 pnpm test
 ```
 
-For more information, refer to the README files in the individual packages.
+---
+
+## Other useful commands
+
+```shell
+pnpm format # prettier check
+pnpm format:fix # prettier fix
+pnpm lint # eslint check
+pnpm lint:fix # eslint fix
+pnpm ts-check # typescript check
+pnpm deps # check for unused code
+pnpm clear # clear cache (turbo, vite, pnpm, esbuild, pnpm)
+```
