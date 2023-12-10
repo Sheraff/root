@@ -70,9 +70,11 @@ function LoggedIn({
 
 function CreateAccount({
 	createAccount,
+	cancelCreateAccount,
 	providers,
 }: {
 	createAccount: (provider: string) => void
+	cancelCreateAccount: () => void
 	providers: Array<Provider>
 }) {
 	return (
@@ -87,6 +89,8 @@ function CreateAccount({
 					{provider.name}
 				</button>
 			))}
+			<hr />
+			<button onClick={cancelCreateAccount}>Cancel</button>
 		</>
 	)
 }
@@ -155,6 +159,7 @@ export default function App() {
 			{state.type === "creating-account" && (
 				<CreateAccount
 					createAccount={state.createAccount}
+					cancelCreateAccount={state.cancelCreateAccount}
 					providers={state.providers}
 				/>
 			)}

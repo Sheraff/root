@@ -12,6 +12,7 @@ type States =
 	| {
 			type: "creating-account"
 			createAccount: (provider: string) => void
+			cancelCreateAccount: () => void
 			providers: Array<Provider>
 	  }
 	| {
@@ -56,6 +57,13 @@ function submitInviteCode(inviteCode: string) {
  */
 function createAccount(provider: string) {
 	window.location.href = `/api/oauth/connect/${provider}`
+}
+
+/**
+ * Should transition state from "creating-account" to "unauthenticated"
+ */
+function cancelCreateAccount() {
+	document.cookie = `${PUBLIC_CONFIG.accountCreationCookie}=; max-age=0; path=/;`
 }
 
 /**
@@ -124,6 +132,7 @@ export function useAuth(): States {
 		return {
 			type: "creating-account",
 			createAccount,
+			cancelCreateAccount,
 			providers,
 		}
 	}
