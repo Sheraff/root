@@ -10,6 +10,10 @@ export function onFetch(event: FetchEvent) {
 	if (request.method === "GET") {
 		const url = new URL(request.url)
 
+		if (url.protocol !== "http:" && url.protocol !== "https:") {
+			return
+		}
+
 		if (url.pathname.startsWith("/api")) {
 			return
 		}
