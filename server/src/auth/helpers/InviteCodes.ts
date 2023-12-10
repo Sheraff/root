@@ -73,7 +73,9 @@ export function makeInviteCodes(db: BetterSqlite3.Database) {
 	 * 		4.2.2. repeat steps 1-3
 	 */
 
-	function cleanAndFill(): NodeJS.Timeout {
+	let timeout: NodeJS.Timeout | null = null
+	function cleanAndFill() {
+		if (timeout) clearTimeout(timeout)
 		deleteExpiredStatement.run()
 		const invites = getAllStatement.all() as Invite[]
 		fillInvites(invites, (invite: Invite) => insertStatement.run(invite))
@@ -81,17 +83,16 @@ export function makeInviteCodes(db: BetterSqlite3.Database) {
 			(min, i) => (i.expires_at < min ? i.expires_at : min),
 			invites[0]!.expires_at,
 		)
-		return setTimeout(cleanAndFill, new Date(minExpiresAt).getTime() - Date.now())
+		timeout = setTimeout(cleanAndFill, new Date(minExpiresAt).getTime() - Date.now())
 	}
 
-	let timeout = cleanAndFill()
+	cleanAndFill()
 
 	return {
 		validate(code: string) {
 			const res = deleteReturnStatement.get({ code }) as Invite | undefined
 			if (!res) return false
-			clearTimeout(timeout)
-			timeout = cleanAndFill()
+			cleanAndFill()
 			return res
 		},
 	}
