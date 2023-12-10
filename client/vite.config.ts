@@ -6,6 +6,7 @@ import { config } from "dotenv"
 config({ path: "../.env" })
 
 function SwHotReload(): PluginOption {
+	let id = 0
 	return {
 		name: "sw-hot-reload",
 		handleHotUpdate({ file, server }) {
@@ -14,6 +15,7 @@ function SwHotReload(): PluginOption {
 				server.ws.send({
 					type: "custom",
 					event: "sw-rebuild",
+					data: { id: id++ },
 				})
 			}
 		},

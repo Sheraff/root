@@ -6,11 +6,12 @@ const container = document.getElementById("root")
 const root = createRoot(container!)
 root.render(<App />)
 
-async function loadServiceWorker() {
+async function loadServiceWorker(id?: string) {
 	try {
 		if (!("serviceWorker" in navigator)) return
 		console.log("[SW] registering...")
-		const registration = await navigator.serviceWorker.register("/sw.js", {
+		const path = id ? `/sw.js?id=${id}` : "/sw.js"
+		const registration = await navigator.serviceWorker.register(path, {
 			scope: "/",
 			type: "module",
 			updateViaCache: "none",
@@ -22,11 +23,11 @@ async function loadServiceWorker() {
 	}
 }
 
-window.addEventListener("load", loadServiceWorker, { once: true })
+window.addEventListener("load", () => loadServiceWorker(), { once: true })
 
 if (import.meta.hot) {
-	import.meta.hot.on("sw-rebuild", () => {
+	import.meta.hot.on("sw-rebuild", (data: { id: string }) => {
 		console.log("[SW] Hot Module Reloading...")
-		loadServiceWorker()
+		loadServiceWorker(data.id)
 	})
 }
