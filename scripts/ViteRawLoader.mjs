@@ -15,7 +15,7 @@ export function ViteRawLoader() {
 			const extension = extname(url)
 			if (extension === ".sql") {
 				const input = readFileSync(url, "utf8")
-				return `export default const string = \`${input}\``
+				return `export default \`${input}\``
 			}
 		},
 		// handleHotUpdate({ file, server }) {
