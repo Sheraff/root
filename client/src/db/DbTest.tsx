@@ -3,6 +3,7 @@ import schema from "@shared/schemas/test-v0.sql"
 import { createContext, useContext, useEffect } from "react"
 import { sql } from "@shared/sql"
 import { useSync } from "~/db/Sync"
+import { useCacheManager, useDbQuery } from "~/db/useDbQuery"
 
 const NameContext = createContext<string | null>(null)
 function useName() {
@@ -19,24 +20,34 @@ function useDB() {
 function Content() {
 	const ctx = useDB()
 	const sync = useSync(ctx.db, useName())
+	useCacheManager(useName())
 
-	const addData = (content: string) => {
-		ctx.db.exec(sql`INSERT INTO test (id, content, position) VALUES (?, ?, -1);`, [
+	const addData = async (content: string) => {
+		await ctx.db.exec(sql`INSERT INTO test (id, content, position) VALUES (?, ?, -1);`, [
 			crypto.randomUUID(),
 			content,
 		])
 		sync?.pushChanges()
 	}
 
-	const dropData = () => {
-		ctx.db.exec(sql`DELETE FROM test;`)
+	const dropData = async () => {
+		await ctx.db.exec(sql`DELETE FROM test;`)
 		sync?.pushChanges()
 	}
 
 	useEffect(() => {
 		if (!sync) return
 		const controller = new AbortController()
-		const roundTrip = () => sync.pushChanges().then(() => sync.pullChanges())
+		let online = navigator.onLine
+		const roundTrip = () => {
+			online = true
+			sync.pushChanges().then(() => {
+				if (online && !controller.signal.aborted) {
+					sync.pullChanges()
+				}
+			})
+		}
+		addEventListener("offline", () => (online = false), { signal: controller.signal })
 		addEventListener("online", roundTrip, { signal: controller.signal })
 		if (navigator.onLine) roundTrip()
 		return () => controller.abort()
@@ -47,7 +58,12 @@ function Content() {
 		sql`SELECT id, content, position FROM test ORDER BY position, id ASC`,
 	)
 
-	if (result.loading) return <div>loading...</div>
+	const other = useDbQuery<{ id: string; content: string; position: number }>({
+		dbName: useName(),
+		query: sql`SELECT id, content, position FROM test ORDER BY position, id ASC`,
+	})
+
+	if (result.loading || other.isLoading) return <div>loading...</div>
 
 	return (
 		<>
@@ -57,6 +73,8 @@ function Content() {
 					<li key={item.id}>{item.content}</li>
 				))}
 			</ul>
+			<hr />
+			<ul>{other.data?.map((item) => <li key={item.id}>{item.content}</li>)}</ul>
 			<hr />
 			<form
 				onSubmit={(event) => {

@@ -1,5 +1,6 @@
 import { onFetch } from "~/onFetch"
 import { CACHES } from "~/config"
+import type { Message } from "@shared/workerEvents"
 
 export {}
 
@@ -45,4 +46,12 @@ sw.addEventListener("activate", (event) => {
 })
 
 sw.addEventListener("fetch", onFetch)
-// sw.addEventListener("message", onMessage)
+sw.addEventListener("message", async (event) => {
+	const data = event.data as Message
+	// TODO: this is not the most efficient way to do this, we'd need to know where the file is from /sw (both during dev and build)
+	if (data.type === "CACHE_FILE") {
+		const { url } = data.payload
+		const cache = await caches.open(CACHES.assets)
+		await cache.add(url)
+	}
+})

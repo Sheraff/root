@@ -13,8 +13,10 @@
 		"outfile",
 		"pino",
 		"pnpm",
+		"SAVEPOINT",
 		"siteid",
 		"sqlite",
+		"tanstack",
 		"valibot",
 		"vlcn"
 	],

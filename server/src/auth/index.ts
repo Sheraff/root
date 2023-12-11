@@ -64,7 +64,10 @@ async function auth(fastify: FastifyInstance) {
 
 	fastify.register(session, {
 		secret: env.SESSION_COOKIE_SECRET,
-		cookie: { secure: process.env.NODE_ENV === "production", sameSite: "lax" },
+		cookie: {
+			secure: false, // TODO: set to true when using HTTPS
+			sameSite: "lax",
+		},
 		store: sessionStore,
 		cookieName: "session",
 		saveUninitialized: true,
