@@ -145,9 +145,11 @@ export function useDbQuery<
 			try {
 				const data = (await statement.all(transaction)) as TQueryFnData[]
 				transaction.exec(/*sql*/ `RELEASE use_query_${transactionId};`).then(releaser, releaser)
+				statement.finalize(transaction)
 				return data
 			} catch (e) {
 				transaction.exec(/*sql*/ `ROLLBACK TO use_query_${transactionId};`).then(releaser, releaser)
+				statement.finalize(transaction)
 				throw e
 			}
 		},
