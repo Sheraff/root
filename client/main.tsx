@@ -1,11 +1,20 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { createRoot } from "react-dom/client"
 import App from "~/App"
 import type { Message } from "@shared/workerEvents"
 
 import wasmCrsqlitePath from "@vlcn.io/crsqlite-wasm/crsqlite.wasm?url"
 
-const client = new QueryClient()
+const client = new QueryClient({
+	defaultOptions: {
+		queries: {
+			staleTime: Infinity,
+			gcTime: 45 * 60 * 1000,
+			retry: false,
+		},
+	},
+})
 
 const container = document.getElementById("root")
 
@@ -13,6 +22,7 @@ const root = createRoot(container!)
 root.render(
 	<QueryClientProvider client={client}>
 		<App />
+		<ReactQueryDevtools initialIsOpen={false} />
 	</QueryClientProvider>,
 )
 
