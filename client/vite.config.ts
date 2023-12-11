@@ -1,7 +1,8 @@
 import { type PluginOption, defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
 import viteTsconfigPaths from "vite-tsconfig-paths"
-import { ViteRawLoader } from "../scripts/ViteRawLoader.mjs"
+import { ViteRawLoader } from "scripts/ViteRawLoader"
+import { visualizer } from "rollup-plugin-visualizer"
 import { config } from "dotenv"
 config({ path: "../.env" })
 
@@ -22,8 +23,21 @@ function SwHotReload(): PluginOption {
 	}
 }
 
+const plugins: PluginOption[] = [react(), viteTsconfigPaths(), ViteRawLoader(), SwHotReload()]
+
+if (process.env.VITE_ANALYZE) {
+	plugins.push(
+		visualizer({
+			open: true,
+			brotliSize: true,
+			gzipSize: true,
+			openOptions: { app: { name: "google chrome" } },
+		}),
+	)
+}
+
 export default defineConfig({
-	plugins: [react(), viteTsconfigPaths(), ViteRawLoader(), SwHotReload()],
+	plugins,
 	envDir: "..",
 	server: {
 		port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
@@ -35,6 +49,11 @@ export default defineConfig({
 				changeOrigin: true,
 				secure: false,
 			},
+		},
+	},
+	resolve: {
+		alias: {
+			// "@shared": "node_modules/@shared",
 		},
 	},
 	optimizeDeps: {

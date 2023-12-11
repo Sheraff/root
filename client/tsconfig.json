@@ -6,18 +6,10 @@
 		"rootDir": "..",
 		"baseUrl": ".",
 		"paths": {
-			"~/*": ["./src/*"],
-			"@shared/*": ["../shared/*"]
+			"~/*": ["./src/*"]
 		}
 	},
-	"include": [
-		"src/**/*",
-		"types/*.d.ts",
-		"../types/*.d.ts",
-		"main.tsx",
-		"../shared/*",
-		"../shared/**/*"
-	],
+	"include": ["src/**/*", "types/*.d.ts", "../types/*.d.ts", "main.tsx"],
 	"exclude": ["node_modules"],
 	"references": [{ "path": "../shared" }]
 }

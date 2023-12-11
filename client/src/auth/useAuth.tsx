@@ -1,4 +1,4 @@
-import { PUBLIC_CONFIG } from "@shared/env/publicConfig"
+import { PUBLIC_CONFIG } from "shared/env/publicConfig"
 import { useEffect, useState } from "react"
 import { type Provider, providers } from "~/auth/providers"
 

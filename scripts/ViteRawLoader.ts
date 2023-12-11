@@ -3,11 +3,9 @@
 
 import { readFileSync } from "node:fs"
 import { extname } from "node:path"
+import { type Plugin } from "vite"
 
-/**
- * @returns {import('vite').Plugin}
- */
-export function ViteRawLoader() {
+export function ViteRawLoader(): Plugin {
 	return {
 		name: "vite-plugin-raw-loader",
 		async load(url) {

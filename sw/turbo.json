@@ -9,6 +9,10 @@
 		"ts-check": {
 			"dependsOn": ["shared#ts-check"],
 			"inputs": ["*", "**/*", "../shared/**", "../types/**"]
+		},
+		"dev": {
+			"cache": false,
+			"persistent": true
 		}
 	}
 }

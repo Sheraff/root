@@ -9,6 +9,16 @@
 		"ts-check": {
 			"dependsOn": ["shared#ts-check"],
 			"inputs": ["*", "**/*", "../shared/**", "../types/**"]
+		},
+		"test": {
+			"inputs": ["../scripts/dist/**"],
+			"dependsOn": ["scripts#ts-check"]
+		},
+		"dev": {
+			"cache": false,
+			"persistent": true,
+			"inputs": ["../scripts/dist/**"],
+			"dependsOn": ["scripts#ts-check"]
 		}
 	}
 }

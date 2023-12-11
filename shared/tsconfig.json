@@ -1,10 +1,13 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
+		"rootDir": "..",
 		"baseUrl": ".",
 		"outDir": "node_modules/.cache/ts-check",
 		"esModuleInterop": true,
 		"moduleResolution": "Node",
+		"target": "ESNext",
+		"module": "ESNext",
 		"lib": ["ESNext"],
 		"composite": true,
 		"incremental": true,
@@ -13,8 +16,9 @@
 		}
 	},
 	"watchOptions": {
-		"excludeDirectories": ["**/node_modules"]
+		// "excludeDirectories": ["**/node_modules"]
 	},
-	"include": ["**/*.ts", "../types/*.d.ts"],
+	"include": ["./**/*.ts", "../types/*.d.ts"],
 	"exclude": ["node_modules"]
+	// "references": [{ "path": "../scripts" }]
 }

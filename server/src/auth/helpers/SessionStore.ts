@@ -1,5 +1,5 @@
 import { type SessionStore } from "@fastify/session"
-import { sql } from "@shared/sql"
+import { sql } from "shared/sql"
 import type BetterSqlite3 from "better-sqlite3"
 import { type Session } from "fastify"
 

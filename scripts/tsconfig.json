@@ -2,13 +2,15 @@
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
 		"baseUrl": ".",
+		"outDir": ".dist",
 		"esModuleInterop": true,
 		"moduleResolution": "Node",
 		"target": "ESNext",
 		"allowJs": true,
 		"checkJs": true,
-		"noEmit": true,
+		"composite": true,
 		"module": "ESNext",
 		"lib": ["ESNext"]
-	}
+	},
+	"exclude": ["node_modules"]
 }

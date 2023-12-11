@@ -1,5 +1,5 @@
 import fastify from "fastify"
-import { fooBar } from "@shared/foo/bar"
+import { fooBar } from "shared/foo/bar"
 import api from "~/api"
 import auth from "~/auth"
 import frontend from "~/frontend"

@@ -16,6 +16,9 @@
 		"format:fix": {},
 		"clear": {
 			"cache": false
+		},
+		"analyze": {
+			"cache": false
 		}
 	},
 	"globalDotEnv": [".env"]

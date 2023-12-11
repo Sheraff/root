@@ -10,11 +10,10 @@
 		"module": "ESNext",
 		"lib": ["ESNext"],
 		"paths": {
-			"~/*": ["./src/*"],
-			"@shared/*": ["../shared/*"]
+			"~/*": ["./src/*"]
 		}
 	},
-	"include": ["src/**/*.ts", "types/*.d.ts", "../types/*.d.ts", "../shared/*", "../shared/**/*"],
+	"include": ["src/**/*.ts", "types/*.d.ts", "../types/*.d.ts"],
 	"exclude": ["node_modules"],
 	"references": [{ "path": "../shared" }]
 }

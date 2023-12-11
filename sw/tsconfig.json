@@ -5,11 +5,10 @@
 		"rootDir": "..",
 		"baseUrl": ".",
 		"paths": {
-			"~/*": ["./src/*"],
-			"@shared/*": ["../shared/*"]
+			"~/*": ["./src/*"]
 		}
 	},
-	"include": ["src/**/*", "types/*.d.ts", "../types/*.d.ts", "../shared/*", "../shared/**/*"],
-	"exclude": ["node_modules", "esbuild.mjs"],
+	"include": ["src/**/*", "types/*.d.ts", "../types/*.d.ts"],
+	"exclude": ["node_modules", "esbuild.mjs", "**/dist", "**/.dist"],
 	"references": [{ "path": "../shared" }]
 }

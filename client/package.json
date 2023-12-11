@@ -5,6 +5,7 @@
 	"type": "module",
 	"main": "main.tsx",
 	"scripts": {
+		"analyze": "VITE_ANALYZE=1 vite build",
 		"dev": "vite",
 		"test": "vitest",
 		"build": "vite build",

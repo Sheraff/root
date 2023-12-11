@@ -3,8 +3,17 @@
 	"extends": ["//"],
 	"pipeline": {
 		"ts-check": {
-			"inputs": ["*", "**/*", "../types/**"],
-			"outputs": ["node_modules/.cache/ts-check"]
+			"inputs": ["*", "**/*", "../types/**", "../scripts/dist/**"],
+			"outputs": ["node_modules/.cache/ts-check"],
+			"dependsOn": ["scripts#ts-check"]
+		},
+		"test": {
+			"inputs": ["../scripts/dist/**"],
+			"dependsOn": ["scripts#ts-check"]
+		},
+		"dev": {
+			"cache": false,
+			"persistent": true
 		}
 	}
 }

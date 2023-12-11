@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { createRoot } from "react-dom/client"
 import App from "~/App"
-import type { Message } from "@shared/workerEvents"
+import type { Message } from "shared/workerEvents"
 
 import wasmCrsqlitePath from "@vlcn.io/crsqlite-wasm/crsqlite.wasm?url"
 

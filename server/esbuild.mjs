@@ -25,6 +25,9 @@ const options = {
 	outExtension: {
 		".js": ".mjs",
 	},
+	alias: {
+		shared: "../shared",
+	},
 }
 
 async function build() {

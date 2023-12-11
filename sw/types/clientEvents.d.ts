@@ -1,4 +1,4 @@
-import type { Message } from "@shared/workerEvents"
+import type { Message } from "shared/workerEvents"
 
 declare global {
 	interface ExtendableMessageEvent extends ExtendableEvent {

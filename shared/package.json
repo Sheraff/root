@@ -3,6 +3,14 @@
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",
+	"exports": {
+		"./*": {
+			"default": "./*"
+		},
+		"./*.sql": {
+			"default": "./*.sql"
+		}
+	},
 	"scripts": {
 		"dev": "tsc --watch --preserveWatchOutput",
 		"test": "vitest",

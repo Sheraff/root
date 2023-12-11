@@ -4,6 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
+		"analyze": "turbo analyze --filter client",
 		"dev": "FORCE_COLOR=1 turbo dev",
 		"test": "FORCE_COLOR=1 turbo test",
 		"build": "FORCE_COLOR=1 turbo build",
@@ -13,8 +14,9 @@
 		"format": "FORCE_COLOR=1 turbo format",
 		"format:fix": "FORCE_COLOR=1 turbo format:fix",
 		"ts-check": "FORCE_COLOR=1 turbo ts-check",
-		"deps": "knip",
-		"clear": "turbo clear; rm -rf dist; rm -rf node_modules; rm -rf .turbo;"
+		"deps": "pnpm ts-check --filter scripts && knip",
+		"clear": "FORCE_COLOR=1 turbo clear; rm -rf dist; rm -rf node_modules; rm -rf .turbo;",
+		"postinstall": "FORCE_COLOR=1 turbo ts-check"
 	},
 	"dependencies": {
 		"@fastify/cookie": "^9.2.0",
@@ -33,6 +35,7 @@
 		"pino-pretty": "10.2.3",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
+		"shared": "workspace:./shared",
 		"valibot": "0.23.0"
 	},
 	"devDependencies": {
@@ -49,8 +52,10 @@
 		"eslint-config-prettier": "^9.1.0",
 		"knip": "^3.7.0",
 		"prettier": "^3.1.1",
+		"rollup-plugin-visualizer": "5.11.0",
 		"turbo": "1.11.1",
 		"typescript": "^5.3.3",
+		"scripts": "workspace:./scripts",
 		"vite": "^5.0.7",
 		"vite-tsconfig-paths": "4.2.2",
 		"vitest": "^1.0.4"

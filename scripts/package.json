@@ -4,9 +4,14 @@
 	"private": true,
 	"type": "module",
 	"exports": {
-		"./ViteRawLoader.mjs": "./ViteRawLoader.mjs"
+		"./*": {
+			"default": "./.dist/*"
+		}
 	},
-	"scripts": {},
+	"scripts": {
+		"ts-check": "tsc --build",
+		"clear": "rm -rf .dist;"
+	},
 	"engines": {
 		"node": ">=20.9.0"
 	}

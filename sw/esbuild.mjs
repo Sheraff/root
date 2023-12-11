@@ -16,6 +16,9 @@ const options = {
 		".sql": "text",
 		".html": "text",
 	},
+	// alias: {
+	// 	shared: "../shared",
+	// },
 }
 
 /** @type {import('esbuild').Plugin} */

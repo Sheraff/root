@@ -26,10 +26,12 @@
 	},
 	"files.exclude": {
 		"**/dist/**": true,
+		"**/.dist/**": true,
 		"**/node_modules/**": true,
 		"**/.turbo": true,
 		"client/public/sw.js": true,
-		"client/public/sw.js.map": true
+		"client/public/sw.js.map": true,
+		"client/stats.html": true
 	},
 	"npm.packageManager": "pnpm",
 	"typescript.tsdk": "node_modules/typescript/lib",

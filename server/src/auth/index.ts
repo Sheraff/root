@@ -7,10 +7,10 @@ import { makeAuthDb } from "~/auth/db"
 import { makeStore } from "~/auth/helpers/SessionStore"
 import { makeInviteCodes } from "~/auth/helpers/InviteCodes"
 import { maxLength, object, parse, string } from "valibot"
-import { sql } from "@shared/sql"
+import { sql } from "shared/sql"
 import crypto from "node:crypto"
 import { env } from "~/env"
-import { PUBLIC_CONFIG } from "@shared/env/publicConfig"
+import { PUBLIC_CONFIG } from "shared/env/publicConfig"
 import { decrypt, encrypt } from "~/auth/helpers/AuthTokens"
 
 declare module "fastify" {

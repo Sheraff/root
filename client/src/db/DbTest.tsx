@@ -1,7 +1,7 @@
 import { DBProvider as BaseDbProvider, useDB as useVlcnDb, useQuery } from "@vlcn.io/react"
-import schema from "@shared/schemas/test-v0.sql"
+import schema from "shared/schemas/test-v0.sql"
 import { createContext, useContext, useEffect } from "react"
-import { sql } from "@shared/sql"
+import { sql } from "shared/sql"
 import { useSync } from "~/db/Sync"
 import { useCacheManager, useDbQuery } from "~/db/useDbQuery"
 

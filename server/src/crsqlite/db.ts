@@ -4,7 +4,7 @@ import type { FastifyInstance } from "fastify"
 import { DB_ROOT } from "~/utils/dbRoot"
 import { extensionPath } from "@vlcn.io/crsqlite"
 import { cryb64, type Change, type Changes } from "@vlcn.io/ws-common"
-import { sql } from "@shared/sql"
+import { sql } from "shared/sql"
 import { readFile } from "node:fs/promises"
 import { fileURLToPath } from "node:url"
 

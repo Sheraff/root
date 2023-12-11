@@ -1,4 +1,4 @@
-import { parseEnv } from "@shared/env/schema"
+import { parseEnv } from "shared/env/schema"
 import { config } from "dotenv"
 config({ path: "../.env" })
 
