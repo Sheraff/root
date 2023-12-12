@@ -12,13 +12,13 @@ globalThis.sw = self as unknown as ServiceWorkerGlobalScope
 sw.addEventListener("install", (event) => {
 	event.waitUntil(
 		(async () => {
-			console.log("[SW] installing...")
+			console.debug("[SW] installing...")
 
 			const cache = await caches.open(CACHES.assets)
 			await cache.add("/")
 			await sw.skipWaiting()
 
-			console.log("[SW] installed.")
+			console.debug("[SW] installed.")
 		})(),
 	)
 })
@@ -26,7 +26,7 @@ sw.addEventListener("install", (event) => {
 sw.addEventListener("activate", (event) => {
 	event.waitUntil(
 		(async () => {
-			console.log("[SW] activating...")
+			console.debug("[SW] activating...")
 
 			// remove caches that aren't used anymore
 			const cacheNames = await caches.keys()
@@ -40,7 +40,7 @@ sw.addEventListener("activate", (event) => {
 			// immediately claim clients to avoid de-sync
 			await sw.clients.claim()
 
-			console.log("[SW] activated.")
+			console.debug("[SW] activated.")
 		})(),
 	)
 })
