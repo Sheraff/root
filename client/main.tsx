@@ -9,6 +9,8 @@ import wasmCrsqlitePath from "@vlcn.io/crsqlite-wasm/crsqlite.wasm?url"
 const client = new QueryClient({
 	defaultOptions: {
 		queries: {
+			// staleTime: 10_000,
+			// gcTime: 20_000,
 			staleTime: Infinity,
 			gcTime: 45 * 60 * 1000,
 			retry: false,
@@ -29,7 +31,7 @@ root.render(
 async function loadServiceWorker(id?: string) {
 	try {
 		if (!("serviceWorker" in navigator)) return
-		console.log("[SW] registering...")
+		console.debug("[SW] registering...")
 		const path = id ? `/sw.js?id=${id}` : "/sw.js"
 		const registration = await navigator.serviceWorker.register(path, {
 			scope: "/",
@@ -41,7 +43,7 @@ async function loadServiceWorker(id?: string) {
 			type: "CACHE_FILE",
 			payload: { url: wasmCrsqlitePath },
 		} satisfies Message)
-		console.log("[SW] registered.")
+		console.debug("[SW] registered.")
 	} catch (e) {
 		console.error("[SW] registration failed: ", e)
 	}
@@ -51,7 +53,7 @@ window.addEventListener("load", () => loadServiceWorker(), { once: true })
 
 if (import.meta.hot) {
 	import.meta.hot.on("sw-rebuild", (data: { id: string }) => {
-		console.log("[SW] Hot Module Reloading...")
+		console.debug("[SW] Hot Module Reloading...")
 		loadServiceWorker(data.id)
 	})
 }
