@@ -1,16 +1,16 @@
 {
 	"root": true,
 	"parser": "@typescript-eslint/parser",
-	"plugins": ["@typescript-eslint"],
+	"plugins": ["@typescript-eslint", "react-refresh"],
 	"extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
 	"ignorePatterns": ["node_modules/*", "dist/*", "client/public/sw*"],
 	"rules": {
-		// Add your custom rules here
 		"no-fallthrough": "off",
 		"no-constant-condition": "off",
 		"no-mixed-spaces-and-tabs": "off",
 		"@typescript-eslint/consistent-type-imports": ["error", { "fixStyle": "inline-type-imports" }],
 		"@typescript-eslint/no-explicit-any": "off",
-		"no-empty": "off"
+		"no-empty": "off",
+		"react-refresh/only-export-components": ["error", { "allowConstantExport": true }]
 	}
 }
