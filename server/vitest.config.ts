@@ -8,5 +8,6 @@ export default defineConfig({
 	test: {
 		passWithNoTests: true,
 		// reporters: process.env.GITHUB_ACTIONS ? ['default', new VitestGHAReporter()] : 'default',
+		setupFiles: ["./vitest.setup.ts"],
 	},
 })

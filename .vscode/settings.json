@@ -31,7 +31,8 @@
 		"**/.turbo": true,
 		"client/public/sw.js": true,
 		"client/public/sw.js.map": true,
-		"client/stats.html": true
+		"client/stats.html": true,
+		"**/vitest.config.ts.*": true
 	},
 	"npm.packageManager": "pnpm",
 	"typescript.tsdk": "node_modules/typescript/lib",
@@ -62,6 +63,6 @@
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"explorer.fileNesting.patterns": {
-		"*package.json": "${capture}.eslint*, ${capture}.prettier*, ${capture}pnpm*, ${capture}turbo*, ${capture}tsconfig.json, ${capture}vite.config.ts, ${capture}vitest.config.ts, ${capture}.gitignore, ${capture}esbuild.mjs, ${capture}knip.json, ${capture}.nvmrc, ${capture}vitest.workspace.ts"
+		"*package.json": "${capture}.eslint*, ${capture}.prettier*, ${capture}pnpm*, ${capture}turbo*, ${capture}tsconfig.json, ${capture}vite.config.ts, ${capture}vitest.*, ${capture}.gitignore, ${capture}esbuild.mjs, ${capture}knip.json, ${capture}.nvmrc"
 	}
 }

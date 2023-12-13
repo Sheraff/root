@@ -7,3 +7,4 @@ client/public/sw.js.map
 .turbo
 .dist
 client/stats.html
+vitest.config.ts.*
