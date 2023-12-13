@@ -88,7 +88,7 @@ class Sync {
 		if (response.ok) {
 			this.lastSent = changes[changes.length - 1][5]
 		} else {
-			const txt = await response.json()
+			const txt = (await response.json()) as any
 			throw new Error(txt.message || txt)
 		}
 
@@ -103,7 +103,7 @@ class Sync {
 
 		const response = await fetch(endpoint)
 		if (!response.ok) {
-			const txt = await response.json()
+			const txt = (await response.json()) as any
 			throw new Error(txt.message || txt)
 		}
 		const msg = decode(new Uint8Array(await response.arrayBuffer()))
@@ -112,7 +112,7 @@ class Sync {
 		}
 
 		if (msg.changes.length === 0) {
-			console.log("[DB] No changes received")
+			console.debug("[DB] No changes received")
 			return
 		}
 

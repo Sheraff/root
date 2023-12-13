@@ -6,7 +6,7 @@ import { grantOptions, getGrantData, type RawGrant } from "~/auth/providers"
 import { makeAuthDb } from "~/auth/db"
 import { makeStore } from "~/auth/helpers/SessionStore"
 import { makeInviteCodes } from "~/auth/helpers/InviteCodes"
-import { maxLength, object, parse, string } from "valibot"
+import { literal, maxLength, object, parse, string, union } from "valibot"
 import { sql } from "shared/sql"
 import crypto from "node:crypto"
 import { env } from "~/env"
@@ -169,7 +169,7 @@ async function auth(fastify: FastifyInstance) {
 				const parsed = parse(object({ code: string([maxLength(50)]) }), req.body)
 				inviteCode = parsed.code
 			} catch (err) {
-				fastify.log.error(err)
+				fastify.log.error(err as any)
 				res.status(400)
 				return res.send({ error: "invalid code format" })
 			}
@@ -254,7 +254,11 @@ async function auth(fastify: FastifyInstance) {
 			fastify.log.warn("no account creation cookie")
 			return res.send({ error: "unauthorized" })
 		}
-		const result = decrypt<{ mode: "create" } | { mode: "link"; id: string }>(token)
+		const tokenSchema = union([
+			object({ mode: literal("create") }),
+			object({ mode: literal("link"), id: string() }),
+		])
+		const result = decrypt(token, tokenSchema)
 		if ("error" in result) {
 			res.status(401)
 			fastify.log.warn("invalid account creation cookie")

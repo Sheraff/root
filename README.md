@@ -46,6 +46,7 @@ A workspace, with
 - knip (dead code elimination)
 - turbo (monorepo manager / script cache)
 - valibot (data validation)
+- ts-reset (better typescript defaults)
 
 ## Getting Started
 

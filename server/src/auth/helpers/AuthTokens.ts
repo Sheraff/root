@@ -6,6 +6,7 @@
  */
 
 import crypto, { type CipherGCMTypes } from "node:crypto"
+import { type BaseSchema, type Output, parse } from "valibot"
 import { env } from "~/env"
 
 const ALGORITHM: CipherGCMTypes = "aes-256-gcm"
@@ -57,9 +58,10 @@ export function encrypt(data: object): string {
 	return output
 }
 
-export function decrypt<T extends object = object>(
+export function decrypt<Schema extends BaseSchema>(
 	cipherText: string,
-): { success: T } | { error: Error } {
+	schema: Schema,
+): { success: Output<Schema> } | { error: Error } {
 	try {
 		const inputData = Buffer.from(cipherText, "hex")
 
@@ -80,8 +82,10 @@ export function decrypt<T extends object = object>(
 		// Decrypt data
 		// @ts-expect-error -- TS expects the wrong createDecipher return type here
 		const decrypted = decipher.update(encryptedData, "binary", "utf-8") + decipher.final("utf-8")
+		const unknown = JSON.parse(decrypted)
+		const success = parse(schema, unknown)
 
-		return { success: JSON.parse(decrypted) }
+		return { success }
 	} catch (error) {
 		console.error("Decryption failed!")
 		console.error(error)

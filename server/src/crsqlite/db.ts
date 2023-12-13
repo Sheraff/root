@@ -7,6 +7,7 @@ import { cryb64, type Change, type Changes } from "@vlcn.io/ws-common"
 import { sql } from "shared/sql"
 import { readFile } from "node:fs/promises"
 import { fileURLToPath } from "node:url"
+import { makeDbLogger } from "~/utils/dbLogger"
 
 export type CrsqliteDatabase = Database.Database & {
 	getChanges(sinceVersion: bigint, requestorSiteId: Uint8Array): Change[]
@@ -68,13 +69,7 @@ export async function makeCrsqliteDb(
 	const name = path.join(DB_ROOT, `${options.name}.sqlite3`)
 	fastify.log.info(`Creating database @ ${name}`)
 	const db = new Database(name, {
-		verbose: (main, ...rest) => {
-			if (rest.length) {
-				fastify.log.info(main, "", ...rest)
-			} else {
-				fastify.log.info(main)
-			}
-		},
+		verbose: makeDbLogger(fastify),
 	})
 	db.pragma("journal_mode = WAL")
 	db.pragma("synchronous = NORMAL")
