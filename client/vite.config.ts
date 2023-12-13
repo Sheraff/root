@@ -75,4 +75,14 @@ export default defineConfig({
 		minifyIdentifiers: false,
 		keepNames: true,
 	},
+	define: {
+		__AUTH_PROVIDERS__: [
+			{ name: "twitch", enabled: !!process.env.TWITCH_CLIENT_ID },
+			{ name: "google", enabled: !!process.env.GOOGLE_CLIENT_ID },
+			{ name: "spotify", enabled: !!process.env.SPOTIFY_CLIENT_ID },
+			{ name: "discord", enabled: !!process.env.DISCORD_CLIENT_ID },
+		]
+			.filter((p) => p.enabled)
+			.map((p) => p.name),
+	},
 })

@@ -90,6 +90,8 @@ function linkAccount(provider: string) {
 	})
 }
 
+const filteredProviders = providers.filter((p) => __AUTH_PROVIDERS__.includes(p.key))
+
 export function useAuth(): States {
 	const [userId, setUserId] = useState<string | undefined>(() =>
 		getCookie(PUBLIC_CONFIG.userIdCookie),
@@ -124,7 +126,7 @@ export function useAuth(): States {
 			userId,
 			signOut,
 			linkAccount,
-			providers,
+			providers: filteredProviders,
 		}
 	}
 
@@ -133,7 +135,7 @@ export function useAuth(): States {
 			type: "creating-account",
 			createAccount,
 			cancelCreateAccount,
-			providers,
+			providers: filteredProviders,
 		}
 	}
 
@@ -141,6 +143,6 @@ export function useAuth(): States {
 		type: "unauthenticated",
 		submitInviteCode,
 		signIn,
-		providers,
+		providers: filteredProviders,
 	}
 }

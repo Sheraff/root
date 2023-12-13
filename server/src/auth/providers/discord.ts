@@ -2,13 +2,15 @@ import { type GrantProvider } from "grant"
 import { type GrantData, type RawGrant } from "~/auth/providers"
 import { env } from "~/env"
 
-export const options: GrantProvider = {
-	client_id: env.DISCORD_CLIENT_ID,
-	client_secret: env.DISCORD_CLIENT_SECRET,
-	scope: ["identify"],
-	response: ["tokens", "profile"],
-	nonce: true,
-}
+export const options: GrantProvider | undefined = !env.DISCORD_CLIENT_ID
+	? undefined
+	: {
+			client_id: env.DISCORD_CLIENT_ID,
+			client_secret: env.DISCORD_CLIENT_SECRET,
+			scope: ["identify"],
+			response: ["tokens", "profile"],
+			nonce: true,
+	  }
 
 type DiscordUser = {
 	id: string
@@ -30,6 +32,7 @@ type DiscordUser = {
 }
 
 export function getIdFromGrant(response: RawGrant["response"]): GrantData | undefined {
+	if (!env.DISCORD_CLIENT_ID) throw new Error("Discord credentials not set in environment")
 	if (!response.profile) return undefined
 	const data = response.profile as DiscordUser
 	return {
