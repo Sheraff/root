@@ -9,9 +9,6 @@
   - we shouldn't need dynamic schema imports, use regular import, and hash content for "schema name"
     - this would also allow us to remove chokidar entirely
   - better DX (sync hook, db provider, ...)
-    - bonus: replace vlcn `useQuery` with React-Query (and same for mutations)
-- fix imports from /scripts (type issue in /shared)
-- fix knip (doesn't detect imports from /shared)
 
 ## Client Package
 
@@ -20,6 +17,7 @@ A typescript React application, with
 - Vitest
 - Vite
 - SQLite (vlcn.io CRDTs)
+- Tanstack Query + useQuery hook for SQLite
 
 ## Server Package
 
