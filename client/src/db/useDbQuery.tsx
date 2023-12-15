@@ -421,6 +421,7 @@ export function useDbQuery<
 		refetchOnWindowFocus: true, // in case browser sent the tab to sleep
 		enabled,
 		networkMode: "always",
+		staleTime: Infinity,
 	})
 }
 

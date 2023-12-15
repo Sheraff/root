@@ -9,11 +9,7 @@ import wasmCrsqlitePath from "@vlcn.io/crsqlite-wasm/crsqlite.wasm?url"
 const client = new QueryClient({
 	defaultOptions: {
 		queries: {
-			// staleTime: 10_000,
-			// gcTime: 20_000,
-			staleTime: Infinity,
-			gcTime: 45 * 60 * 1000,
-			retry: false,
+			gcTime: 5 * 60 * 1000,
 		},
 	},
 })
