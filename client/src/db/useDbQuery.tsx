@@ -1,6 +1,12 @@
-import { useQuery, useQueryClient, hashKey, type QueryClient } from "@tanstack/react-query"
+import {
+	useQuery,
+	useQueryClient,
+	hashKey,
+	type QueryClient,
+	type QueryCache,
+} from "@tanstack/react-query"
 import { useDB, type CtxAsync } from "@vlcn.io/react"
-import { useEffect, useRef } from "react"
+import { useLayoutEffect } from "react"
 
 const UNIQUE_KEY = "__vlcn__react_query__cache_manager__"
 
@@ -24,38 +30,42 @@ function sqlToKey(sql: string) {
 	return sql.replace(/\s+/g, " ")
 }
 
+type QueryEntry = {
+	dbName: string
+	/** how many react-query cache entries match this key */
+	count: number
+	/** how many react-query cache entries match this key and are actively being used */
+	activeCount: number
+	/**
+	 * Prepared statement.
+	 * This is stored as a promise to avoid race condition when multiple queries (≠ queryKey, but same SQL)
+	 * are mounted at the same time, and would thus try to prepare the same statement.
+	 */
+	statement: Promise<StmtAsync> | null
+	/**
+	 * Array<`dbName, table`>
+	 * The result of querying for tables used by the SQL.
+	 */
+	tables: string[] | null
+	/**
+	 * used to avoid race conditions between when we query for "tables used" and when we obtain the data.
+	 * if `listening` is false, we can ignore the result of the query, otherwise we should attach listeners
+	 * to every table used by the query.
+	 */
+	listening: boolean
+}
+
 const queryStore = new Map<
 	/** dbName, sql */
 	string,
-	{
-		/** how many react-query cache entries match this key */
-		count: number
-		/** how many react-query cache entries match this key and are actively being used */
-		activeCount: number
-		/**
-		 * Prepared statement.
-		 * This is stored as a promise to avoid race condition when multiple queries (≠ queryKey, but same SQL)
-		 * are mounted at the same time, and would thus try to prepare the same statement.
-		 */
-		statement: Promise<StmtAsync> | null
-		/**
-		 * Array<`dbName, table`>
-		 * The result of querying for tables used by the SQL.
-		 */
-		tables: string[] | null
-		/**
-		 * used to avoid race conditions between when we query for "tables used" and when we obtain the data.
-		 * if `listening` is false, we can ignore the result of the query, otherwise we should attach listeners
-		 * to every table used by the query.
-		 */
-		listening: boolean
-	}
+	QueryEntry
 >()
 
 const tableStore = new Map<
 	/** dbName, table */
 	string,
 	{
+		dbName: string
 		queries: Map<
 			/** dbName, sql */
 			string,
@@ -66,52 +76,122 @@ const tableStore = new Map<
 	}
 >()
 
+function cleanupQuery({
+	q,
+	cacheManager,
+	queryKey,
+	hash,
+	dbName,
+}: {
+	q: QueryEntry
+	cacheManager: QueryCache
+	queryKey: readonly [dbName: string, sql: string]
+	hash: string
+	dbName: string
+}) {
+	console.log("cleanup query", hash)
+
+	// make sure no other queryKey is using that same SQL query and is still considered fresh
+	const filterKey = [UNIQUE_KEY, ...queryKey] as const
+	const remaining = cacheManager.find({
+		queryKey: filterKey,
+		stale: false,
+		exact: false,
+	})
+	if (remaining) {
+		// the same SQL query is still considered fresh in some other queryKey, we should keep listening to table changes
+		return
+	}
+
+	console.log("finalizing statement", hash)
+	queryStore.delete(hash)
+	q.statement?.then((s) => s.finalize(null))
+	q.statement = null
+
+	// stop listening to table changes
+	if (!q.listening) {
+		// this should not happen
+		console.warn("query was not listening to table changes when trying to cleanup")
+		return
+	}
+	q.listening = false
+
+	if (!q.tables) {
+		// this can happen it `getUsedTables` was still in progress when we started this cleanup
+		return
+	}
+
+	for (const table of q.tables) {
+		const tableKey = hashKey([dbName, table])
+		const t = tableStore.get(tableKey)
+		if (!t) {
+			console.error("Table not found when trying to remove from cache", table)
+			continue
+		}
+		// remove current query from the list to be notified when that table changes
+		t.queries.delete(hash)
+		if (t.queries.size === 0) {
+			// no more queries are interested in that table, stop listening to it
+			t.unsubscribe()
+			tableStore.delete(tableKey)
+		}
+	}
+
+	q.tables = null
+}
+
 function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
+	console.log("~~~ start cache manager ~~~", dbName)
+
 	const cacheManager = client.getQueryCache()
-	cacheManager.subscribe((event) => {
+	const unsubscribe = cacheManager.subscribe((event) => {
 		if (event.query.queryKey[0] !== UNIQUE_KEY) return
-		const queryKey = [event.query.queryKey[1], event.query.queryKey[2]] as const
+		const queryKey = [event.query.queryKey[1], event.query.queryKey[2]] as [
+			dbName: string,
+			sql: string,
+		]
 		const hash = hashKey(queryKey)
 
-		// new unknown useQuery hook just mounted. `queryFn` hasn't been called yet.
+		/**
+		 * New queryKey discovered by react-query (nothing else has happened with it yet, no data, no queryFn, ...)
+		 * - increment the count (if it matches an SQL query in the store)
+		 */
 		if (event.type === "added") {
 			console.debug("::::::added")
 			const q = queryStore.get(hash)
-			if (!q) {
-				console.log("start listening to", hash)
-				queryStore.set(hash, {
-					count: 1,
-					activeCount: 0,
-					statement: null,
-					tables: null,
-					listening: false,
-				})
-			} else {
+			if (q) {
 				console.log("increment count", hash)
 				q.count++
 			}
 			return
 		}
 
-		// useQuery hook just mounted, `queryFn` might have been called already if it's not the first hook with this `queryKey`
-		if (event.type === "observerAdded") {
-			console.debug("::::::obs.added")
-			let q = queryStore.get(hash)!
+		/**
+		 * queryFn is about to be called
+		 * - add it to the store (if we've never seen this SQL before)
+		 * - prepare the statement (if it's not already prepared)
+		 * - start listening to table changes (if we're not already listening)
+		 */
+		if (event.type === "updated" && event.action.type === "fetch") {
+			console.log("::::::updated:fetch")
+			let q = queryStore.get(hash) as QueryEntry // force exclude `undefined` for `getUsedTables` promise chain below, because it's never going back to undefined
 			if (!q) {
-				// this should only happen in dev env, with hot module reloading
+				console.log("start listening to", hash)
 				q = {
-					count: 1,
-					activeCount: 0,
+					dbName,
+					count: 1, // "updated:fetch" happens after "added", so we initialize count to 1
+					activeCount: 1, // "updated:fetch" happens after "observerAdded", so we initialize activeCount to 1
 					statement: null,
 					tables: null,
 					listening: false,
 				}
 				queryStore.set(hash, q)
-				console.warn("Query not found when trying to add observer", hash)
 			}
-			console.log("increment active count", hash)
-			q.activeCount++
+			if (!q.statement) {
+				q.statement = ctx.db.prepare(event.query.queryKey[2])
+			}
 			if (q.activeCount !== 1) return
+			if (q.listening) return
 			q.listening = true
 			getUsedTables(ctx.db, queryKey[1]).then((tables) => {
 				if (!q.listening) return
@@ -138,6 +218,7 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 						}
 					})
 					tableStore.set(tableKey, {
+						dbName,
 						queries,
 						unsubscribe: () => {
 							console.log("stop listening to table", [table, dbName])
@@ -149,97 +230,94 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 			return
 		}
 
-		// useQuery hook just unmounted, there might be more hooks with the same `queryKey` still mounted. Data might or might not be stale.
+		/**
+		 * Known queryKey mounted by react-query, it might be in any state (though if it's the initial mount, queryFn has not been called yet)
+		 * - increment the activeCount (if it matches an SQL query in the store)
+		 */
+		if (event.type === "observerAdded") {
+			console.debug("::::::obs.added")
+			const q = queryStore.get(hash)!
+			if (!q) return
+			console.log("increment active count", hash)
+			q.activeCount++
+			return
+		}
+
+		/**
+		 * Known queryKey unmounted by react-query, it might be in any state. At this point it should be a known SQL query.
+		 * - decrement the activeCount
+		 * - if some queries using that SQL are still **not stale**, keep listening to table changes
+		 * - otherwise
+		 *   - finalize the statement
+		 *   - stop listening to table changes
+		 *   - remove query from store
+		 */
 		if (event.type === "observerRemoved") {
 			console.debug("::::::obs.removed")
 			const q = queryStore.get(hash)
 			if (!q) {
-				console.error("Query not found when trying to remove observer", hash)
+				// this error should only be logged while we evaluate the stability of this react-query adapter, remove it after a while
+				console.error(
+					"Query not found when trying to remove observer. This can happen just after a Hot Reload, but is an actual error otherwise.",
+					hash,
+				)
 				return
 			}
 			console.log("decrement active count", hash)
 			q.activeCount--
 			if (q.activeCount !== 0) return
-			console.log("all are inactive", hash)
-			const filterKey = [UNIQUE_KEY, ...queryKey] as const
-			const remaining = cacheManager.find({
-				queryKey: filterKey,
-				stale: false,
-				exact: false,
-			})
 
-			if (!remaining) return
-			/**
-			 * No queries using that SQL are active anymore, so to preserve memory we stop
-			 * listening to table changes and we finalize the statement. This requires that
-			 * we also mark all queries using that SQL as stale, so that they can be
-			 * re-executed when they become active again.
-			 *
-			 * If `gcTime` is "high enough", next time those queries are mounted they will
-			 * start with stale data while the queryFn is being executed.
-			 */
-			client.invalidateQueries({
-				exact: false,
-				queryKey: filterKey,
-			})
-			// no more queries using that SQL are considered fresh, we can finalize the statement
-			console.log("finalizing statement (obs. removed)", hash)
-			q.statement?.then((s) => s.finalize(null))
-			q.statement = null
-			if (!q.listening) return
-			q.listening = false
-			if (!q.tables) return
-			for (const table of q.tables) {
-				const tableKey = hashKey([dbName, table])
-				const t = tableStore.get(tableKey)
-				if (!t) {
-					console.error("Table not found when trying to remove from cache", table)
-					continue
-				}
-				t.queries.delete(hash)
-				if (t.queries.size) continue
-				t.unsubscribe()
-				tableStore.delete(tableKey)
-			}
+			cleanupQuery({ q, cacheManager, queryKey, hash, dbName })
 			return
 		}
 
-		// query got removed from cache, no more hooks with that `queryKey` are mounted, data is stale.
+		/**
+		 * Known queryKey was explicitly invalidated by react-query (e.g. `queryClient.invalidateQueries(queryKey)`)
+		 * - if it was the last hold-out for that SQL query (not removed during the "observerRemoved" event)
+		 *   - finalize the statement
+		 *   - stop listening to table changes
+		 *   - remove query from store
+		 */
+		if (event.type === "updated" && event.action.type === "invalidate") {
+			console.log("::::::updated:invalidate")
+			const q = queryStore.get(hash)
+			if (!q) return
+			if (q.activeCount !== 0) return
+			if (!q.listening) return
+			cleanupQuery({ q, cacheManager, queryKey, hash, dbName })
+			return
+		}
+
+		/**
+		 * Known queryKey is being "forgotten" by react-query, the intent is to remove all traces of it
+		 * (if no other queryKey is also using that same SQL query).
+		 */
 		if (event.type === "removed") {
 			console.debug("::::::removed")
 			const q = queryStore.get(hash)
-			if (!q) {
-				console.error("Query not found when trying to remove", hash)
-				return
-			}
-			q.count--
-			if (q.count > 0) return
-			console.log("finalizing statement (removed)", hash)
-			q.statement?.then((s) => s.finalize(null))
-			q.statement = null
-			console.log("removing from store", hash)
-			queryStore.delete(hash)
-			if (!q.listening) return
-			q.listening = false
-			if (!q.tables) return
-			for (const table of q.tables) {
-				const tableKey = hashKey([dbName, table])
-				const t = tableStore.get(tableKey)
-				if (!t) {
-					console.error("Table not found when trying to remove from cache", table)
-					continue
-				}
-				t.queries.delete(hash)
-				if (t.queries.size) continue
-				t.unsubscribe()
-				tableStore.delete(tableKey)
-			}
-			q.tables = null
+			if (!q) return
+			// q.count--
+			// if (q.count > 0) return
+			cleanupQuery({ q, cacheManager, queryKey, hash, dbName })
 			return
 		}
-
-		console.debug(":::::other", event.type)
 	})
+
+	return () => {
+		unsubscribe()
+		tableStore.forEach((t) => {
+			if (t.dbName === dbName) {
+				t.unsubscribe()
+				tableStore.delete(t.dbName)
+			}
+		})
+		queryStore.forEach((q) => {
+			if (q.dbName === dbName) {
+				q.statement?.then((s) => s.finalize(null))
+				queryStore.delete(q.dbName)
+			}
+		})
+	}
 }
 
 /**
@@ -255,22 +333,8 @@ export function useCacheManager(dbName: string) {
 	const client = useQueryClient()
 	const ctx = useDB(dbName)
 
-	/**
-	 * synchronously start listening to cache events, otherwise we might miss
-	 * the "added" event of a query mounted in the same render cycle as this hook.
-	 * This should be fine because it's a very light function.
-	 */
-	const started = useRef(false)
-	if (!started.current) {
-		started.current = true
-		start(dbName, ctx, client)
-	}
-
 	// only in dev
-	useEffect(() => {
-		// TODO: can we find a way to avoid HMR causing queries not to be found in the store?
-		return () => {}
-	}, [])
+	useLayoutEffect(() => start(dbName, ctx, client), [dbName, ctx, client])
 }
 
 let queryId = 0
@@ -285,14 +349,17 @@ export function useDbQuery<
 	select,
 	bindings = [],
 	updateTypes = ALL_UPDATES,
+	enabled = true,
 }: {
 	dbName: string
 	query: string
 	select?: (data: TQueryFnData[]) => TData
 	bindings?: ReadonlyArray<string>
 	updateTypes?: ReadonlyArray<UpdateType>
+	enabled?: boolean
 }) {
 	const ctx = useDB(dbName)
+
 	const queryKey = [
 		UNIQUE_KEY,
 		dbName,
@@ -309,7 +376,7 @@ export function useDbQuery<
 
 	return useQuery({
 		queryKey,
-		queryFn: async () => {
+		queryFn: async ({ signal }) => {
 			console.debug("::::::queryFn")
 			const partialKey = [queryKey[1], queryKey[2]] as const
 			const key = hashKey(partialKey)
@@ -318,13 +385,18 @@ export function useDbQuery<
 			if (!q) {
 				throw new Error("Query not in store when trying to execute queryFn")
 			}
-			const statementPromise = q.statement ?? ctx.db.prepare(query)
-			if (!q.statement) console.log("preparing statement", key)
-			q.statement = statementPromise
-			const statement = await statementPromise
+			if (!q.statement) {
+				throw new Error("Query statement did not exist when trying to execute queryFn")
+			}
+			const statement = await q.statement
+			if (signal.aborted) return Promise.reject("Request aborted")
 
 			statement.bind(bindings)
 			const [releaser, transaction] = await ctx.db.imperativeTx()
+			if (signal.aborted) {
+				releaser()
+				return Promise.reject("Request aborted")
+			}
 			if (!q.statement) {
 				releaser()
 				throw new Error("Query statement was finalized before being executed")
@@ -342,6 +414,13 @@ export function useDbQuery<
 			}
 		},
 		select,
+		refetchOnReconnect: false, // local db, never disconnected
+		retry: false, // SQL won't work better the 2nd time, there is no network reliability to worry about
+		retryOnMount: false,
+		refetchOnMount: true, // will only refetch if query is stale
+		refetchOnWindowFocus: true, // in case browser sent the tab to sleep
+		enabled,
+		networkMode: "always",
 	})
 }
 

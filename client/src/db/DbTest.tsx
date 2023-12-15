@@ -1,38 +1,85 @@
-import { DBProvider as BaseDbProvider, useDB as useVlcnDb, useQuery } from "@vlcn.io/react"
-import schema from "shared/schemas/test-v0.sql"
-import { createContext, useContext, useEffect } from "react"
+import { useDB, useQuery } from "@vlcn.io/react"
+import { useEffect, useState } from "react"
 import { sql } from "shared/sql"
 import { useSync } from "~/db/Sync"
-import { useCacheManager, useDbQuery } from "~/db/useDbQuery"
+import { useDbQuery } from "~/db/useDbQuery"
+import { useDbMutation } from "~/db/useDbMutation"
 
-const NameContext = createContext<string | null>(null)
-function useName() {
-	const name = useContext(NameContext)
-	if (!name) throw new Error("NameContext.Provider not found")
-	return name
+function Test({ name }: { name: string }) {
+	const other = useDbQuery<{ id: string; content: string; position: number }>({
+		dbName: name,
+		query: sql`SELECT id, content, position FROM test ORDER BY position, id ASC`,
+	})
+
+	return (
+		<div style={{ padding: 10, background: "black" }}>
+			<ul>{other.data?.map((item) => <li key={item.id}>{item.content}</li>)}</ul>
+		</div>
+	)
 }
 
-function useDB() {
-	const name = useName()
-	return useVlcnDb(name)
+function TestBis({ name }: { name: string }) {
+	const other = useDbQuery<{ id: string; content: string; position: number }>({
+		dbName: name,
+		query: sql`SELECT id, content, position FROM test ORDER BY position, id ASC`,
+	})
+
+	return (
+		<div style={{ padding: 10, background: "black" }}>
+			<ul>{other.data?.map((item) => <li key={item.id}>{item.content}</li>)}</ul>
+		</div>
+	)
 }
 
-function Content() {
-	const ctx = useDB()
-	const sync = useSync(ctx.db, useName())
-	useCacheManager(useName())
+function Test2({ name }: { name: string }) {
+	const other = useDbQuery<{ id: string; content: string; position: number }>({
+		dbName: name,
+		query: sql`SELECT id, content, position FROM test ORDER BY position, id ASC`,
+		updateTypes: [18],
+	})
+
+	return (
+		<div style={{ padding: 10, background: "black" }}>
+			<ul>{other.data?.map((item) => <li key={item.id}>{item.content}</li>)}</ul>
+		</div>
+	)
+}
+
+export function Content({ name }: { name: string }) {
+	const ctx = useDB(name)
+	const sync = useSync(ctx.db, name)
+
+	const { mutateAsync } = useDbMutation<[id: string, content: string]>({
+		dbName: name,
+		query: sql`INSERT INTO test (id, content, position) VALUES (?, ?, -1) RETURNING id, content;`,
+	})
 
 	const addData = async (content: string) => {
-		await ctx.db.exec(sql`INSERT INTO test (id, content, position) VALUES (?, ?, -1);`, [
-			crypto.randomUUID(),
-			content,
-		])
-		sync?.pushChanges()
+		await mutateAsync([crypto.randomUUID(), content])
+		await sync?.pushChanges()
+		await sync?.pullChanges()
+	}
+
+	const { mutateAsync: mutateAsync2 } = useDbMutation<
+		[id: string],
+		{ id: string; content: string }
+	>({
+		dbName: name,
+		query: sql`DELETE FROM test WHERE id = ? RETURNING id, content;`,
+		returning: true,
+	})
+
+	const removeData = async (id: string) => {
+		const [res] = await mutateAsync2([id])
+		console.log("---- remove", res)
+		await sync?.pushChanges()
+		await sync?.pullChanges()
 	}
 
 	const dropData = async () => {
 		await ctx.db.exec(sql`DELETE FROM test;`)
-		sync?.pushChanges()
+		await sync?.pushChanges()
+		await sync?.pullChanges()
 	}
 
 	useEffect(() => {
@@ -58,23 +105,29 @@ function Content() {
 		sql`SELECT id, content, position FROM test ORDER BY position, id ASC`,
 	)
 
-	const other = useDbQuery<{ id: string; content: string; position: number }>({
-		dbName: useName(),
-		query: sql`SELECT id, content, position FROM test ORDER BY position, id ASC`,
-	})
-
-	if (result.loading || other.isLoading) return <div>loading...</div>
+	const [toggle, setToggle] = useState(true)
+	const [toggleBis, setToggleBis] = useState(false)
+	const [toggle2, setToggle2] = useState(false)
 
 	return (
 		<>
 			<h2>Database</h2>
+			<button onClick={() => setToggle((toggle) => !toggle)}>Toggle {String(!toggle)}</button>
+			{toggle && <Test name={name} />}
+			<button onClick={() => setToggleBis((toggle) => !toggle)}>
+				Toggle bis {String(!toggleBis)}
+			</button>
+			{toggleBis && <TestBis name={name} />}
+			<button onClick={() => setToggle2((toggle) => !toggle)}>Toggle 2 {String(!toggle2)}</button>
+			{toggle2 && <Test2 name={name} />}
 			<ul>
-				{result.data.map((item) => (
-					<li key={item.id}>{item.content}</li>
+				{result.data?.map((item) => (
+					<li key={item.id}>
+						{item.content} <button onClick={() => removeData(item.id)}>delete</button>
+					</li>
 				))}
 			</ul>
 			<hr />
-			<ul>{other.data?.map((item) => <li key={item.id}>{item.content}</li>)}</ul>
 			<hr />
 			<form
 				onSubmit={(event) => {
@@ -107,21 +160,5 @@ function Content() {
 				</>
 			)}
 		</>
-	)
-}
-
-export function DbProvider({ name }: { name: string }) {
-	return (
-		<NameContext.Provider value={name}>
-			<BaseDbProvider
-				dbname={name}
-				schema={{
-					name: "test-v0",
-					content: schema.replace(/[\s\n\t]+/g, " ").trim(),
-				}}
-				fallback={<div>Creating DB {name}</div>}
-				Render={Content}
-			/>
-		</NameContext.Provider>
 	)
 }

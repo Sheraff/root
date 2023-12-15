@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import { type Provider } from "~/auth/providers"
 import { useAuth } from "~/auth/useAuth"
-import { DbProvider } from "~/db/DbTest"
+import { Content } from "~/db/DbTest"
+import { DbProvider } from "~/db/ParentTest"
 
 function Demo() {
 	const [protectedRes, setProtectedRes] = useState<unknown>()
@@ -66,7 +67,9 @@ function LoggedIn({
 			<hr />
 			<Demo />
 			<hr />
-			<DbProvider name={userId} />
+			<DbProvider name={userId}>
+				<Content name={userId} />
+			</DbProvider>
 		</>
 	)
 }
