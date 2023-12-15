@@ -9,5 +9,11 @@ export default defineConfig({
 		passWithNoTests: true,
 		// reporters: process.env.GITHUB_ACTIONS ? ['default', new VitestGHAReporter()] : 'default',
 		setupFiles: ["./vitest.setup.ts"],
+		includeSource: ["src/**/*.{js,ts}"],
+		alias: [
+			{ find: /^(.*)\.txt$/, replacement: "$1.txt?raw" },
+			{ find: /^(.*)\.sql$/, replacement: "$1.sql?raw" },
+		],
 	},
+	// esbuild: {},
 })

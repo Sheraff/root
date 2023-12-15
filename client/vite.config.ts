@@ -52,9 +52,10 @@ export default defineConfig({
 		},
 	},
 	resolve: {
-		alias: {
-			// "@shared": "node_modules/@shared",
-		},
+		alias: [
+			{ find: /^(.*)\.txt$/, replacement: "$1.txt?raw" },
+			{ find: /^(.*)\.sql$/, replacement: "$1.sql?raw" },
+		],
 	},
 	optimizeDeps: {
 		exclude: [

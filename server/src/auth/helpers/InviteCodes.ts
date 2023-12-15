@@ -22,6 +22,23 @@ function generateCode(existingCodes: string[]) {
 	}
 }
 
+if (import.meta.vitest) {
+	const { it, expect } = import.meta.vitest
+	it("words", () => {
+		expect(WORDS.length).toBeGreaterThan(4000)
+	})
+	it("generateCode", () => {
+		const code = generateCode([])
+		expect(code).not.toBeUndefined()
+		const arr = [code]
+		for (let i = 0; i < 100; i++) {
+			const code = generateCode(arr)
+			expect(code).not.toBeUndefined()
+			arr.push(code)
+		}
+	})
+}
+
 function fillInvites(invites: Invite[], insert: (invite: Invite) => void) {
 	const delta = FREE_INVITES - invites.length
 	if (delta <= 0) return
@@ -94,6 +111,12 @@ export function makeInviteCodes(db: BetterSqlite3.Database) {
 			if (!res) return false
 			cleanAndFill()
 			return res
+		},
+		getAll() {
+			return getAllStatement.all() as Invite[]
+		},
+		close() {
+			if (timeout) clearTimeout(timeout)
 		},
 	}
 }

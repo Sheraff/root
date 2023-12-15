@@ -7,5 +7,9 @@ export default defineConfig({
 	envDir: "..",
 	test: {
 		passWithNoTests: true,
+		alias: [
+			{ find: /^(.*)\.txt$/, replacement: "$1.txt?raw" },
+			{ find: /^(.*)\.sql$/, replacement: "$1.sql?raw" },
+		],
 	},
 })

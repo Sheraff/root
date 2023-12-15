@@ -9,9 +9,8 @@ export function ViteRawLoader(): Plugin {
 	return {
 		name: "vite-plugin-raw-loader",
 		async load(url) {
-			this.setAssetSource
 			const extension = extname(url)
-			if (extension === ".sql") {
+			if (extension === ".sql" || extension === ".txt") {
 				const input = readFileSync(url, "utf8")
 				return `export default \`${input}\``
 			}
