@@ -14,9 +14,9 @@
 		"format": "FORCE_COLOR=1 turbo format",
 		"format:fix": "FORCE_COLOR=1 turbo format:fix",
 		"ts-check": "FORCE_COLOR=1 turbo ts-check",
-		"deps": "pnpm ts-check --filter scripts && knip",
+		"deps": "pnpm ts-check --filter=scripts && knip",
 		"clear": "FORCE_COLOR=1 turbo clear; rm -rf dist; rm -rf node_modules; rm -rf .turbo;",
-		"postinstall": "FORCE_COLOR=1 turbo ts-check"
+		"postinstall": "FORCE_COLOR=1 turbo ts-check --log-order=grouped --filter=scripts --filter=shared"
 	},
 	"dependencies": {
 		"@fastify/cookie": "^9.2.0",
