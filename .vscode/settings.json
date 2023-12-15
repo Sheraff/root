@@ -64,6 +64,6 @@
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"explorer.fileNesting.patterns": {
-		"*package.json": "${capture}.eslint*, ${capture}.prettier*, ${capture}pnpm*, ${capture}turbo*, ${capture}tsconfig.json, ${capture}vite.config.ts, ${capture}vitest.*, ${capture}.gitignore, ${capture}esbuild.mjs, ${capture}knip.json, ${capture}.nvmrc"
+		"*package.json": "${capture}.eslint*, ${capture}.prettier*, ${capture}pnpm*, ${capture}turbo*, ${capture}tsconfig.json, ${capture}vite.config.ts, ${capture}vitest.*, ${capture}.gitignore, ${capture}esbuild.mjs, ${capture}knip.json*, ${capture}.nvmrc"
 	}
 }
