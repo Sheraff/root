@@ -1,6 +1,7 @@
 import { type GrantProvider } from "grant"
 import { env } from "~/env"
 import { type GrantData, type RawGrant } from "~/auth/providers"
+import { object, parse, string } from "valibot"
 
 export const options: GrantProvider | undefined = !env.GOOGLE_CLIENT_ID
 	? undefined
@@ -10,20 +11,24 @@ export const options: GrantProvider | undefined = !env.GOOGLE_CLIENT_ID
 			scope: ["openid", "https://www.googleapis.com/auth/userinfo.email"],
 			response: ["tokens", "profile"],
 			nonce: true,
-	  }
+		}
 
-type GoogleUser = {
-	sub: string
-	picture: string
-	email: string
-	email_verified: boolean
-	hd: string
-}
+// type GoogleUser = {
+// 	sub: string
+// 	picture: string
+// 	email: string
+// 	email_verified: boolean
+// 	hd: string
+// }
+
+const googleUserShape = object({
+	email: string(),
+})
 
 export function getIdFromGrant(response: RawGrant["response"]): GrantData | undefined {
 	if (!env.GOOGLE_CLIENT_ID) throw new Error("google credentials not set in environment")
 	if (!response.profile) return undefined
-	const data = response.profile as GoogleUser
+	const data = parse(googleUserShape, response.profile)
 	return {
 		email: data.email,
 		provider: "google",
