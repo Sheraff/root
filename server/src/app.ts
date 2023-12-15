@@ -5,6 +5,7 @@ import auth from "~/auth"
 import frontend from "~/frontend"
 import { env } from "~/env"
 import crsqlite from "~/crsqlite"
+import { DB_ROOT } from "~/utils/dbRoot"
 
 fooBar()
 
@@ -32,7 +33,9 @@ const app = fastify({
  * - POST /api/oauth/invite
  * - DELETE /api/oauth/session
  */
-app.register(auth)
+app.register(auth, {
+	dbPath: DB_ROOT,
+})
 
 /**
  * Register the DB Sync routes.
@@ -40,7 +43,9 @@ app.register(auth)
  * - GET /api/changes/:name
  * - POST /api/changes/:name
  */
-app.register(crsqlite)
+app.register(crsqlite, {
+	dbPath: DB_ROOT,
+})
 
 // Register the API routes
 app.register(api)

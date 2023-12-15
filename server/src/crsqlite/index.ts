@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify"
 import { makeCrsqliteDb, type CrsqliteDatabase } from "~/crsqlite/db"
 import { encode, decode, tags, hexToBytes } from "@vlcn.io/ws-common"
 
-export default async function crsqlite(fastify: FastifyInstance) {
+export default async function crsqlite(fastify: FastifyInstance, { dbPath }: { dbPath: string }) {
 	fastify.addContentTypeParser(
 		"application/octet-stream",
 		{ parseAs: "buffer" },
@@ -46,6 +46,7 @@ export default async function crsqlite(fastify: FastifyInstance) {
 					name: req.params.name,
 					schemaName: req.query.schemaName,
 					version: BigInt(req.query.schemaVersion),
+					dbPath,
 				})
 			} catch (error: any) {
 				if (error.code === "SQLITE_IOERR_WRITE" || error.message?.includes("readonly database")) {

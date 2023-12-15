@@ -1,7 +1,6 @@
 import Database from "better-sqlite3"
 import path from "node:path"
 import type { FastifyInstance } from "fastify"
-import { DB_ROOT } from "~/utils/dbRoot"
 import { extensionPath } from "@vlcn.io/crsqlite"
 import { cryb64, type Change, type Changes } from "@vlcn.io/ws-common"
 import { sql } from "shared/sql"
@@ -59,14 +58,16 @@ function wrapDatabase(db: Database.Database): CrsqliteDatabase {
 export async function makeCrsqliteDb(
 	fastify: FastifyInstance,
 	options: {
-		name: string
+		name?: string
 		schemaName: string
 		version: bigint
+		dbPath?: string
 	},
 ) {
-	if (!options.name) throw new Error("No DB name provided")
-
-	const name = path.join(DB_ROOT, `${options.name}.sqlite3`)
+	const name =
+		options.name && options.dbPath
+			? path.join(options.dbPath, `${options.name}.sqlite3`)
+			: ":memory:"
 	fastify.log.info(`Creating database @ ${name}`)
 	const db = new Database(name, {
 		verbose: makeDbLogger(fastify),

@@ -52,8 +52,8 @@ declare module "fastify" {
  * 1. front-end calls DELETE /api/oauth/session
  *
  */
-async function auth(fastify: FastifyInstance) {
-	const authDB = makeAuthDb(fastify)
+async function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }) {
+	const authDB = makeAuthDb(fastify, { dbPath })
 	const sessionStore = makeStore(authDB)
 	const invitesStore = makeInviteCodes(authDB)
 
