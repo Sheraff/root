@@ -11,6 +11,8 @@
 		"lib": ["ESNext"],
 		"composite": true,
 		"incremental": true,
+		"sourceMap": true,
+		"declarationMap": true,
 		"paths": {
 			"~/*": ["./*"]
 		}

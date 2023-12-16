@@ -10,7 +10,9 @@
 		"checkJs": true,
 		"composite": true,
 		"module": "ESNext",
-		"lib": ["ESNext"]
+		"lib": ["ESNext"],
+		"sourceMap": true,
+		"declarationMap": true
 	},
 	"exclude": ["node_modules"]
 }
