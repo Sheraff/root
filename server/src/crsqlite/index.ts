@@ -2,7 +2,11 @@ import type { FastifyInstance } from "fastify"
 import { makeCrsqliteDb, type CrsqliteDatabase } from "~/crsqlite/db"
 import { encode, decode, tags, hexToBytes } from "@vlcn.io/ws-common"
 
-export default async function crsqlite(fastify: FastifyInstance, { dbPath }: { dbPath: string }) {
+export default function crsqlite(
+	fastify: FastifyInstance,
+	{ dbPath }: { dbPath: string },
+	done: () => void,
+) {
 	fastify.addContentTypeParser(
 		"application/octet-stream",
 		{ parseAs: "buffer" },
@@ -17,6 +21,54 @@ export default async function crsqlite(fastify: FastifyInstance, { dbPath }: { d
 			}
 		},
 	)
+
+	let lastDb: {
+		name: string
+		schemaName: string
+		version: bigint
+		dbPath?: string
+		db: CrsqliteDatabase
+	} | null = null
+
+	fastify.addHook("onClose", (fastify, done) => {
+		if (lastDb) {
+			fastify.log.info("Closing crsqlite database...")
+			console.log("Closing crsqlite database...")
+			lastDb.db.close()
+			lastDb = null
+			fastify.log.info("Closed crsqlite database")
+			console.log("Closed crsqlite database")
+		}
+		done()
+	})
+
+	async function getDb(name: string, schemaName: string, version: bigint) {
+		if (
+			lastDb &&
+			lastDb.name === name &&
+			lastDb.schemaName === schemaName &&
+			lastDb.version === version &&
+			lastDb.dbPath === dbPath
+		) {
+			return lastDb.db
+		}
+		lastDb?.db.close()
+		lastDb = null
+		const db = await makeCrsqliteDb(fastify, {
+			name,
+			schemaName,
+			version,
+			dbPath,
+		})
+		lastDb = {
+			name,
+			schemaName,
+			version,
+			dbPath,
+			db,
+		}
+		return db
+	}
 
 	/**
 	 * Endpoint that clients can call to `get` or `pull` changes
@@ -42,12 +94,7 @@ export default async function crsqlite(fastify: FastifyInstance, { dbPath }: { d
 		async handler(req, res) {
 			let db: CrsqliteDatabase
 			try {
-				db = await makeCrsqliteDb(fastify, {
-					name: req.params.name,
-					schemaName: req.query.schemaName,
-					version: BigInt(req.query.schemaVersion),
-					dbPath,
-				})
+				db = await getDb(req.params.name, req.query.schemaName, BigInt(req.query.schemaVersion))
 			} catch (error: any) {
 				if (error.code === "SQLITE_IOERR_WRITE" || error.message?.includes("readonly database")) {
 					res.status(400).send({
@@ -58,24 +105,20 @@ export default async function crsqlite(fastify: FastifyInstance, { dbPath }: { d
 				throw error
 			}
 
-			try {
-				const requestorSiteId = hexToBytes(req.query.requestor)
-				const sinceVersion = BigInt(req.query.since)
+			const requestorSiteId = hexToBytes(req.query.requestor)
+			const sinceVersion = BigInt(req.query.since)
 
-				const changes = db.getChanges(sinceVersion, requestorSiteId)
-				const encoded = encode({
-					_tag: tags.Changes,
-					changes,
-					sender: db.getId(),
-					since: [sinceVersion, 0],
-				})
-				res.header("Content-Type", "application/octet-stream")
+			const changes = db.getChanges(sinceVersion, requestorSiteId)
+			const encoded = encode({
+				_tag: tags.Changes,
+				changes,
+				sender: db.getId(),
+				since: [sinceVersion, 0],
+			})
+			res.header("Content-Type", "application/octet-stream")
 
-				fastify.log.info(`Returning ${changes.length} changes`)
-				res.send(encoded)
-			} finally {
-				db.close()
-			}
+			fastify.log.info(`Returning ${changes.length} changes`)
+			res.send(encoded)
 		},
 	})
 
@@ -105,17 +148,12 @@ export default async function crsqlite(fastify: FastifyInstance, { dbPath }: { d
 				throw new Error(`Expected Changes message but got ${msg._tag}`)
 			}
 
-			const db = await makeCrsqliteDb(fastify, {
-				name: req.params.name,
-				schemaName: req.query.schemaName,
-				version: BigInt(req.query.schemaVersion),
-			})
-			try {
-				db.applyChanges(msg)
-				res.send({ status: "OK" })
-			} finally {
-				db.close()
-			}
+			const db = await getDb(req.params.name, req.query.schemaName, BigInt(req.query.schemaVersion))
+
+			db.applyChanges(msg)
+			res.send({ status: "OK" })
 		},
 	})
+
+	done()
 }

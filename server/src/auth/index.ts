@@ -1,6 +1,6 @@
 import { type FastifyRequest, type FastifyInstance } from "fastify"
 import cookie from "@fastify/cookie"
-import session from "@fastify/session"
+import session, { type SessionStore } from "@fastify/session"
 import grant from "grant"
 import { grantOptions, getGrantData, type RawGrant } from "~/auth/providers"
 import { makeAuthDb } from "~/auth/db"
@@ -12,6 +12,7 @@ import crypto from "node:crypto"
 import { env } from "~/env"
 import { PUBLIC_CONFIG } from "shared/env/publicConfig"
 import { decrypt, encrypt } from "~/auth/helpers/AuthTokens"
+import type BetterSqlite3 from "better-sqlite3"
 
 declare module "fastify" {
 	interface Session {
@@ -24,6 +25,14 @@ declare module "fastify" {
 		provider?: string
 		provider_user_id?: string
 		provider_email?: string
+	}
+
+	interface FastifyInstance {
+		auth: {
+			db: BetterSqlite3.Database
+			sessionStore: SessionStore
+			invitesStore: ReturnType<typeof makeInviteCodes>
+		}
 	}
 }
 
@@ -52,10 +61,27 @@ declare module "fastify" {
  * 1. front-end calls DELETE /api/oauth/session
  *
  */
-async function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }) {
+function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: () => void) {
 	const authDB = makeAuthDb(fastify, { dbPath })
 	const sessionStore = makeStore(authDB)
 	const invitesStore = makeInviteCodes(authDB)
+
+	fastify.decorate("auth", {
+		db: authDB,
+		sessionStore,
+		invitesStore,
+	})
+
+	fastify.addHook("onClose", (fastify, done) => {
+		fastify.log.info("Closing auth database...")
+		console.log("Closing auth database...")
+		authDB.close()
+		sessionStore.close()
+		invitesStore.close()
+		fastify.log.info("Auth database closed.")
+		console.log("Auth database closed.")
+		done()
+	})
 
 	fastify.register(cookie, {
 		// hook: "onRequest", // see lifecycle hooks: https://fastify.dev/docs/latest/Reference/Lifecycle/
@@ -321,7 +347,7 @@ async function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }) {
 		})
 	})
 
-	return fastify
+	done()
 }
 
 export default Object.assign(auth, {

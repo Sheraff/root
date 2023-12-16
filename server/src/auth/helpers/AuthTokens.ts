@@ -86,9 +86,9 @@ export function decrypt<Schema extends BaseSchema>(
 		const success = parse(schema, unknown)
 
 		return { success }
-	} catch (error) {
-		console.error("Decryption failed!")
+	} catch (cause) {
+		const error = new Error("Decryption failed", { cause })
 		console.error(error)
-		return { error: error as Error }
+		return { error }
 	}
 }

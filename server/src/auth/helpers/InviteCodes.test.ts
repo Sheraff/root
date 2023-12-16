@@ -5,7 +5,7 @@ import schemaContent from "~/auth/schema.sql"
 
 describe("InviteCodes", () => {
 	it("stores, retrieves, deletes sessions", () => {
-		const db = new Database(":memory:")
+		const db = new Database("")
 		db.pragma("journal_mode = WAL")
 		db.pragma("synchronous = NORMAL")
 		db.exec(schemaContent)

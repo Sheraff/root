@@ -1,10 +1,11 @@
 import { type FastifyInstance } from "fastify"
 
-export default async function routes(fastify: FastifyInstance) {
+export default function routes(fastify: FastifyInstance, opts: object, done: () => void) {
 	fastify.get("/api/hello", async () => {
 		fastify.log.info("hello world")
 		return { hello: "world" }
 	})
+
 	fastify.get("/api/protected", {
 		onRequest(request, reply, done) {
 			if (!request.session?.user) {
@@ -19,4 +20,6 @@ export default async function routes(fastify: FastifyInstance) {
 			return { hello: "protected world" }
 		},
 	})
+
+	done()
 }

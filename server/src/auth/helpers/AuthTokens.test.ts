@@ -3,12 +3,17 @@ import { describe, expect, it } from "vitest"
 import { decrypt, encrypt } from "~/auth/helpers/AuthTokens"
 
 describe("AuthTokens", () => {
+	const schema = object({ foo: string() })
 	it("decrypts what it encrypts", () => {
 		const input = { foo: "bar" }
-		const schema = object({ foo: string() })
 		const encrypted = encrypt(input)
 		const decrypted = decrypt(encrypted, schema)
 
+		expect(encrypted).not.toEqual(input)
+		expect(typeof encrypted).toBe("string")
 		expect(decrypted).toEqual({ success: input })
+	})
+	it("returns {error} object when decrypting invalid token", () => {
+		expect(decrypt("foo", schema)).toEqual({ error: expect.any(Error) })
 	})
 })

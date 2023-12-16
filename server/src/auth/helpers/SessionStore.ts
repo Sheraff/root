@@ -49,10 +49,12 @@ class Cache<T> {
 	}
 }
 
-export function makeStore(db: BetterSqlite3.Database): SessionStore {
-	const clearStatement = db.prepare(
-		sql`DELETE FROM sessions WHERE datetime('now') > datetime(expires_at) RETURNING id`,
-	)
+export function makeStore(db: BetterSqlite3.Database): SessionStore & {
+	close(): void
+} {
+	const clearStatement = db.prepare<{
+		now: string
+	}>(sql`DELETE FROM sessions WHERE @now > datetime(expires_at) RETURNING id`)
 
 	const destroyStatement = db.prepare<{
 		id: string
@@ -68,9 +70,11 @@ export function makeStore(db: BetterSqlite3.Database): SessionStore {
 		id: string
 	}>(sql`SELECT session FROM sessions WHERE id = @id AND datetime('now') < datetime(expires_at)`)
 
-	setInterval(() => {
+	const expiredIntervalId = setInterval(() => {
 		try {
-			const ids = clearStatement.all() as { id: string }[]
+			const ids = clearStatement.all({
+				now: new Date().toISOString(),
+			}) as { id: string }[]
 			for (const { id } of ids) getCache.delete(id)
 		} catch (err) {
 			console.error(err)
@@ -80,6 +84,9 @@ export function makeStore(db: BetterSqlite3.Database): SessionStore {
 	const getCache = new Cache<Session>(10)
 
 	return {
+		close() {
+			clearInterval(expiredIntervalId)
+		},
 		async set(sessionId, session, callback) {
 			try {
 				const age = session.cookie.maxAge ?? oneDay

@@ -14,11 +14,5 @@ export function makeAuthDb(fastify: FastifyInstance, options: { dbPath?: string 
 	db.pragma("synchronous = NORMAL")
 	db.exec(schemaContent)
 
-	fastify.addHook("onClose", () => {
-		console.log("Closing auth database...")
-		db.close()
-		console.log("Auth database closed.")
-	})
-
 	return db
 }
