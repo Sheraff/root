@@ -12,6 +12,7 @@ const options = {
 	bundle: true,
 	sourcemap: true,
 	keepNames: true,
+	format: "esm",
 	loader: {
 		".sql": "text",
 		".html": "text",
@@ -43,11 +44,17 @@ async function build() {
 	options.outfile = "../dist/sw/sw.js"
 	options.minifySyntax = true
 	options.plugins = [injectViteHtml]
+	options.define = {
+		"import.meta.env.PROD": "true",
+	}
 	await esbuild.build(options)
 }
 
 async function watch() {
 	options.outfile = "../client/public/sw.js"
+	options.define = {
+		"import.meta.env.PROD": "false",
+	}
 	const context = await esbuild.context(options)
 	await context.watch()
 	process.on("SIGINT", async () => {

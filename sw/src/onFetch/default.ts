@@ -1,6 +1,31 @@
 import { CACHES } from "~/config"
 import indexHtml from "../../../client/index.html"
 
+function simpleNetworkFirst(event: FetchEvent, request: Request) {
+	return fetch(request)
+		.then((response) => {
+			if (response.status === 200) {
+				const cacheResponse = response.clone()
+				caches.open(CACHES.assets).then((cache) => {
+					cache.put(event.request.url, cacheResponse)
+				})
+			}
+			return response
+		})
+		.catch(() =>
+			caches.match(event.request.url, { cacheName: CACHES.assets }).then(
+				(response) =>
+					response ??
+					new Response(indexHtml, {
+						status: 200,
+						headers: {
+							"Content-Type": "text/html; charset=utf-8",
+						},
+					}),
+			),
+		)
+}
+
 function networkFirst(event: FetchEvent, request: Request, url: URL) {
 	return new Promise<Response>((resolve, reject) => {
 		const controller = new AbortController()
@@ -109,7 +134,9 @@ export function defaultFetch(event: FetchEvent, request: Request, url: URL) {
 		(navigator.connection?.rtt !== undefined && navigator.connection?.rtt > 750)
 	) {
 		event.respondWith(cacheFirst(event, request, url))
-	} else {
+	} else if (import.meta.env.PROD) {
 		event.respondWith(networkFirst(event, request, url))
+	} else {
+		event.respondWith(simpleNetworkFirst(event, request))
 	}
 }
