@@ -5,6 +5,7 @@
 import * as esbuild from "esbuild"
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
+import { loadEnv } from "vite"
 
 /** @type {import("esbuild").BuildOptions} */
 const options = {
@@ -44,17 +45,28 @@ async function build() {
 	options.outfile = "../dist/sw/sw.js"
 	options.minifySyntax = true
 	options.plugins = [injectViteHtml]
-	options.define = {
-		"import.meta.env.PROD": "true",
-	}
+	const env = loadEnv("production", "..")
+	options.define = Object.fromEntries(
+		Object.entries(env).map(([key, value]) => [`import.meta.env.${key}`, JSON.stringify(value)]),
+	)
+	options.define["import.meta.env.MODE"] = "'production'"
+	options.define["import.meta.env.DEV"] = "false"
+	options.define["import.meta.env.PROD"] = "true"
+	options.define["import.meta.env.SSR"] = "false"
+	options.inject
 	await esbuild.build(options)
 }
 
 async function watch() {
 	options.outfile = "../client/public/sw.js"
-	options.define = {
-		"import.meta.env.PROD": "false",
-	}
+	const env = loadEnv("development", "..")
+	options.define = Object.fromEntries(
+		Object.entries(env).map(([key, value]) => [`import.meta.env.${key}`, JSON.stringify(value)]),
+	)
+	options.define["import.meta.env.MODE"] = "'production'"
+	options.define["import.meta.env.DEV"] = "true"
+	options.define["import.meta.env.PROD"] = "false"
+	options.define["import.meta.env.SSR"] = "false"
 	const context = await esbuild.context(options)
 	await context.watch()
 	process.on("SIGINT", async () => {
