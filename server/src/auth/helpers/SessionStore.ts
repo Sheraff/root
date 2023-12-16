@@ -51,7 +51,7 @@ class Cache<T> {
 
 export function makeStore(db: BetterSqlite3.Database): SessionStore {
 	const clearStatement = db.prepare(
-		sql`DELETE FROM sessions WHERE datetime('now') > datetime(expires_at)`,
+		sql`DELETE FROM sessions WHERE datetime('now') > datetime(expires_at) RETURNING id`,
 	)
 
 	const destroyStatement = db.prepare<{
@@ -70,7 +70,8 @@ export function makeStore(db: BetterSqlite3.Database): SessionStore {
 
 	setInterval(() => {
 		try {
-			clearStatement.run()
+			const ids = clearStatement.all() as { id: string }[]
+			for (const { id } of ids) getCache.delete(id)
 		} catch (err) {
 			console.error(err)
 		}

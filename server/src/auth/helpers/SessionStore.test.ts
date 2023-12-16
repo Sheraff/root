@@ -20,9 +20,11 @@ describe("SessionStore", () => {
 		}
 
 		const setCallback = vi.fn()
-		store.set("1", session, setCallback)
-		expect(setCallback).toHaveBeenCalledOnce()
-		expect(setCallback).toHaveBeenCalledWith()
+		for (let i = 1; i < 12; i++) {
+			store.set(`${i}`, session, setCallback)
+			expect(setCallback).toHaveBeenLastCalledWith()
+		}
+		expect(setCallback).toHaveBeenCalledTimes(11)
 
 		const getCallback = vi.fn()
 		store.get("1", getCallback)
