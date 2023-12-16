@@ -26,5 +26,9 @@ export default function frontend(fastify: FastifyInstance, opts: object, done: (
 		reply.sendFile("sw.js.map", swDir)
 	})
 
+	fastify.get("/*", function (req, reply) {
+		reply.sendFile("index.html", clientDir)
+	})
+
 	done()
 }
