@@ -100,7 +100,7 @@ export async function makeCrsqliteDb(
 		const content = raw.replace(/[\s\n\t]+/g, " ").trim()
 
 		const residentVersion = cryb64(content)
-		if (residentVersion != options.version) {
+		if (residentVersion !== options.version) {
 			throw new Error(
 				`Server has schema version ${residentVersion} but client requested ${options.version}`,
 			)

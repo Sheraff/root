@@ -3,7 +3,7 @@ CREATE TABLE
 
 CREATE TABLE
 	IF NOT EXISTS sessions (
-		id TEXT PRIMARY KEY,
+		id TEXT NOT NULL PRIMARY KEY,
 		session JSON NOT NULL,
 		expires_at DATETIME NOT NULL,
 		provider TEXT,
