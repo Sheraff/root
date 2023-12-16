@@ -14,6 +14,7 @@ export default function frontend(fastify: FastifyInstance, opts: object, done: (
 	fastify.register(fastifyStatic, {
 		root: clientDir,
 		prefix: "/",
+		wildcard: false,
 	})
 
 	const swDir = path.join(__dirname, "../../dist/sw")
