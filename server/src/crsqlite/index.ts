@@ -71,10 +71,10 @@ export default function crsqlite(
 	}
 
 	/**
-	 * Endpoint that clients can call to `get` or `pull` changes
-	 * from the server.
+	 * Endpoint for clients to post their database changes to,
+	 * and get the changes from other clients.
 	 */
-	fastify.get<{
+	fastify.post<{
 		Params: { name: string }
 		Querystring: {
 			schemaName: string
@@ -83,6 +83,9 @@ export default function crsqlite(
 			since: string
 		}
 	}>("/api/changes/:name", {
+		config: {
+			rawBody: true,
+		},
 		onRequest(request, reply, done) {
 			if (!request.session?.user) {
 				fastify.log.warn("/api/changes/:name ::: unauthorized")
@@ -105,8 +108,20 @@ export default function crsqlite(
 				throw error
 			}
 
-			const requestorSiteId = hexToBytes(req.query.requestor)
-			const sinceVersion = BigInt(req.query.since)
+			const data = new Uint8Array((req.body as { raw: Buffer }).raw)
+			if (data.length > 0) {
+				const msg = decode(data)
+				if (msg._tag !== tags.Changes) {
+					res.header("Vlcn-Accept-Changes", `error=${msg._tag}`)
+				} else {
+					fastify.log.info(`Applying ${msg.changes.length} changes`)
+					db.applyChanges(msg)
+					res.header("Vlcn-Accept-Changes", `ok`)
+				}
+			}
+
+			const requestorSiteId = hexToBytes(req.query.requestor!)
+			const sinceVersion = BigInt(req.query.since!)
 
 			const changes = db.getChanges(sinceVersion, requestorSiteId)
 			const encoded = encode({
@@ -119,39 +134,6 @@ export default function crsqlite(
 
 			fastify.log.info(`Returning ${changes.length} changes`)
 			res.send(encoded)
-		},
-	})
-
-	/**
-	 * Endpoint for clients to post their database changes to.
-	 */
-	fastify.post<{
-		Params: { name: string }
-		Querystring: { schemaName: string; schemaVersion: string }
-	}>("/api/changes/:name", {
-		config: {
-			rawBody: true,
-		},
-		onRequest(request, reply, done) {
-			if (!request.session?.user) {
-				fastify.log.warn("/api/changes/:name ::: unauthorized")
-				reply.status(401).send({ error: "unauthorized" })
-				return done()
-			}
-			done()
-		},
-		async handler(req, res) {
-			const data = new Uint8Array((req.body as { raw: Buffer }).raw)
-
-			const msg = decode(data)
-			if (msg._tag != tags.Changes) {
-				throw new Error(`Expected Changes message but got ${msg._tag}`)
-			}
-
-			const db = await getDb(req.params.name, req.query.schemaName, BigInt(req.query.schemaVersion))
-
-			db.applyChanges(msg)
-			res.send({ status: "OK" })
 		},
 	})
 

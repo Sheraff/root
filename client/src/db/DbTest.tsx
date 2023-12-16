@@ -56,8 +56,7 @@ export function Content({ name }: { name: string }) {
 
 	const addData = async (content: string) => {
 		await mutateAsync([crypto.randomUUID(), content])
-		await sync?.pushChanges()
-		await sync?.pullChanges()
+		await sync?.roundTrip()
 	}
 
 	const { mutateAsync: mutateAsync2 } = useDbMutation<
@@ -72,31 +71,19 @@ export function Content({ name }: { name: string }) {
 	const removeData = async (id: string) => {
 		const [res] = await mutateAsync2([id])
 		console.log("---- remove", res)
-		await sync?.pushChanges()
-		await sync?.pullChanges()
+		await sync?.roundTrip()
 	}
 
 	const dropData = async () => {
 		await ctx.db.exec(sql`DELETE FROM test;`)
-		await sync?.pushChanges()
-		await sync?.pullChanges()
+		await sync?.roundTrip()
 	}
 
 	useEffect(() => {
 		if (!sync) return
 		const controller = new AbortController()
-		let online = navigator.onLine
-		const roundTrip = () => {
-			online = true
-			sync.pushChanges().then(() => {
-				if (online && !controller.signal.aborted) {
-					sync.pullChanges()
-				}
-			})
-		}
-		addEventListener("offline", () => (online = false), { signal: controller.signal })
-		addEventListener("online", roundTrip, { signal: controller.signal })
-		if (navigator.onLine) roundTrip()
+		addEventListener("online", sync.roundTrip, { signal: controller.signal })
+		if (navigator.onLine) sync.roundTrip()
 		return () => controller.abort()
 	}, [sync])
 
@@ -155,8 +142,7 @@ export function Content({ name }: { name: string }) {
 			<hr />
 			{sync && (
 				<>
-					<button onClick={() => sync.pullChanges()}>Pull</button>
-					<button onClick={() => sync.pushChanges()}>Push</button>
+					<button onClick={() => sync.roundTrip()}>Sync</button>
 				</>
 			)}
 		</>

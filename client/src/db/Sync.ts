@@ -55,92 +55,94 @@ class Sync {
 		localStorage.setItem(key, val)
 	}
 
-	async pushChanges() {
+	async roundTrip() {
 		// track what we last sent to the server so we only send the diff.
 		const lastSentVersion = this.lastSent
+		const lastSeenVersion = this.lastSeen
+		const params = new URLSearchParams({
+			schemaName: this.args.schemaName,
+			schemaVersion: this.args.schemaVersion.toString(10),
+			requestor: bytesToHex(this.args.siteId),
+			since: lastSeenVersion.toString(10),
+		})
+		const headers = new Headers({
+			"Content-Type": "application/octet-stream",
+			Accept: "application/octet-stream, application/json",
+		})
+		const endpoint = `/api/changes/${this.args.name}?${params.toString()}`
 
 		// gather our changes to send to the server
 		const changes = await this.args.pullChangesetStmt.all(null, lastSentVersion)
-		if (changes.length === 0) {
-			console.log("[DB] No changes to send")
-			return
-		}
 
-		const encoded = encode({
-			_tag: tags.Changes,
-			changes,
-			sender: this.args.siteId,
-			since: [lastSentVersion, 0],
-		})
+		const requestBody =
+			changes.length === 0
+				? new Uint8Array(0)
+				: encode({
+						_tag: tags.Changes,
+						changes,
+						sender: this.args.siteId,
+						since: [lastSentVersion, 0],
+					})
 
 		console.log(`[DB] Sending ${changes.length} changes since ${lastSentVersion}`)
 
-		const response = await fetch(this.syncEndpoint, {
+		const response = await fetch(endpoint, {
 			method: "POST",
-			body: encoded,
-			headers: {
-				"Content-Type": "application/octet-stream",
-			},
+			body: requestBody,
+			headers,
 		})
 
-		// Record that we've sent up to the given db version to the server
-		// so next sync will be a delta.
-		if (response.ok) {
-			this.lastSent = changes[changes.length - 1][5]
-		} else {
-			const txt = (await response.json()) as any
-			throw new Error(txt.message || txt)
-		}
-
-		return changes.length
-	}
-
-	async pullChanges() {
-		const lastSeenVersion = this.lastSeen
-		const endpoint =
-			this.syncEndpoint +
-			`&requestor=${bytesToHex(this.args.siteId)}&since=${lastSeenVersion.toString(10)}`
-
-		const response = await fetch(endpoint)
 		if (!response.ok) {
 			const txt = (await response.json()) as any
 			throw new Error(txt.message || txt)
 		}
-		const msg = decode(new Uint8Array(await response.arrayBuffer()))
-		if (msg._tag !== tags.Changes) {
-			throw new Error(`[DB] Expected changes, got ${msg._tag}`)
-		}
 
-		if (msg.changes.length === 0) {
-			console.debug("[DB] No changes received")
-			return
-		}
-
-		await this.args.db.tx(async (tx) => {
-			for (const c of msg.changes) {
-				await this.args.applyChangesetStmt.run(
-					tx,
-					c[0],
-					c[1],
-					c[2],
-					c[3],
-					c[4],
-					c[5],
-					// record who send us the change
-					msg.sender,
-					c[7],
-					c[8],
+		// SENT CHANGES
+		if (changes.length) {
+			const sentChangesResult = response.headers.get("Vlcn-Accept-Changes")
+			if (sentChangesResult === "ok") {
+				// Record that we've sent up to the given db version to the server
+				// so next sync will be a delta.
+				this.lastSent = changes[changes.length - 1][5]
+			} else {
+				const [, error] = sentChangesResult?.split("=") ?? []
+				console.error(
+					new Error(`[DB] Server rejected changes: needed Changes message, received ${error} tag`),
 				)
 			}
-		})
+		}
 
-		console.log(`[DB] Received ${msg.changes.length} changes since ${lastSeenVersion}`)
+		//// RECEIVED CHANGES
+		const msg = decode(new Uint8Array(await response.arrayBuffer()))
+		if (msg._tag !== tags.Changes) {
+			console.error(new Error(`[DB] Expected changes, got ${msg._tag}`))
+		} else if (msg.changes.length === 0) {
+			console.debug("[DB] No changes received")
+		} else {
+			await this.args.db.tx(async (tx) => {
+				for (const c of msg.changes) {
+					await this.args.applyChangesetStmt.run(
+						tx,
+						c[0],
+						c[1],
+						c[2],
+						c[3],
+						c[4],
+						c[5],
+						// record who send us the change
+						msg.sender,
+						c[7],
+						c[8],
+					)
+				}
+			})
 
-		// Record that we've seen up to the given db version from the server
-		// so next sync will be a delta.
-		this.lastSeen = msg.changes.at(-1)![5]
+			console.log(`[DB] Received ${msg.changes.length} changes since ${lastSeenVersion}`)
 
-		return msg.changes.length
+			// Record that we've seen up to the given db version from the server
+			// so next sync will be a delta.
+			this.lastSeen = msg.changes.at(-1)![5]
+		}
 	}
 
 	destroy() {
