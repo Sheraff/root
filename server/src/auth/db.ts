@@ -4,7 +4,7 @@ import path from "node:path"
 import type { FastifyInstance } from "fastify"
 import { makeDbLogger } from "~/utils/dbLogger"
 
-export function makeAuthDb(fastify: FastifyInstance, options: { dbPath?: string }) {
+export function makeAuthDb(fastify: FastifyInstance, options: { dbPath?: string } = {}) {
 	const name = options.dbPath ? path.join(options.dbPath, "auth.sqlite3") : ":memory:"
 	fastify.log.info(`Creating auth database @ ${name}`)
 	const db = new Database(name, {
