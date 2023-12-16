@@ -3,5 +3,6 @@
 	"ignoreDependencies": [
 		// used by fastify, with just a string reference, no import
 		"pino-pretty"
-	]
+	],
+	"ignore": ["**/*.test.ts"]
 }
