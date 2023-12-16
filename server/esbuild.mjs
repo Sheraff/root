@@ -7,7 +7,6 @@ import { spawn } from "node:child_process"
 import { join } from "node:path"
 import { cp } from "node:fs/promises"
 import { watch as chokidar } from "chokidar"
-import { rm } from "node:fs/promises"
 
 /** @type {import("esbuild").BuildOptions} */
 const options = {
@@ -37,8 +36,6 @@ async function build() {
 	options.define = {
 		"process.env.ROOT": `"${join(process.cwd(), "..")}"`,
 	}
-	await rm("../dist/client/sw.js", { force: true })
-	await rm("../dist/client/sw.js.map", { force: true })
 	await esbuild.build(options)
 	await cp("../shared/schemas", "../dist/schemas", { recursive: true })
 }

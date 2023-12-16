@@ -4,6 +4,7 @@ import viteTsconfigPaths from "vite-tsconfig-paths"
 import { ViteRawLoader } from "scripts/ViteRawLoader"
 import { visualizer } from "rollup-plugin-visualizer"
 import { config } from "dotenv"
+import { rm } from "node:fs/promises"
 config({ path: "../.env" })
 
 function SwHotReload(): PluginOption {
@@ -23,6 +24,19 @@ function SwHotReload(): PluginOption {
 	}
 }
 
+function RemoveSwFilesFromBuild(): PluginOption {
+	return {
+		name: "remove-sw-files-from-build",
+		closeBundle() {
+			console.log('Removing "sw.js" and "sw.js.map" from build...')
+			return Promise.all([
+				rm("../dist/client/sw.js", { force: true }),
+				rm("../dist/client/sw.js.map", { force: true }),
+			]).then()
+		},
+	}
+}
+
 const plugins: PluginOption[] = [react(), viteTsconfigPaths(), ViteRawLoader(), SwHotReload()]
 
 if (process.env.VITE_ANALYZE) {
@@ -34,6 +48,10 @@ if (process.env.VITE_ANALYZE) {
 			openOptions: { app: { name: "google chrome" } },
 		}),
 	)
+}
+
+if (process.env.NODE_ENV === "production") {
+	plugins.push(RemoveSwFilesFromBuild())
 }
 
 export default defineConfig({
