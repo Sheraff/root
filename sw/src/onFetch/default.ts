@@ -2,15 +2,23 @@ import { CACHES } from "~/config"
 import indexHtml from "../../../client/index.html"
 
 function networkFirst(event: FetchEvent, request: Request, url: URL) {
-	return new Promise<Response>((resolve) => {
+	return new Promise<Response>((resolve, reject) => {
 		const controller = new AbortController()
-		const timeout = setTimeout(
+		let cacheChecked: boolean | null = null
+		let responseChecked: boolean | null = null
+		let fetchResponse: Response | null = null
+		let timeout: NodeJS.Timeout | null = setTimeout(
 			() => {
+				timeout = null
 				caches.match(event.request.url, { cacheName: CACHES.assets }).then((response) => {
+					if (responseChecked === true) return
+					cacheChecked = false
 					if (response) {
+						cacheChecked = true
 						controller.abort()
 						resolve(response)
 					} else if (url.pathname === "/") {
+						cacheChecked = true
 						controller.abort()
 						resolve(
 							new Response(indexHtml, {
@@ -20,27 +28,47 @@ function networkFirst(event: FetchEvent, request: Request, url: URL) {
 								},
 							}),
 						)
+					} else if (fetchResponse) {
+						resolve(fetchResponse)
 					}
 				})
 			},
-			navigator.connection?.rtt !== undefined
-				? Math.min(navigator.connection.rtt + 100, 1000)
-				: 1000,
+			navigator.connection?.rtt !== undefined ? navigator.connection.rtt + 100 : 850,
 		)
-		fetch(request, { signal: controller.signal }).then((response) => {
-			if (response.status === 200) {
-				clearTimeout(timeout)
-				const cacheResponse = response.clone()
-				caches.open(CACHES.assets).then((cache) => {
-					cache.put(event.request.url, cacheResponse)
-				})
-				resolve(response)
-			} else {
-				caches
-					.match(event.request.url, { cacheName: CACHES.assets })
-					.then((cacheResponse) => !controller.signal.aborted && resolve(cacheResponse ?? response))
-			}
-		})
+		fetch(request, { signal: controller.signal })
+			.then((response) => {
+				responseChecked = false
+				if (response.status === 200) {
+					responseChecked = true
+					if (timeout) clearTimeout(timeout)
+					const cacheResponse = response.clone()
+					caches.open(CACHES.assets).then((cache) => {
+						cache.put(event.request.url, cacheResponse)
+					})
+					resolve(response)
+				} else if (timeout) {
+					clearTimeout(timeout)
+					caches.match(event.request.url, { cacheName: CACHES.assets }).then((cacheResponse) => {
+						if (cacheResponse) resolve(cacheResponse)
+						else if (url.pathname === "/") {
+							resolve(
+								new Response(indexHtml, {
+									status: 200,
+									headers: {
+										"Content-Type": "text/html; charset=utf-8",
+									},
+								}),
+							)
+						} else resolve(response)
+					})
+				} else {
+					fetchResponse = response
+				}
+			})
+			.catch((e) => {
+				if (controller.signal.aborted) return
+				if (cacheChecked === false) return reject(e)
+			})
 	})
 }
 
@@ -77,8 +105,8 @@ declare global {
 
 export function defaultFetch(event: FetchEvent, request: Request, url: URL) {
 	if (
-		(navigator.connection?.downlink !== undefined && navigator.connection?.downlink < 0.5) ||
-		(navigator.connection?.rtt !== undefined && navigator.connection?.rtt > 1000)
+		(navigator.connection?.downlink !== undefined && navigator.connection?.downlink < 1) ||
+		(navigator.connection?.rtt !== undefined && navigator.connection?.rtt > 750)
 	) {
 		event.respondWith(cacheFirst(event, request, url))
 	} else {
