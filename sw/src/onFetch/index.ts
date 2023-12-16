@@ -18,6 +18,6 @@ export function onFetch(event: FetchEvent) {
 			return
 		}
 
-		defaultFetch(event, request)
+		defaultFetch(event, request, url)
 	}
 }
