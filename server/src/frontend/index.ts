@@ -15,6 +15,7 @@ export default function frontend(fastify: FastifyInstance, opts: object, done: (
 		root: clientDir,
 		prefix: "/",
 		wildcard: false,
+		preCompressed: true,
 	})
 
 	const swDir = path.join(__dirname, "../../dist/sw")

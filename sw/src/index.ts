@@ -52,6 +52,9 @@ sw.addEventListener("message", async (event) => {
 	if (data.type === "CACHE_FILE") {
 		const { url } = data.payload
 		const cache = await caches.open(CACHES.assets)
-		await cache.add(url)
+		const match = await cache.match(url)
+		if (!match) {
+			await cache.add(url)
+		}
 	}
 })

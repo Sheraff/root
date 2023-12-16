@@ -1,19 +1,27 @@
-import { type PluginOption, defineConfig } from "vite"
+import { type PluginOption, defineConfig, normalizePath, type Logger } from "vite"
 import react from "@vitejs/plugin-react"
 import viteTsconfigPaths from "vite-tsconfig-paths"
 import { ViteRawLoader } from "scripts/ViteRawLoader"
+import { walkFsTree } from "scripts/walkFsTree"
 import { visualizer } from "rollup-plugin-visualizer"
 import { config } from "dotenv"
-import { rm } from "node:fs/promises"
+import { readFile, rm, writeFile } from "node:fs/promises"
+import { join, resolve } from "node:path"
+import { constants, brotliCompress } from "node:zlib"
 config({ path: "../.env" })
 
 function SwHotReload(): PluginOption {
 	let id = 0
+	let _logger: Logger
 	return {
 		name: "sw-hot-reload",
-		handleHotUpdate({ file, server }) {
+		apply: "serve",
+		configResolved({ logger }) {
+			_logger = logger
+		},
+		handleHotUpdate({ file, server, timestamp }) {
 			if (file.endsWith("sw.js")) {
-				console.log("SW rebuild detected, registering new worker...")
+				_logger.info(`${timestamp} [SW] hmr update, registering new worker...`)
 				server.ws.send({
 					type: "custom",
 					event: "sw-rebuild",
@@ -25,19 +33,112 @@ function SwHotReload(): PluginOption {
 }
 
 function RemoveSwFilesFromBuild(): PluginOption {
+	let _logger: Logger
+	let outRoot: string
 	return {
 		name: "remove-sw-files-from-build",
+		apply: "build",
+		configResolved({ logger, root, build: { ssr, outDir } }) {
+			if (ssr) return
+			_logger = logger
+			outRoot = normalizePath(resolve(root, outDir))
+		},
 		closeBundle() {
-			console.log('Removing "sw.js" and "sw.js.map" from build...')
+			if (!outRoot) return
+			_logger.info('Removing "sw.js" and "sw.js.map" from build...')
 			return Promise.all([
-				rm("../dist/client/sw.js", { force: true }),
-				rm("../dist/client/sw.js.map", { force: true }),
-			]).then()
+				rm(join(outRoot, "sw.js"), { force: true }),
+				rm(join(outRoot, "sw.js.map"), { force: true }),
+			])
+				.catch()
+				.then()
 		},
 	}
 }
 
-const plugins: PluginOption[] = [react(), viteTsconfigPaths(), ViteRawLoader(), SwHotReload()]
+function Compress(): PluginOption {
+	let _logger: Logger
+	let outRoot: string
+	return {
+		name: "compress",
+		apply: "build",
+		enforce: "post",
+		configResolved({ logger, root, build: { outDir, ssr } }) {
+			if (ssr) return
+			_logger = logger
+			outRoot = normalizePath(resolve(root, outDir))
+		},
+		async closeBundle() {
+			if (!outRoot) return
+			_logger.info("Compressing files...")
+			const promises: Promise<unknown>[] = []
+			const stats = {
+				before: 0,
+				after: 0,
+				count: 0,
+			}
+			const extensions = /\.(js|wasm|css)$/
+			await walkFsTree(outRoot, (node) => {
+				if (node.stats.isDirectory()) return
+				if (!extensions.test(node.path)) return
+				if (node.path.endsWith("/sw.js")) return
+				stats.count++
+				promises.push(
+					readFile(node.path)
+						.then((buffer) => {
+							stats.before += buffer.byteLength
+							if (buffer.byteLength < 1501) {
+								stats.after += buffer.byteLength
+								return
+							}
+							return new Promise<Buffer>((resolve, reject) => {
+								brotliCompress(
+									buffer,
+									{
+										params: {
+											[constants.BROTLI_PARAM_MODE]: constants.BROTLI_MODE_TEXT,
+											[constants.BROTLI_PARAM_QUALITY]: constants.BROTLI_MAX_QUALITY,
+											[constants.BROTLI_PARAM_SIZE_HINT]: buffer.byteLength,
+										},
+									},
+									(error, result) => {
+										if (error) {
+											reject(error)
+										} else {
+											resolve(result)
+										}
+									},
+								)
+							})
+						})
+						.then((compressed) => {
+							if (!compressed) return
+							stats.after += compressed.byteLength
+							const compressedPath = node.path + ".br"
+							writeFile(compressedPath, compressed)
+						})
+						.catch((error) => _logger.error(error)),
+				)
+			})
+			await Promise.all(promises)
+			if (stats.count > 0) {
+				const percent = Math.round((stats.after / stats.before) * 100)
+				_logger.info(
+					`Compressed ${stats.before} bytes to ${stats.after} bytes (${percent}%) in ${stats.count} files`,
+				)
+			}
+		},
+	}
+}
+
+const plugins: PluginOption[] = [
+	react(),
+	viteTsconfigPaths(),
+	ViteRawLoader(),
+	SwHotReload(),
+	RemoveSwFilesFromBuild(),
+	Compress(),
+]
 
 if (process.env.VITE_ANALYZE) {
 	plugins.push(
@@ -48,10 +149,6 @@ if (process.env.VITE_ANALYZE) {
 			openOptions: { app: { name: "google chrome" } },
 		}),
 	)
-}
-
-if (process.env.NODE_ENV === "production") {
-	plugins.push(RemoveSwFilesFromBuild())
 }
 
 export default defineConfig({

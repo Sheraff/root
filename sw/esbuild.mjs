@@ -3,8 +3,9 @@
 /* eslint-disable no-undef */
 
 import * as esbuild from "esbuild"
-import { readFile } from "node:fs/promises"
+import { readFile, writeFile } from "node:fs/promises"
 import { join } from "node:path"
+import { brotliCompress, constants } from "node:zlib"
 import { loadEnv } from "vite"
 
 /** @type {import("esbuild").BuildOptions} */
@@ -41,6 +42,23 @@ const injectViteHtml = {
 	},
 }
 
+/** @param {string} relative */
+async function compressFile(relative) {
+	const path = join(process.cwd(), relative)
+	const buffer = await readFile(path)
+	if (buffer.byteLength < 1501) return
+	const params = {
+		[constants.BROTLI_PARAM_MODE]: constants.BROTLI_MODE_TEXT,
+		[constants.BROTLI_PARAM_QUALITY]: constants.BROTLI_MAX_QUALITY,
+		[constants.BROTLI_PARAM_SIZE_HINT]: buffer.byteLength,
+	}
+	/** @type {Buffer} */
+	const compressed = await new Promise((resolve, reject) => {
+		brotliCompress(buffer, { params }, (error, result) => (error ? reject(error) : resolve(result)))
+	})
+	return writeFile(path + ".br", compressed)
+}
+
 async function build() {
 	options.outfile = "../dist/sw/sw.js"
 	options.minifySyntax = true
@@ -55,6 +73,7 @@ async function build() {
 	options.define["import.meta.env.SSR"] = "false"
 	options.inject
 	await esbuild.build(options)
+	await compressFile("../dist/sw/sw.js")
 }
 
 async function watch() {
