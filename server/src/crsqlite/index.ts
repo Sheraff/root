@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify"
 import { makeCrsqliteDb, type CrsqliteDatabase } from "~/crsqlite/db"
 import { encode, decode, tags, hexToBytes } from "@vlcn.io/ws-common"
+import { compressBuffer } from "shared/compressBuffer"
 
 export default function crsqlite(
 	fastify: FastifyInstance,
@@ -132,8 +133,18 @@ export default function crsqlite(
 			})
 			res.header("Content-Type", "application/octet-stream")
 
-			fastify.log.info(`Returning ${changes.length} changes`)
-			res.send(encoded)
+			if (encoded.byteLength < 1501) {
+				fastify.log.info(`Returning ${changes.length} changes`)
+				res.send(encoded)
+			} else {
+				const compressed = await compressBuffer(encoded, 3)
+				const percent = Math.round((compressed.byteLength / encoded.byteLength) * 100)
+				fastify.log.info(
+					`Returning ${changes.length} changes, compressed to ${percent}% (${encoded.byteLength} -> ${compressed.byteLength})`,
+				)
+				res.header("Content-Encoding", "br")
+				res.send(compressed)
+			}
 		},
 	})
 
