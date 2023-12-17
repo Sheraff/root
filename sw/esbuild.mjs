@@ -5,7 +5,7 @@
 import * as esbuild from "esbuild"
 import { readFile, writeFile } from "node:fs/promises"
 import { join } from "node:path"
-import { brotliCompress, constants } from "node:zlib"
+import { compressBuffer } from "shared/compressBuffer.js"
 import { loadEnv } from "vite"
 
 /** @type {import("esbuild").BuildOptions} */
@@ -47,15 +47,8 @@ async function compressFile(relative) {
 	const path = join(process.cwd(), relative)
 	const buffer = await readFile(path)
 	if (buffer.byteLength < 1501) return
-	const params = {
-		[constants.BROTLI_PARAM_MODE]: constants.BROTLI_MODE_TEXT,
-		[constants.BROTLI_PARAM_QUALITY]: constants.BROTLI_MAX_QUALITY,
-		[constants.BROTLI_PARAM_SIZE_HINT]: buffer.byteLength,
-	}
 	/** @type {Buffer} */
-	const compressed = await new Promise((resolve, reject) => {
-		brotliCompress(buffer, { params }, (error, result) => (error ? reject(error) : resolve(result)))
-	})
+	const compressed = await compressBuffer(buffer)
 	return writeFile(path + ".br", compressed)
 }
 

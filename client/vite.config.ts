@@ -7,7 +7,7 @@ import { visualizer } from "rollup-plugin-visualizer"
 import { config } from "dotenv"
 import { readFile, rm, writeFile } from "node:fs/promises"
 import { join, resolve } from "node:path"
-import { constants, brotliCompress } from "node:zlib"
+import { compressBuffer } from "shared/compressBuffer"
 config({ path: "../.env" })
 
 function SwHotReload(): PluginOption {
@@ -91,25 +91,7 @@ function Compress(): PluginOption {
 								stats.after += buffer.byteLength
 								return
 							}
-							return new Promise<Buffer>((resolve, reject) => {
-								brotliCompress(
-									buffer,
-									{
-										params: {
-											[constants.BROTLI_PARAM_MODE]: constants.BROTLI_MODE_TEXT,
-											[constants.BROTLI_PARAM_QUALITY]: constants.BROTLI_MAX_QUALITY,
-											[constants.BROTLI_PARAM_SIZE_HINT]: buffer.byteLength,
-										},
-									},
-									(error, result) => {
-										if (error) {
-											reject(error)
-										} else {
-											resolve(result)
-										}
-									},
-								)
-							})
+							return compressBuffer(buffer)
 						})
 						.then((compressed) => {
 							if (!compressed) return

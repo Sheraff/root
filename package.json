@@ -35,7 +35,6 @@
 		"pino-pretty": "10.3.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"shared": "workspace:./shared",
 		"valibot": "0.24.1"
 	},
 	"devDependencies": {
@@ -55,7 +54,6 @@
 		"knip": "^3.8.1",
 		"prettier": "^3.1.1",
 		"rollup-plugin-visualizer": "5.11.0",
-		"scripts": "workspace:./scripts",
 		"turbo": "1.11.2",
 		"typescript": "^5.3.3",
 		"vite": "^5.0.10",

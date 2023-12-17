@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		"rootDir": "..",
 		"baseUrl": ".",
-		"outDir": "node_modules/.cache/ts-check",
+		"outDir": ".dist",
 		"esModuleInterop": true,
 		"moduleResolution": "Node",
 		"target": "ESNext",
@@ -20,7 +20,6 @@
 	"watchOptions": {
 		// "excludeDirectories": ["**/node_modules"]
 	},
-	"include": ["./**/*.ts", "../types/*.d.ts"],
-	"exclude": ["node_modules"]
+	"include": ["./**/*.ts", "../types/*.d.ts", "vitest.config.ts", "vitest.config.ts.*"]
 	// "references": [{ "path": "../scripts" }]
 }

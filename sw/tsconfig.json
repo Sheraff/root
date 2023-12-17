@@ -4,11 +4,14 @@
 		"lib": ["WebWorker", "ESNext"],
 		"rootDir": "..",
 		"baseUrl": ".",
+		"allowJs": true,
+		"checkJs": true,
+		"noEmit": true,
 		"paths": {
 			"~/*": ["./src/*"]
 		}
 	},
-	"include": ["src/**/*", "types/*.d.ts", "../types/*.d.ts"],
-	"exclude": ["node_modules", "esbuild.mjs", "**/dist", "**/.dist"],
+	"include": ["src/**/*", "types/*.d.ts", "../types/*.d.ts", "node_modules", "esbuild.mjs"],
+	"exclude": ["**/dist", "**/.dist", "node_modules/**/tsconfig.json", "**/vitest.config.ts.*"],
 	"references": [{ "path": "../shared" }]
 }

@@ -18,5 +18,12 @@
 	},
 	"engines": {
 		"node": ">=20.9.0"
+	},
+	"dependencies": {
+		"shared": "workspace:*"
+	},
+	"devDependencies": {
+		"shared": "workspace:*",
+		"scripts": "workspace:*"
 	}
 }

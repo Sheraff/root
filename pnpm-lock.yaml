@@ -130,15 +130,43 @@ importers:
         specifier: ^1.0.4
         version: 1.0.4(@types/node@20.10.4)
 
-  client: {}
+  client:
+    dependencies:
+      shared:
+        specifier: workspace:*
+        version: link:../shared
+    devDependencies:
+      scripts:
+        specifier: workspace:*
+        version: link:../scripts
 
   scripts: {}
 
-  server: {}
+  server:
+    dependencies:
+      shared:
+        specifier: workspace:*
+        version: link:../shared
+    devDependencies:
+      scripts:
+        specifier: workspace:*
+        version: link:../scripts
 
-  shared: {}
+  shared:
+    devDependencies:
+      scripts:
+        specifier: workspace:*
+        version: link:../scripts
 
-  sw: {}
+  sw:
+    dependencies:
+      shared:
+        specifier: workspace:*
+        version: link:../shared
+    devDependencies:
+      scripts:
+        specifier: workspace:*
+        version: link:../scripts
 
 packages:
 
