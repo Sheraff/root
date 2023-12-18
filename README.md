@@ -7,7 +7,8 @@
     - import suggestion from every repo
     - extension-less imports (or at least correct extension in the suggestions)
     - dependencies (scripts / shared) work after install / dev / build
-  - service worker should have a list of assets to cache before it builds
+  - rename ts-check scripts to tsc
+  - rename ./dist folder to ./.dist (for uniformity with in-package builds)
 - finish auth
   - better utils for "protected" stuff (client & server)
 - database

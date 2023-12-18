@@ -1,7 +1,7 @@
 type AddToCache = {
-	type: "CACHE_FILE"
+	type: "FOO"
 	payload: {
-		url: string
+		foo: string
 	}
 }
 

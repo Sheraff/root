@@ -1,6 +1,5 @@
 import { onFetch } from "~/onFetch"
 import { CACHES } from "~/config"
-import type { Message } from "shared/workerEvents"
 
 export {}
 
@@ -15,7 +14,7 @@ sw.addEventListener("install", (event) => {
 			console.debug("[SW] installing...")
 
 			const cache = await caches.open(CACHES.assets)
-			await cache.add("/")
+			await cache.addAll(__CLIENT_ASSETS__)
 			await sw.skipWaiting()
 
 			console.debug("[SW] installed.")
@@ -46,15 +45,9 @@ sw.addEventListener("activate", (event) => {
 })
 
 sw.addEventListener("fetch", onFetch)
-sw.addEventListener("message", async (event) => {
-	const data = event.data as Message
-	// TODO: this is not the most efficient way to do this, we'd need to know where the file is from /sw (both during dev and build)
-	if (data.type === "CACHE_FILE") {
-		const { url } = data.payload
-		const cache = await caches.open(CACHES.assets)
-		const match = await cache.match(url)
-		if (!match) {
-			await cache.add(url)
-		}
-	}
-})
+
+// import type { Message } from "shared/workerEvents"
+// sw.addEventListener("message", async (event) => {
+// 	const data = event.data as Message
+
+// })

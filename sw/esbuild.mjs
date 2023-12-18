@@ -3,7 +3,7 @@
 /* eslint-disable no-undef */
 
 import * as esbuild from "esbuild"
-import { readFile, writeFile } from "node:fs/promises"
+import { readFile, readdir, writeFile } from "node:fs/promises"
 import { join } from "node:path"
 import { compressBuffer } from "shared/compressBuffer.js"
 import { loadEnv } from "vite"
@@ -56,6 +56,8 @@ async function build() {
 	options.outfile = "../dist/sw/sw.js"
 	options.minifySyntax = true
 	options.plugins = [injectViteHtml]
+
+	// env
 	const env = loadEnv("production", "..")
 	options.define = Object.fromEntries(
 		Object.entries(env).map(([key, value]) => [`import.meta.env.${key}`, JSON.stringify(value)]),
@@ -64,13 +66,24 @@ async function build() {
 	options.define["import.meta.env.DEV"] = "false"
 	options.define["import.meta.env.PROD"] = "true"
 	options.define["import.meta.env.SSR"] = "false"
-	options.inject
+
+	// assets
+	const files = await readdir(join(process.cwd(), "../dist/client/assets"))
+	const re = /\.(js|css|wasm)$/
+	options.define["__CLIENT_ASSETS__"] = JSON.stringify([
+		"/",
+		...files.filter((f) => re.test(f)).map((f) => `/assets/${f}`),
+	])
+
+	//
 	await esbuild.build(options)
 	await compressFile("../dist/sw/sw.js")
 }
 
 async function watch() {
 	options.outfile = "../client/public/sw.js"
+
+	// env
 	const env = loadEnv("development", "..")
 	options.define = Object.fromEntries(
 		Object.entries(env).map(([key, value]) => [`import.meta.env.${key}`, JSON.stringify(value)]),
@@ -79,6 +92,11 @@ async function watch() {
 	options.define["import.meta.env.DEV"] = "true"
 	options.define["import.meta.env.PROD"] = "false"
 	options.define["import.meta.env.SSR"] = "false"
+
+	// assets
+	options.define["__CLIENT_ASSETS__"] = JSON.stringify(["/"])
+
+	//
 	const context = await esbuild.context(options)
 	await context.watch()
 	process.on("SIGINT", async () => {

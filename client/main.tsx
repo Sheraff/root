@@ -2,9 +2,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { createRoot } from "react-dom/client"
 import App from "~/App"
-import type { Message } from "shared/workerEvents"
-
-import wasmCrsqlitePath from "@vlcn.io/crsqlite-wasm/crsqlite.wasm?url"
 
 const client = new QueryClient({
 	defaultOptions: {
@@ -35,10 +32,6 @@ async function loadServiceWorker(id?: string) {
 			updateViaCache: "none",
 		})
 		await registration.update()
-		registration.active?.postMessage({
-			type: "CACHE_FILE",
-			payload: { url: wasmCrsqlitePath },
-		} satisfies Message)
 		console.debug("[SW] registered.")
 	} catch (e) {
 		console.error("[SW] registration failed: ", e)
