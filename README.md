@@ -71,7 +71,7 @@ pnpm build
 The folders necessary for running the project after it has been built are:
 - `/dist`
 - `/db` (though it will be generated if it doesn't exist)
-- `/node_modules` (because imports aren't bundled)
+- `/node_modules` (because not all imports are bundled)
 
 To test the project, run:
 
