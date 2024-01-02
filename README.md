@@ -1,22 +1,5 @@
 # Fullstack TypeScript Offline-First PWA Template
 
-## TODO
-
-- setup
-  - fix tsconfig (& cie) to have
-    - import suggestion from every repo
-    - extension-less imports (or at least correct extension in the suggestions)
-    - dependencies (scripts / shared) work after install / dev / build
-  - rename ts-check scripts to tsc
-  - rename ./dist folder to ./.dist (for uniformity with in-package builds)
-- finish auth
-  - better utils for "protected" stuff (client & server)
-- database
-  - figure out migrations story
-  - we shouldn't need dynamic schema imports, use regular import, and hash content for "schema name"
-    - this would also allow us to remove chokidar entirely
-  - better DX (sync hook, db provider, ...)
-
 ## Client Package
 
 A typescript React application, with
@@ -109,3 +92,22 @@ pnpm ts-check # typescript check
 pnpm deps # check for unused code
 pnpm clear # clear cache (turbo, vite, pnpm, esbuild, pnpm)
 ```
+
+---
+
+## TODO
+
+- setup
+  - fix tsconfig (& cie) to have
+    - import suggestion from every repo
+    - extension-less imports (or at least correct extension in the suggestions)
+    - dependencies (scripts / shared) work after install / dev / build
+  - rename ts-check scripts to tsc
+  - rename ./dist folder to ./.dist (for uniformity with in-package builds)
+- finish auth
+  - better utils for "protected" stuff (client & server)
+- database
+  - figure out migrations story
+  - we shouldn't need dynamic schema imports, use regular import, and hash content for "schema name"
+    - this would also allow us to remove chokidar entirely
+  - better DX (sync hook, db provider, ...)
