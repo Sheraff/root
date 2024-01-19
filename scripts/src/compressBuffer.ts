@@ -1,4 +1,4 @@
-import { brotliCompress, constants } from "zlib"
+import { brotliCompress, constants } from "node:zlib"
 
 export function compressBuffer(
 	buffer: Buffer | ArrayBuffer,

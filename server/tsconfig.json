@@ -1,25 +1,25 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"rootDir": "..",
-		"baseUrl": ".",
-		"outDir": "dist",
+		"rootDir": ".",
+		"baseUrl": "src",
 		"esModuleInterop": true,
-		"moduleResolution": "Node",
+		"moduleResolution": "Bundler",
 		"target": "ESNext",
 		"module": "ESNext",
 		"lib": ["ESNext"],
 		"paths": {
-			"~/*": ["./src/*"]
-		}
+			"~/*": ["./*"]
+		},
+		"types": ["vitest/importMeta"]
 	},
+	"exclude": ["node_modules", ".turbo"],
 	"include": [
-		"src/**/*.ts",
-		"types/*.d.ts",
+		"./src/**/*.ts",
 		"../types/*.d.ts",
-		"node_modules",
 		"vitest.config.ts",
-		"vitest.setup.ts"
+		"vitest.setup.ts",
+		"esbuild.ts"
 	],
-	"references": [{ "path": "../shared" }]
+	"references": [{ "path": "../shared" }, { "path": "../scripts" }]
 }

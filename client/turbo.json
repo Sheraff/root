@@ -3,22 +3,22 @@
 	"extends": ["//"],
 	"pipeline": {
 		"build": {
-			"outputs": ["dist/client/**"],
-			"dependsOn": ["shared#ts-check"]
+			"outputs": ["../dist/client/**"],
+			"dependsOn": ["shared#tsc", "scripts#tsc"]
 		},
-		"ts-check": {
-			"dependsOn": ["shared#ts-check"],
-			"inputs": ["*", "**/*", "../shared/**", "../types/**"]
+		"tsc": {
+			"dependsOn": ["shared#tsc", "scripts#tsc"],
+			"inputs": ["*", "**/*", "../shared/.dist/**", "../scripts/.dist/**", "../types/**"]
 		},
 		"test": {
-			"inputs": ["../scripts/dist/**"],
-			"dependsOn": ["scripts#ts-check"]
+			"inputs": ["../shared/.dist/**", "../scripts/.dist/**"],
+			"dependsOn": ["shared#tsc", "scripts#tsc"]
 		},
 		"dev": {
 			"cache": false,
 			"persistent": true,
-			"inputs": ["../scripts/dist/**"],
-			"dependsOn": ["scripts#ts-check"]
+			"inputs": ["../shared/.dist/**", "../scripts/.dist/**"],
+			"dependsOn": ["shared#tsc", "scripts#tsc"]
 		}
 	}
 }

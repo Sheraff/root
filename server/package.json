@@ -5,10 +5,10 @@
 	"type": "module",
 	"main": "src/app.ts",
 	"scripts": {
-		"dev": "node ./esbuild.mjs",
+		"dev": "tsx ./esbuild.ts",
 		"test": "vitest",
-		"build": "node ./esbuild.mjs --build",
-		"ts-check": "tsc --noEmit",
+		"build": "tsx ./esbuild.ts --build",
+		"tsc": "tsc --noEmit",
 		"lint": "eslint . --config ../.eslintrc.json",
 		"lint:fix": "eslint . --config ../.eslintrc.json --fix",
 		"format": "prettier --check . --config ../.prettierrc --log-level warn",
@@ -22,7 +22,7 @@
 		"shared": "workspace:*"
 	},
 	"devDependencies": {
-		"shared": "workspace:*",
-		"scripts": "workspace:*"
+		"scripts": "workspace:*",
+		"vitest": "^1.1.0"
 	}
 }

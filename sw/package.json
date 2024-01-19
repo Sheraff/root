@@ -5,9 +5,9 @@
 	"type": "module",
 	"main": "src/index.ts",
 	"scripts": {
-		"dev": "node ./esbuild.mjs",
-		"build": "node ./esbuild.mjs --build",
-		"ts-check": "tsc --noEmit",
+		"dev": "tsx esbuild.ts",
+		"build": "tsx esbuild.ts --build",
+		"tsc": "tsc --noEmit",
 		"lint": "eslint . --config ../.eslintrc.json",
 		"lint:fix": "eslint . --config ../.eslintrc.json --fix",
 		"format": "prettier --check . --config ../.prettierrc --log-level warn",
@@ -21,6 +21,6 @@
 		"shared": "workspace:*"
 	},
 	"devDependencies": {
-		"shared": "workspace:*"
+		"scripts": "workspace:*"
 	}
 }

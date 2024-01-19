@@ -1,25 +1,26 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"rootDir": "..",
-		"baseUrl": ".",
 		"outDir": ".dist",
+		"rootDir": ".",
+		"baseUrl": "src",
+		"sourceMap": true,
+		"declarationMap": true,
 		"esModuleInterop": true,
-		"moduleResolution": "Node",
+		"moduleResolution": "Bundler",
 		"target": "ESNext",
 		"module": "ESNext",
 		"lib": ["ESNext"],
 		"composite": true,
-		"incremental": true,
-		"sourceMap": true,
-		"declarationMap": true,
 		"paths": {
 			"~/*": ["./*"]
 		}
 	},
 	"watchOptions": {
 		// "excludeDirectories": ["**/node_modules"]
+		"excludeFiles": ["vitest.config.ts"]
 	},
-	"include": ["./**/*.ts", "../types/*.d.ts", "vitest.config.ts", "vitest.config.ts.*"]
-	// "references": [{ "path": "../scripts" }]
+	"exclude": ["node_modules", ".turbo"],
+	"include": ["./src/**/*", "vitest.config.ts", "./types/*.d.ts"],
+	"references": [{ "path": "../scripts" }]
 }

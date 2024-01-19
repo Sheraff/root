@@ -88,7 +88,6 @@ export function decrypt<Schema extends BaseSchema>(
 		return { success }
 	} catch (cause) {
 		const error = new Error("Decryption failed", { cause })
-		console.error(error)
 		return { error }
 	}
 }

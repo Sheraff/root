@@ -5,11 +5,14 @@
 	"type": "module",
 	"exports": {
 		"./*": {
-			"default": "./.dist/*"
+			"default": "./.dist/src/*.js",
+			"import": "./.dist/src/*.js",
+			"node": "./.dist/src/*",
+			"types": "./src/*.ts"
 		}
 	},
 	"scripts": {
-		"ts-check": "tsc --build",
+		"tsc": "tsc",
 		"clear": "rm -rf .dist;"
 	},
 	"engines": {

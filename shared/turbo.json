@@ -2,14 +2,14 @@
 	"$schema": "https://turbo.build/schema.json",
 	"extends": ["//"],
 	"pipeline": {
-		"ts-check": {
+		"tsc": {
 			"inputs": ["*", "**/*", "../types/**", "../scripts/dist/**"],
-			"outputs": ["node_modules/.cache/ts-check"],
-			"dependsOn": ["scripts#ts-check"]
+			"outputs": [".dist"],
+			"dependsOn": ["scripts#tsc"]
 		},
 		"test": {
 			"inputs": ["../scripts/dist/**"],
-			"dependsOn": ["scripts#ts-check"]
+			"dependsOn": ["scripts#tsc"]
 		},
 		"dev": {
 			"cache": false,

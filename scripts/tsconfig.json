@@ -1,18 +1,24 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"baseUrl": ".",
+		"rootDir": ".",
 		"outDir": ".dist",
+		"baseUrl": "src",
 		"esModuleInterop": true,
-		"moduleResolution": "Node",
+		"moduleResolution": "Bundler",
 		"target": "ESNext",
 		"allowJs": true,
 		"checkJs": true,
 		"composite": true,
 		"module": "ESNext",
 		"lib": ["ESNext"],
+		"noEmit": false,
 		"sourceMap": true,
-		"declarationMap": true
+		"declarationMap": true,
+		"paths": {
+			"~/*": ["./*"]
+		}
 	},
-	"exclude": ["node_modules"]
+	"exclude": ["node_modules", ".turbo"],
+	"include": ["./src/**/*"]
 }

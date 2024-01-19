@@ -1,9 +1,9 @@
 {
 	"compilerOptions": {
-		"target": "esnext",
-		"module": "esnext",
+		"target": "ESNext",
+		"module": "ESNext",
 		"strict": true,
-		"moduleResolution": "node",
+		"moduleResolution": "Bundler",
 		"esModuleInterop": true,
 		"resolveJsonModule": true,
 		"isolatedModules": true,
@@ -19,5 +19,6 @@
 		"skipLibCheck": true,
 		"noUncheckedIndexedAccess": true,
 		"verbatimModuleSyntax": true
-	}
+	},
+	"include": ["types/*.d.ts"]
 }

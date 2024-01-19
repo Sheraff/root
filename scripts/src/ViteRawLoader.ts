@@ -1,4 +1,3 @@
-//@ts-check
 /// <reference types="node" />
 
 import { readFileSync } from "node:fs"

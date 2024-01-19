@@ -14,7 +14,7 @@ async function recurse(initial_folder: string, nodeCallback: NodeCallback): Prom
 	try {
 		files = await readdir(initial_folder)
 	} catch (cause) {
-		throw new Error(`Error while reading directory ${initial_folder}`)
+		throw new Error(`Error while reading directory ${initial_folder}`, { cause })
 	}
 
 	await Promise.all(

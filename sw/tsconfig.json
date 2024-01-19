@@ -2,16 +2,16 @@
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
 		"lib": ["WebWorker", "ESNext"],
-		"rootDir": "..",
-		"baseUrl": ".",
+		"rootDir": ".",
+		"baseUrl": "src",
 		"allowJs": true,
 		"checkJs": true,
 		"noEmit": true,
 		"paths": {
-			"~/*": ["./src/*"]
+			"~/*": ["./*"]
 		}
 	},
-	"include": ["src/**/*", "types/*.d.ts", "../types/*.d.ts", "node_modules", "esbuild.mjs"],
+	"include": ["./src/**/*", "./types/*.d.ts", "esbuild.ts"],
 	"exclude": ["**/dist", "**/.dist", "node_modules/**/tsconfig.json", "**/vitest.config.ts.*"],
-	"references": [{ "path": "../shared" }]
+	"references": [{ "path": "../shared" }, { "path": "../scripts" }]
 }

@@ -5,21 +5,29 @@
 	"type": "module",
 	"exports": {
 		"./*": {
-			"default": "./.dist/shared/*"
+			"import": "./.dist/src/*.js",
+			"types": "./src/*.ts",
+			"default": "./.dist/src/*",
+			"node": "./.dist/src/*.js"
 		},
-		"./*.sql": {
-			"default": "./*.sql"
-		}
+		"./*.js.map": "./.dist/src/*.js.map",
+		"./schemas/*.sql": {
+			"import": "./src/schemas/*.sql",
+			"types": "./src/types/imports.d.ts",
+			"default": "./src/schemas/*.sql",
+			"node": "./src/schemas/*.sql"
+		},
+		"./package.json": "./package.json"
 	},
 	"scripts": {
-		"dev": "tsc --watch --preserveWatchOutput",
 		"test": "vitest",
-		"ts-check": "tsc --build",
+		"tsc": "tsc",
+		"dev": "tsc --watch --preserveWatchOutput",
 		"lint": "eslint . --config ../.eslintrc.json",
 		"lint:fix": "eslint . --config ../.eslintrc.json --fix",
 		"format": "prettier --check . --config ../.prettierrc --log-level warn",
 		"format:fix": "prettier --write . --config ../.prettierrc --log-level warn",
-		"clear": "rm -rf node_modules; rm -rf .turbo;"
+		"clear": "rm tsconfig.tsbuildinfo; rm -rf .dist; rm -rf node_modules; rm -rf .turbo;"
 	},
 	"engines": {
 		"node": ">=20.9.0"

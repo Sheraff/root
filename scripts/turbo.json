@@ -2,8 +2,12 @@
 	"$schema": "https://turbo.build/schema.json",
 	"extends": ["//"],
 	"pipeline": {
-		"ts-check": {
+		"tsc": {
 			"outputs": [".dist"]
+		},
+		"dev": {
+			"cache": false,
+			"persistent": true
 		}
 	}
 }

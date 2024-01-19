@@ -1,11 +1,11 @@
 import fastify from "fastify"
-import { fooBar } from "shared/foo/bar"
 import api from "~/api"
 import auth from "~/auth"
 import frontend from "~/frontend"
 import { env } from "~/env"
 import crsqlite from "~/crsqlite"
 import { DB_ROOT } from "~/utils/dbRoot"
+import { fooBar } from "shared/foo/bar"
 
 fooBar()
 
@@ -66,7 +66,7 @@ const start = async () => {
 				process.env.NODE_ENV === "production" ? `Listening on ${address}` : `API server started`,
 		})
 		process.on("SIGINT", async () => {
-			console.log("SIGINT received, shutting down...")
+			console.log("\nSIGINT received, shutting down...")
 			await app.close()
 			console.log("Server shut down, exiting.")
 			process.exit(0)

@@ -3,20 +3,20 @@
 	"compilerOptions": {
 		"jsx": "react-jsx",
 		"lib": ["dom", "dom.iterable", "esnext"],
-		"rootDir": "..",
+		"rootDir": ".",
 		"baseUrl": ".",
 		"paths": {
 			"~/*": ["./src/*"]
 		}
 	},
+	"exclude": ["node_modules", ".turbo"],
 	"include": [
 		"src/**/*",
 		"types/*.d.ts",
 		"../types/*.d.ts",
 		"main.tsx",
 		"vite.config.ts",
-		"vitest.config.ts",
-		"node_modules"
+		"vitest.config.ts"
 	],
-	"references": [{ "path": "../shared" }]
+	"references": []
 }

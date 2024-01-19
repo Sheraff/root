@@ -1,15 +1,13 @@
-//@ts-check
 /// <reference types="node" />
 /* eslint-disable no-undef */
 
 import * as esbuild from "esbuild"
 import { readFile, readdir, writeFile } from "node:fs/promises"
 import { join } from "node:path"
-import { compressBuffer } from "shared/compressBuffer.js"
+import { compressBuffer } from "scripts/compressBuffer"
 import { loadEnv } from "vite"
 
-/** @type {import("esbuild").BuildOptions} */
-const options = {
+const options: esbuild.BuildOptions = {
 	entryPoints: ["src/index.ts"],
 	bundle: true,
 	sourcemap: true,
@@ -24,8 +22,7 @@ const options = {
 	// },
 }
 
-/** @type {import('esbuild').Plugin} */
-const injectViteHtml = {
+const injectViteHtml: esbuild.Plugin = {
 	name: "source-vite-index",
 	setup(build) {
 		build.onResolve({ filter: /index\.html$/ }, (args) => {
@@ -43,7 +40,7 @@ const injectViteHtml = {
 }
 
 /** @param {string} relative */
-async function compressFile(relative) {
+async function compressFile(relative: string) {
 	const path = join(process.cwd(), relative)
 	const buffer = await readFile(path)
 	if (buffer.byteLength < 1501) return

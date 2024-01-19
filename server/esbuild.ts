@@ -1,15 +1,13 @@
-//@ts-check
 /// <reference types="node" />
 /* eslint-disable no-undef */
 
 import * as esbuild from "esbuild"
-import { spawn } from "node:child_process"
+import { type ChildProcess, spawn } from "node:child_process"
 import { join } from "node:path"
 import { cp } from "node:fs/promises"
 import { watch as chokidar } from "chokidar"
 
-/** @type {import("esbuild").BuildOptions} */
-const options = {
+const options: esbuild.BuildOptions = {
 	entryPoints: ["src/app.ts"],
 	platform: "node",
 	target: "node20",
@@ -26,7 +24,8 @@ const options = {
 		".js": ".mjs",
 	},
 	alias: {
-		shared: "../shared",
+		shared: "../shared/src",
+		scripts: "../scripts/src",
 	},
 }
 
@@ -35,9 +34,10 @@ async function build() {
 	options.minifySyntax = true
 	options.define = {
 		"process.env.ROOT": `"${join(process.cwd(), "..")}"`,
+		"import.meta.vitest": "undefined",
 	}
 	await esbuild.build(options)
-	await cp("../shared/schemas", "../dist/schemas", { recursive: true })
+	await cp("../shared/src/schemas", "../dist/schemas", { recursive: true })
 }
 
 async function makeEsbuildWatcher() {
@@ -46,8 +46,7 @@ async function makeEsbuildWatcher() {
 		{
 			name: "watch-exec",
 			setup(build) {
-				/** @type {import('child_process').ChildProcess|null} */
-				let childProcess = null
+				let childProcess: ChildProcess | null = null
 				build.onStart(() => {
 					if (childProcess) {
 						const running = childProcess
@@ -59,7 +58,7 @@ async function makeEsbuildWatcher() {
 					}
 				})
 				build.onEnd(async () => {
-					await cp("../shared/schemas", "node_modules/.cache/schemas", { recursive: true })
+					await cp("../shared/src/schemas", "node_modules/.cache/schemas", { recursive: true })
 					process.env.ROOT = join(process.cwd(), "..")
 					const run = () =>
 						spawn(
@@ -81,7 +80,7 @@ async function makeEsbuildWatcher() {
 }
 
 async function makeChokidarWatcher() {
-	const watcher = chokidar("../shared/schemas", {
+	const watcher = chokidar("../shared/src/schemas", {
 		ignoreInitial: true,
 		persistent: true,
 		atomic: true,
@@ -95,8 +94,7 @@ async function makeChokidarWatcher() {
 
 async function watch() {
 	const [context, watcher] = await Promise.all([makeEsbuildWatcher(), makeChokidarWatcher()])
-	/** @type {NodeJS.Timeout | null} */
-	let debounce = null
+	let debounce: NodeJS.Timeout | null = null
 	watcher.on("all", (event, path) => {
 		if (debounce) clearTimeout(debounce)
 		console.log(`File ${path} modified (${event}), rebuilding server esbuild...`)

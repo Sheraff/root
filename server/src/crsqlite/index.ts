@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify"
 import { makeCrsqliteDb, type CrsqliteDatabase } from "~/crsqlite/db"
 import { encode, decode, tags, hexToBytes } from "@vlcn.io/ws-common"
-import { compressBuffer } from "shared/compressBuffer"
+import { compressBuffer } from "scripts/compressBuffer"
 
 export default function crsqlite(
 	fastify: FastifyInstance,

@@ -37,8 +37,8 @@ A workspace, with
 - turbo (monorepo manager / script cache)
 - valibot (data validation)
 - ts-reset (better typescript defaults)
-- a `scripts` folder for build-time shared code
-- a `shared` folder for run-time shared code
+- a `scripts` folder for build-time shared code (node only, for CI, vite plugins, ...)
+- a `shared` folder for run-time shared code (all environments, for client, server, service worker, ...)
 
 ## Getting Started
 
@@ -90,7 +90,7 @@ pnpm format # prettier check
 pnpm format:fix # prettier fix
 pnpm lint # eslint check
 pnpm lint:fix # eslint fix
-pnpm ts-check # typescript check
+pnpm tsc # typescript check
 pnpm deps # check for unused code
 pnpm clear # clear cache (turbo, vite, pnpm, esbuild, pnpm)
 ```
@@ -104,7 +104,6 @@ pnpm clear # clear cache (turbo, vite, pnpm, esbuild, pnpm)
     - import suggestion from every repo
     - extension-less imports (or at least correct extension in the suggestions)
     - dependencies (scripts / shared) work after install / dev / build
-  - rename ts-check scripts to tsc
   - rename ./dist folder to ./.dist (for uniformity with in-package builds)
 - finish auth
   - better utils for "protected" stuff (client & server)
@@ -113,3 +112,21 @@ pnpm clear # clear cache (turbo, vite, pnpm, esbuild, pnpm)
   - we shouldn't need dynamic schema imports, use regular import, and hash content for "schema name"
     - this would also allow us to remove chokidar entirely
   - better DX (sync hook, db provider, ...)
+
+
+
+What I want
+
+- tricky folders
+  - `/scripts` for build-time code (CI, vite / vitest plugins, ...), node only
+  - `/shared` for run-time code (client, server, service worker), node & browser
+- TS everywhere (ideally no JSDoc / .mjs / .d.ts)
+- vscode import autocomplete across packages
+- go-to-definition works (doesn't send you to an obscure .d.ts file)
+- no barrel files, autocomplete proposes deep imports
+- ideally `/shared` doesn't need to be built, because it would mean a long running task depending on another long running task
+- `knip` understands the config
+- "exotic imports" (.sql) work across packages
+  - bonus: go to definition works
+  - bonus: import autocomplete works
+- bonus: imports have nice names (like `@shared/foo`) to avoid collisions with local stuff

@@ -1,13 +1,14 @@
 import { type PluginOption, defineConfig, normalizePath, type Logger } from "vite"
 import react from "@vitejs/plugin-react-swc"
 import viteTsconfigPaths from "vite-tsconfig-paths"
-import { ViteRawLoader } from "scripts/ViteRawLoader"
+
 import { walkFsTree } from "scripts/walkFsTree"
 import { visualizer } from "rollup-plugin-visualizer"
 import { config } from "dotenv"
 import { readFile, rm, writeFile } from "node:fs/promises"
 import { join, resolve } from "node:path"
-import { compressBuffer } from "shared/compressBuffer"
+import { compressBuffer } from "scripts/compressBuffer"
+import { ViteRawLoader } from "scripts/ViteRawLoader"
 config({ path: "../.env" })
 
 function SwHotReload(): PluginOption {

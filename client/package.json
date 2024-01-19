@@ -9,7 +9,7 @@
 		"dev": "vite",
 		"test": "vitest",
 		"build": "vite build",
-		"ts-check": "tsc --noEmit",
+		"tsc": "tsc --noEmit",
 		"lint": "eslint . --config ../.eslintrc.json",
 		"lint:fix": "eslint . --config ../.eslintrc.json --fix",
 		"format": "prettier --check . --config ../.prettierrc --log-level warn",
@@ -23,7 +23,6 @@
 		"shared": "workspace:*"
 	},
 	"devDependencies": {
-		"shared": "workspace:*",
 		"scripts": "workspace:*"
 	}
 }
