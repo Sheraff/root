@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@fastify/cookie':
-        specifier: ^9.2.0
-        version: 9.2.0
+        specifier: ^9.3.1
+        version: 9.3.1
       '@fastify/session':
         specifier: ^10.7.0
         version: 10.7.0
@@ -476,8 +476,8 @@ packages:
       fast-uri: 2.3.0
     dev: false
 
-  /@fastify/cookie@9.2.0:
-    resolution: {integrity: sha512-fkg1yjjQRHPFAxSHeLC8CqYuNzvR6Lwlj/KjrzQcGjNBK+K82nW+UfCjfN71g1GkoVoc1GTOgIWkFJpcMfMkHQ==}
+  /@fastify/cookie@9.3.1:
+    resolution: {integrity: sha512-h1NAEhB266+ZbZ0e9qUE6NnNR07i7DnNXWG9VbbZ8uC6O/hxHpl+Zoe5sw1yfdZ2U6XhToUGDnzQtWJdCaPwfg==}
     dependencies:
       cookie-signature: 1.2.1
       fastify-plugin: 4.5.1
