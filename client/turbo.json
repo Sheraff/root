@@ -4,21 +4,22 @@
 	"pipeline": {
 		"build": {
 			"outputs": ["../dist/client/**"],
-			"dependsOn": ["shared#tsc", "scripts#tsc"]
+			"inputs": ["*", "**/*", "../shared/src/**", "../scripts/.dist/**", "../types/**"],
+			"dependsOn": ["scripts#tsc"]
 		},
 		"tsc": {
-			"dependsOn": ["shared#tsc", "scripts#tsc"],
-			"inputs": ["*", "**/*", "../shared/.dist/**", "../scripts/.dist/**", "../types/**"]
+			"dependsOn": ["scripts#tsc"],
+			"inputs": ["*", "**/*", "../shared/src/**", "../scripts/.dist/**", "../types/**"]
 		},
 		"test": {
-			"inputs": ["../shared/.dist/**", "../scripts/.dist/**"],
-			"dependsOn": ["shared#tsc", "scripts#tsc"]
+			"inputs": ["../shared/src/**", "../scripts/.dist/**"],
+			"dependsOn": ["scripts#tsc"]
 		},
 		"dev": {
 			"cache": false,
 			"persistent": true,
-			"inputs": ["../shared/.dist/**", "../scripts/.dist/**"],
-			"dependsOn": ["shared#tsc", "scripts#tsc"]
+			"inputs": ["*", "**/*", "../shared/src/**", "../scripts/.dist/**", "../types/**"],
+			"dependsOn": ["scripts#tsc"]
 		}
 	}
 }

@@ -4,17 +4,26 @@
 	"pipeline": {
 		"build": {
 			"outputs": ["../dist/sw/*"],
-			"dependsOn": ["client#build", "shared#tsc", "scripts#tsc"]
+			"inputs": [
+				"*",
+				"**/*",
+				"../shared/src/**",
+				"../scripts/src/**",
+				"../dist/client/index.html",
+				"../dist/client/assets/**"
+			],
+			"dependsOn": ["client#build", "scripts#tsc"]
 		},
 		"tsc": {
-			"dependsOn": ["shared#tsc", "scripts#tsc"],
-			"inputs": ["*", "**/*", "../shared/.dist/**", "../scripts/.dist/**", "../types/**"]
+			"dependsOn": ["scripts#tsc"],
+			"inputs": ["*", "**/*", "../shared/src/**", "../scripts/.dist/**", "../types/**"]
 		},
 		"dev": {
 			"cache": false,
 			"persistent": true,
-			"inputs": ["../shared/.dist/**", "../scripts/.dist/**"],
-			"dependsOn": ["shared#tsc", "scripts#tsc"]
+			"inputs": ["*", "**/*", "../shared/src/**", "../scripts/.dist/**", "../types/**"],
+			"outputs": ["../client/public/sw.js"],
+			"dependsOn": ["scripts#tsc"]
 		}
 	}
 }

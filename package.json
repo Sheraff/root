@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"analyze": "turbo analyze --filter client",
-		"dev": "pnpm build:common && FORCE_COLOR=1 turbo dev",
+		"dev": "FORCE_COLOR=1 turbo dev",
 		"test": "vitest",
 		"build": "FORCE_COLOR=1 turbo build",
 		"serve": "NODE_ENV=production node --env-file=.env dist/server/app.mjs",
@@ -16,7 +16,7 @@
 		"tsc": "FORCE_COLOR=1 turbo tsc",
 		"deps": "pnpm build:common && knip",
 		"clear": "FORCE_COLOR=1 turbo clear; rm -rf dist; rm -rf node_modules; rm -rf .turbo;",
-		"build:common": "FORCE_COLOR=1 turbo tsc --log-order=grouped --filter=scripts --filter=shared",
+		"build:common": "FORCE_COLOR=1 turbo tsc --log-order=grouped --filter=scripts",
 		"postinstall": "pnpm build:common"
 	},
 	"dependencies": {

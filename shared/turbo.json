@@ -3,17 +3,12 @@
 	"extends": ["//"],
 	"pipeline": {
 		"tsc": {
-			"inputs": ["*", "**/*", "../types/**", "../scripts/dist/**"],
-			"outputs": [".dist"],
+			"inputs": ["*", "**/*", "../types/**", "../scripts/.dist/**"],
 			"dependsOn": ["scripts#tsc"]
 		},
 		"test": {
-			"inputs": ["../scripts/dist/**"],
+			"inputs": ["../scripts/.dist/**"],
 			"dependsOn": ["scripts#tsc"]
-		},
-		"dev": {
-			"cache": false,
-			"persistent": true
 		}
 	}
 }

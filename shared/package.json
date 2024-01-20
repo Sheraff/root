@@ -5,12 +5,11 @@
 	"type": "module",
 	"exports": {
 		"./*": {
-			"import": "./.dist/src/*.js",
+			"import": "./src/*.ts",
 			"types": "./src/*.ts",
-			"default": "./.dist/src/*",
-			"node": "./.dist/src/*.js"
+			"default": "./src/*",
+			"node": "./src/*.ts"
 		},
-		"./*.js.map": "./.dist/src/*.js.map",
 		"./schemas/*.sql": {
 			"import": "./src/schemas/*.sql",
 			"types": "./src/types/imports.d.ts",
@@ -21,13 +20,12 @@
 	},
 	"scripts": {
 		"test": "vitest",
-		"tsc": "tsc",
-		"dev": "tsc --watch --preserveWatchOutput",
+		"tsc": "tsc --noEmit",
 		"lint": "eslint . --config ../.eslintrc.json",
 		"lint:fix": "eslint . --config ../.eslintrc.json --fix",
 		"format": "prettier --check . --config ../.prettierrc --log-level warn",
 		"format:fix": "prettier --write . --config ../.prettierrc --log-level warn",
-		"clear": "rm tsconfig.tsbuildinfo; rm -rf .dist; rm -rf node_modules; rm -rf .turbo;"
+		"clear": "rm -rf node_modules; rm -rf .turbo;"
 	},
 	"engines": {
 		"node": ">=20.9.0"
