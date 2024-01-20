@@ -9,9 +9,9 @@
 		"module": "ESNext",
 		"lib": ["ESNext"],
 		"paths": {
-			"~/*": ["./*"]
+			"~/*": ["./*"],
 		},
-		"types": ["vitest/importMeta"]
+		"types": ["vitest/importMeta"],
 	},
 	"exclude": ["node_modules", ".turbo"],
 	"include": [
@@ -19,7 +19,7 @@
 		"../types/*.d.ts",
 		"vitest.config.ts",
 		"vitest.setup.ts",
-		"esbuild.ts"
+		"esbuild.ts",
 	],
-	"references": [{ "path": "../shared" }, { "path": "../scripts" }]
+	"references": [{ "path": "../shared" }, { "path": "../scripts" }],
 }

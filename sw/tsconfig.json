@@ -8,10 +8,10 @@
 		"checkJs": true,
 		"noEmit": true,
 		"paths": {
-			"~/*": ["./*"]
-		}
+			"~/*": ["./*"],
+		},
 	},
 	"include": ["./src/**/*", "./types/*.d.ts", "esbuild.ts"],
 	"exclude": ["**/dist", "**/.dist", "node_modules/**/tsconfig.json", "**/vitest.config.ts.*"],
-	"references": [{ "path": "../shared" }, { "path": "../scripts" }]
+	"references": [{ "path": "../shared" }, { "path": "../scripts" }],
 }

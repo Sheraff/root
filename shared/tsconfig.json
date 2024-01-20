@@ -13,14 +13,14 @@
 		"lib": ["ESNext"],
 		"composite": true,
 		"paths": {
-			"~/*": ["./*"]
-		}
+			"~/*": ["./*"],
+		},
 	},
 	"watchOptions": {
 		// "excludeDirectories": ["**/node_modules"]
-		"excludeFiles": ["vitest.config.ts"]
+		"excludeFiles": ["vitest.config.ts"],
 	},
 	"exclude": ["node_modules", ".turbo"],
 	"include": ["./src/**/*", "vitest.config.ts", "./types/*.d.ts"],
-	"references": [{ "path": "../scripts" }]
+	"references": [{ "path": "../scripts" }],
 }
