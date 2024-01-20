@@ -10,12 +10,7 @@
 			"default": "./src/*",
 			"node": "./src/*.ts"
 		},
-		"./schemas/*.sql": {
-			"import": "./src/schemas/*.sql",
-			"types": "./src/types/imports.d.ts",
-			"default": "./src/schemas/*.sql",
-			"node": "./src/schemas/*.sql"
-		},
+		"./*.sql": "./src/*.sql",
 		"./package.json": "./package.json"
 	},
 	"scripts": {

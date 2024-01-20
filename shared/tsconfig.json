@@ -21,6 +21,6 @@
 		"excludeFiles": ["vitest.config.ts"],
 	},
 	"exclude": ["node_modules", ".turbo"],
-	"include": ["./src/**/*", "vitest.config.ts", "./types/*.d.ts"],
+	"include": ["./src/**/*", "vitest.config.ts"],
 	"references": [{ "path": "../scripts" }],
 }
