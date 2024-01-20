@@ -6,8 +6,8 @@
 		"rootDir": ".",
 		"baseUrl": ".",
 		"paths": {
-			"~/*": ["./src/*"],
-		},
+			"~/*": ["./src/*"]
+		}
 	},
 	"exclude": ["node_modules", ".turbo"],
 	"include": [
@@ -16,7 +16,7 @@
 		"../types/*.d.ts",
 		"main.tsx",
 		"vite.config.ts",
-		"vitest.config.ts",
+		"vitest.config.ts"
 	],
-	"references": [],
+	"references": [{ "path": "../scripts" }]
 }

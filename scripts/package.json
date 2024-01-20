@@ -9,7 +9,8 @@
 			"import": "./.dist/src/*.js",
 			"node": "./.dist/src/*",
 			"types": "./src/*.ts"
-		}
+		},
+		"./package.json": "./package.json"
 	},
 	"scripts": {
 		"tsc": "tsc",
