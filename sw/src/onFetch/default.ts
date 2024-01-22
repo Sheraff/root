@@ -1,5 +1,5 @@
-import { CACHES } from "~/config"
-import indexHtml from "../../../client/index.html"
+import { CACHES } from "sw/config"
+import indexHtml from "client/index.html"
 
 function simpleNetworkFirst(event: FetchEvent, request: Request) {
 	return fetch(request)

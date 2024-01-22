@@ -1,10 +1,16 @@
 import { ViteRawLoader } from "scripts/ViteRawLoader"
-import viteTsconfigPaths from "vite-tsconfig-paths"
+import { normalizePath } from "vite"
 import { defineConfig } from "vitest/config"
 
 export default defineConfig({
-	plugins: [viteTsconfigPaths(), ViteRawLoader()],
+	plugins: [ViteRawLoader()],
 	envDir: "..",
+	resolve: {
+		alias: {
+			// use alias to avoid having "client" as a package dependency of "client"
+			"client/": `${normalizePath(__dirname)}/src/`,
+		}
+	},
 	test: {
 		passWithNoTests: true,
 		alias: [

@@ -99,8 +99,6 @@ pnpm clear # clear cache (turbo, vite, pnpm, esbuild, pnpm)
 
 ## TODO
 
-- probably need to revert [673821c9e927e22cc960bd04491d481a7a4401d4](https://github.com/Sheraff/root/commit/673821c9e927e22cc960bd04491d481a7a4401d4) because we got errors
-  > server:tsc: src/app.ts(8,24): error TS6305: Output file '/Users/Flo/GitHub/fullstack-copilot/root/shared/.dist/src/foo/bar.d.ts' has not been built from source file '/Users/Flo/GitHub/fullstack-copilot/root/shared/src/foo/bar.ts'.
 - create folder for schemas, no need for actual package, just TS aliases to a folder at the root
   ```json
   "@schemas/*": ["../shared/src/schemas/*"],
@@ -137,4 +135,4 @@ What I want
 - "exotic imports" (.sql) work across packages
   - bonus: go to definition works
   - bonus: import autocomplete works
-- bonus: imports have nice names (like `@shared/foo`) to avoid collisions with local stuff
+- bonus: imports have nice names (like `shared/foo`) to avoid collisions with local stuff

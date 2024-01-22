@@ -1,25 +1,43 @@
 {
 	"$schema": "https://turbo.build/schema.json",
-	"extends": ["//"],
+	"extends": [
+		"//"
+	],
 	"pipeline": {
 		"build": {
-			"outputs": ["../dist/client/**"],
-			"inputs": ["*", "**/*", "../shared/src/**", "../scripts/.dist/**", "../types/**"],
-			"dependsOn": ["scripts#tsc"]
+			"inputs": [
+				"src/**",
+				"vite.config.ts",
+				"public/**",
+				"src/**",
+				"index.html",
+				"main.tsx",
+				"tsconfig.app.json",
+				"../assets/src/**"
+			],
+			"outputs": [
+				"../dist/client/**"
+			],
+			"dependsOn": [
+				"scripts#tsc"
+			]
 		},
 		"tsc": {
-			"dependsOn": ["scripts#tsc"],
-			"inputs": ["*", "**/*", "../shared/src/**", "../scripts/.dist/**", "../types/**"]
+			"dependsOn": [
+				"scripts#tsc"
+			]
 		},
 		"test": {
-			"inputs": ["../shared/src/**", "../scripts/.dist/**"],
-			"dependsOn": ["scripts#tsc"]
+			"dependsOn": [
+				"scripts#tsc"
+			]
 		},
 		"dev": {
 			"cache": false,
 			"persistent": true,
-			"inputs": ["*", "**/*", "../shared/src/**", "../scripts/.dist/**", "../types/**"],
-			"dependsOn": ["scripts#tsc"]
+			"dependsOn": [
+				"scripts#tsc"
+			]
 		}
 	}
 }

@@ -1,6 +1,6 @@
 import { object, string } from "valibot"
 import { describe, expect, it } from "vitest"
-import { decrypt, encrypt } from "~/auth/helpers/AuthTokens"
+import { decrypt, encrypt } from "./AuthTokens"
 
 describe("AuthTokens", () => {
 	const schema = object({ foo: string() })

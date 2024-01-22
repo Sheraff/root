@@ -1,0 +1,52 @@
+{
+	"compilerOptions": {
+		"rootDir": ".",
+		"baseUrl": ".",
+		"moduleResolution": "Bundler",
+		"module": "ESNext",
+		"target": "ESNext",
+		"skipLibCheck": true,
+		"skipDefaultLibCheck": true,
+		"lib": [
+			"ESNext"
+		],
+		"paths": {
+			"assets/*": [
+				"assets/src/*"
+			],
+			"scripts/*": [
+				"scripts/src/*"
+			],
+			"shared/*": [
+				"shared/src/*"
+			],
+			"client/*": [
+				"client/src/*"
+			],
+			"server/*": [
+				"server/src/*"
+			],
+			"sw/*": [
+				"sw/src/*"
+			],
+		},
+		// strict
+		"strict": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+		"strictBindCallApply": true,
+		"strictPropertyInitialization": true,
+		"noImplicitThis": true,
+		"alwaysStrict": true,
+		"forceConsistentCasingInFileNames": true,
+		"noUncheckedIndexedAccess": true,
+	},
+	"exclude": [
+		"node_modules",
+		"**/node_modules"
+	],
+	"include": [
+		"types/*.d.ts",
+	]
+}

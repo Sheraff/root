@@ -1,27 +1,27 @@
 import { useEffect, useState } from "react"
 import { PUBLIC_CONFIG } from "shared/env/publicConfig"
-import { providers, type Provider } from "~/auth/providers"
+import { providers, type Provider } from "client/auth/providers"
 
 type States =
 	| {
-			type: "unauthenticated"
-			submitInviteCode: (inviteCode: string) => Promise<Response>
-			signIn: (provider: string) => void
-			providers: Array<Provider>
-	  }
+		type: "unauthenticated"
+		submitInviteCode: (inviteCode: string) => Promise<Response>
+		signIn: (provider: string) => void
+		providers: Array<Provider>
+	}
 	| {
-			type: "creating-account"
-			createAccount: (provider: string) => void
-			cancelCreateAccount: () => void
-			providers: Array<Provider>
-	  }
+		type: "creating-account"
+		createAccount: (provider: string) => void
+		cancelCreateAccount: () => void
+		providers: Array<Provider>
+	}
 	| {
-			type: "signed-in"
-			userId: string
-			signOut: () => Promise<Response>
-			linkAccount: (provider: string) => void
-			providers: Array<Provider>
-	  }
+		type: "signed-in"
+		userId: string
+		signOut: () => Promise<Response>
+		linkAccount: (provider: string) => void
+		providers: Array<Provider>
+	}
 
 let cookieCache: Map<string, string | undefined> | null = null
 function getCookie(key: string) {

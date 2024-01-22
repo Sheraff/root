@@ -1,4 +1,4 @@
-import { defaultFetch } from "~/onFetch/default"
+import { defaultFetch } from "sw/onFetch/default"
 
 export function onFetch(event: FetchEvent) {
 	const request = event.request

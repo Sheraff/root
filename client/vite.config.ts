@@ -1,14 +1,15 @@
 import { type PluginOption, defineConfig, normalizePath, type Logger } from "vite"
 import react from "@vitejs/plugin-react-swc"
-import viteTsconfigPaths from "vite-tsconfig-paths"
 
-import { walkFsTree } from "scripts/walkFsTree"
 import { visualizer } from "rollup-plugin-visualizer"
 import { config } from "dotenv"
 import { readFile, rm, writeFile } from "node:fs/promises"
 import { join, resolve } from "node:path"
 import { compressBuffer } from "scripts/compressBuffer"
 import { ViteRawLoader } from "scripts/ViteRawLoader"
+import { walkFsTree } from "scripts/walkFsTree"
+
+
 config({ path: "../.env" })
 
 function SwHotReload(): PluginOption {
@@ -116,7 +117,6 @@ function Compress(): PluginOption {
 
 const plugins: PluginOption[] = [
 	react(),
-	viteTsconfigPaths(),
 	ViteRawLoader(),
 	SwHotReload(),
 	RemoveSwFilesFromBuild(),
@@ -137,6 +137,13 @@ if (process.env.VITE_ANALYZE) {
 export default defineConfig({
 	plugins,
 	envDir: "..",
+	cacheDir: "../node_modules/.vite",
+	resolve: {
+		alias: {
+			// use alias to avoid having "client" as a package dependency of "client"
+			"client/": `${normalizePath(__dirname)}/src/`,
+		}
+	},
 	server: {
 		port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
 		strictPort: true,

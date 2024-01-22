@@ -1,29 +1,40 @@
 {
 	"$schema": "https://turbo.build/schema.json",
-	"extends": ["//"],
+	"extends": [
+		"//"
+	],
 	"pipeline": {
 		"build": {
-			"outputs": ["../dist/sw/*"],
-			"inputs": [
-				"*",
-				"**/*",
-				"../shared/src/**",
-				"../scripts/src/**",
-				"../dist/client/index.html",
-				"../dist/client/assets/**"
+			"outputs": [
+				"../dist/sw/**"
 			],
-			"dependsOn": ["client#build", "scripts#tsc"]
+			"inputs": [
+				"esbuild.ts",
+				"tsconfig.app.json",
+				"src/**",
+				"../dist/client/index.html",
+				"../dist/client/assets/**",
+				"../assets/src/**"
+			],
+			"dependsOn": [
+				"client#build",
+				"scripts#tsc"
+			]
 		},
 		"tsc": {
-			"dependsOn": ["scripts#tsc"],
-			"inputs": ["*", "**/*", "../shared/src/**", "../scripts/.dist/**", "../types/**"]
+			"dependsOn": [
+				"scripts#tsc"
+			]
 		},
 		"dev": {
 			"cache": false,
 			"persistent": true,
-			"inputs": ["*", "**/*", "../shared/src/**", "../scripts/.dist/**", "../types/**"],
-			"outputs": ["../client/public/sw.js"],
-			"dependsOn": ["scripts#tsc"]
+			"outputs": [
+				"../client/public/sw.js"
+			],
+			"dependsOn": [
+				"scripts#tsc"
+			]
 		}
 	}
 }

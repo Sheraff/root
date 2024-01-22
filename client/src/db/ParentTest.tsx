@@ -1,7 +1,7 @@
 import { DBProvider as BaseDbProvider } from "@vlcn.io/react"
-import schema from "shared/schemas/test-v0.sql"
+import schema from "assets/test-v0.sql"
 import type { ReactNode } from "react"
-import { useCacheManager } from "~/db/useDbQuery"
+import { useCacheManager } from "client/db/useDbQuery"
 
 function ReactQueryAdapter({ name, children }: { name: string; children: ReactNode }) {
 	useCacheManager(name)

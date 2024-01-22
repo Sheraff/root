@@ -1,22 +1,17 @@
 {
-	"extends": "../tsconfig.json",
-	"compilerOptions": {
-		"jsx": "react-jsx",
-		"lib": ["dom", "dom.iterable", "esnext"],
-		"rootDir": ".",
-		"baseUrl": ".",
-		"paths": {
-			"~/*": ["./src/*"]
-		}
-	},
-	"exclude": ["node_modules", ".turbo"],
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {},
 	"include": [
-		"src/**/*",
 		"types/*.d.ts",
 		"../types/*.d.ts",
-		"main.tsx",
-		"vite.config.ts",
-		"vitest.config.ts"
 	],
-	"references": [{ "path": "../scripts" }]
+	"files": [],
+	"references": [
+		{
+			"path": "./tsconfig.app.json"
+		},
+		{
+			"path": "./tsconfig.tools.json"
+		}
+	]
 }

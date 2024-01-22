@@ -1,5 +1,5 @@
 import { afterAll, describe, expect, it } from "vitest"
-import api from "~/api"
+import api from "."
 import fastify from "fastify"
 
 describe("api", async () => {

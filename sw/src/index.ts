@@ -1,7 +1,8 @@
-import { onFetch } from "~/onFetch"
-import { CACHES } from "~/config"
+import { onFetch } from "sw/onFetch"
+import { CACHES } from "sw/config"
+import type { Message } from "shared/workerEvents"
 
-export {}
+export { }
 
 declare global {
 	var sw: ServiceWorkerGlobalScope // eslint-disable-line no-var
@@ -46,8 +47,7 @@ sw.addEventListener("activate", (event) => {
 
 sw.addEventListener("fetch", onFetch)
 
-// import type { Message } from "shared/workerEvents"
-// sw.addEventListener("message", async (event) => {
-// 	const data = event.data as Message
-
-// })
+sw.addEventListener("message", async (event) => {
+	const data = event.data as Message
+	console.debug("[SW] received message:", data)
+})

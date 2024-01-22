@@ -1,17 +1,17 @@
 import { type GrantProvider } from "grant"
-import { env } from "~/env"
-import { type GrantData, type RawGrant } from "~/auth/providers"
+import { env } from "server/env"
+import { type GrantData, type RawGrant } from "server/auth/providers"
 import { object, parse, string } from "valibot"
 
 export const options: GrantProvider | undefined = !env.GOOGLE_CLIENT_ID
 	? undefined
 	: {
-			client_id: env.GOOGLE_CLIENT_ID,
-			client_secret: env.GOOGLE_CLIENT_SECRET,
-			scope: ["openid", "https://www.googleapis.com/auth/userinfo.email"],
-			response: ["tokens", "profile"],
-			nonce: true,
-		}
+		client_id: env.GOOGLE_CLIENT_ID,
+		client_secret: env.GOOGLE_CLIENT_SECRET,
+		scope: ["openid", "https://www.googleapis.com/auth/userinfo.email"],
+		response: ["tokens", "profile"],
+		nonce: true,
+	}
 
 // type GoogleUser = {
 // 	sub: string

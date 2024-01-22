@@ -4,3 +4,4 @@ packages:
   - "shared"
   - "sw"
   - "scripts"
+  - "assets"

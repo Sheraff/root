@@ -1,10 +1,15 @@
-import viteTsconfigPaths from "vite-tsconfig-paths"
-import { defineConfig } from "vitest/config"
 import { ViteRawLoader } from "scripts/ViteRawLoader"
+import { defineConfig, normalizePath } from "vite"
 
 export default defineConfig({
-	plugins: [viteTsconfigPaths(), ViteRawLoader()],
+	plugins: [ViteRawLoader()],
 	envDir: "..",
+	resolve: {
+		alias: {
+			// use alias to avoid having "shared" as a package dependency of "shared"
+			"shared/": `${normalizePath(__dirname)}/src/`,
+		}
+	},
 	test: {
 		passWithNoTests: true,
 		alias: [

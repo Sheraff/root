@@ -1,0 +1,21 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"composite": true,
+		"types": [
+			"node",
+			"vitest/importMeta",
+		],
+		"module": "ESNext",
+		"target": "ESNext",
+	},
+	"files": [
+		"esbuild.ts"
+	],
+	"include": [
+		"**/*.spec.ts",
+		"**/*.test.ts",
+		"../types/*.d.ts",
+		"../scripts/src/**/*.ts",
+	],
+}

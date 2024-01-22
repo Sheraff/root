@@ -1,8 +1,8 @@
-type AddToCache = {
+type FooEvent = {
 	type: "FOO"
 	payload: {
 		foo: string
 	}
 }
 
-export type Message = AddToCache
+export type Message = FooEvent

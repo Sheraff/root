@@ -1,24 +1,8 @@
 {
-	"compilerOptions": {
-		"target": "ESNext",
-		"module": "ESNext",
-		"strict": true,
-		"moduleResolution": "Bundler",
-		"esModuleInterop": true,
-		"resolveJsonModule": true,
-		"isolatedModules": true,
-		"noImplicitAny": true,
-		"strictNullChecks": true,
-		"strictFunctionTypes": true,
-		"strictBindCallApply": true,
-		"strictPropertyInitialization": true,
-		"noImplicitThis": true,
-		"alwaysStrict": true,
-		"forceConsistentCasingInFileNames": true,
-		"skipDefaultLibCheck": true,
-		"skipLibCheck": true,
-		"noUncheckedIndexedAccess": true,
-		"verbatimModuleSyntax": true
-	},
-	"include": ["types/*.d.ts"]
+	"extends": "./tsconfig.base.json",
+	"compilerOptions": {},
+	"include": [
+		"types/*.d.ts",
+	],
+	"files": [],
 }

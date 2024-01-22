@@ -1,7 +1,7 @@
 import Database from "better-sqlite3"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { makeStore } from "~/auth/helpers/SessionStore"
-import schemaContent from "~/auth/schema.sql"
+import { makeStore } from "./SessionStore"
+import schemaContent from "../schema.sql"
 
 describe("SessionStore", () => {
 	beforeEach(() => {
@@ -66,7 +66,7 @@ describe("SessionStore", () => {
 			provider: "hello",
 		}
 
-		store.set("1", session, () => {})
+		store.set("1", session, () => { })
 		const getCallback = vi.fn()
 		store.get("1", getCallback)
 		expect(getCallback).toHaveBeenCalledOnce()

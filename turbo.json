@@ -19,5 +19,15 @@
 			"cache": false
 		}
 	},
-	"globalDotEnv": [".env"]
+	"globalDotEnv": [
+		".env"
+	],
+	"globalDependencies": [
+		"tsconfig.base.json",
+		".env",
+		"types/*.d.ts",
+		".eslintrc.json",
+		".prettierrc",
+		"package.json"
+	]
 }

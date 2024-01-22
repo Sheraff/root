@@ -1,5 +1,3 @@
-/// <reference types="node" />
-
 import { readFileSync } from "node:fs"
 import { extname } from "node:path"
 import { type Plugin } from "vite"

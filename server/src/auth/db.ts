@@ -2,7 +2,7 @@ import Database from "better-sqlite3"
 import schemaContent from "./schema.sql"
 import path from "node:path"
 import type { FastifyInstance } from "fastify"
-import { makeDbLogger } from "~/utils/dbLogger"
+import { makeDbLogger } from "server/utils/dbLogger"
 
 export function makeAuthDb(fastify: FastifyInstance, options: { dbPath?: string } = {}) {
 	const name = options.dbPath ? path.join(options.dbPath, "auth.sqlite3") : ":memory:"

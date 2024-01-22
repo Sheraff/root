@@ -1,14 +1,13 @@
 {
 	"$schema": "https://turbo.build/schema.json",
-	"extends": ["//"],
+	"extends": [
+		"//"
+	],
 	"pipeline": {
-		"tsc": {
-			"inputs": ["*", "**/*", "../types/**", "../scripts/.dist/**"],
-			"dependsOn": ["scripts#tsc"]
-		},
 		"test": {
-			"inputs": ["../scripts/.dist/**"],
-			"dependsOn": ["scripts#tsc"]
+			"dependsOn": [
+				"scripts#tsc"
+			]
 		}
 	}
 }

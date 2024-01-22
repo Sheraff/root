@@ -1,0 +1,29 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"composite": true,
+		"jsx": "react-jsx",
+		"lib": [
+			"DOM",
+			"DOM.Iterable",
+			"ESNext"
+		],
+		"outDir": "../dist/client",
+		"types": [
+			"vitest/importMeta",
+			"vite/client"
+		],
+	},
+	"files": [
+		"main.tsx",
+		"types/vite.d.ts"
+	],
+	"include": [
+		"src/**/*.ts",
+		"src/**/*.tsx",
+		"src/**/*.test.ts",
+		"types/*.d.ts",
+		"../types/*.d.ts",
+		"../shared/src/**/*.ts"
+	],
+}

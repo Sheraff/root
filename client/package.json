@@ -6,7 +6,7 @@
 	"main": "main.tsx",
 	"scripts": {
 		"analyze": "VITE_ANALYZE=1 vite build",
-		"dev": "vite",
+		"dev": "vite --open",
 		"test": "vitest",
 		"build": "vite build",
 		"tsc": "tsc --noEmit",
@@ -16,13 +16,11 @@
 		"format:fix": "prettier --write . --config ../.prettierrc --log-level warn",
 		"clear": "rm -rf node_modules; rm -rf .turbo; rm public/sw.js; rm public/sw.js.map"
 	},
-	"engines": {
-		"node": ">=20.9.0"
-	},
 	"dependencies": {
-		"shared": "workspace:*"
+		"shared": "workspace:shared@*",
+		"assets": "workspace:assets@*"
 	},
 	"devDependencies": {
-		"scripts": "workspace:*"
+		"scripts": "workspace:scripts@*"
 	}
 }

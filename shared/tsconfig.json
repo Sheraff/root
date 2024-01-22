@@ -1,26 +1,14 @@
 {
-	"extends": "../tsconfig.json",
-	"compilerOptions": {
-		"outDir": ".dist",
-		"rootDir": ".",
-		"baseUrl": "src",
-		"sourceMap": true,
-		"declarationMap": true,
-		"esModuleInterop": true,
-		"moduleResolution": "Bundler",
-		"target": "ESNext",
-		"module": "ESNext",
-		"lib": ["ESNext"],
-		"composite": true,
-		"paths": {
-			"~/*": ["./*"],
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {},
+	"include": [],
+	"files": [],
+	"references": [
+		{
+			"path": "./tsconfig.lib.json"
 		},
-	},
-	"watchOptions": {
-		// "excludeDirectories": ["**/node_modules"]
-		"excludeFiles": ["vitest.config.ts"],
-	},
-	"exclude": ["node_modules", ".turbo"],
-	"include": ["./src/**/*", "vitest.config.ts"],
-	"references": [{ "path": "../scripts" }],
+		{
+			"path": "./tsconfig.tools.json"
+		}
+	]
 }

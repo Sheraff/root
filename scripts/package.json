@@ -3,20 +3,11 @@
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",
-	"exports": {
-		"./*": {
-			"default": "./.dist/src/*.js",
-			"import": "./.dist/src/*.js",
-			"node": "./.dist/src/*",
-			"types": "./src/*.ts"
-		},
-		"./package.json": "./package.json"
-	},
 	"scripts": {
-		"tsc": "tsc",
-		"clear": "rm -rf .dist;"
+		"tsc": "tsc --build",
+		"clear": "rm -rf node_modules; rm -rf .turbo; rm tsconfig.lib.tsbuildinfo; find src -name \"*.js\" -type f -delete"
 	},
-	"engines": {
-		"node": ">=20.9.0"
+	"exports": {
+		"./*": "./src/*"
 	}
 }

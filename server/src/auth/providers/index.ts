@@ -1,7 +1,7 @@
-import * as Twitch from "~/auth/providers/twitch"
-import * as Google from "~/auth/providers/google"
-import * as Spotify from "~/auth/providers/spotify"
-import * as Discord from "~/auth/providers/discord"
+import * as Twitch from "server/auth/providers/twitch"
+import * as Google from "server/auth/providers/google"
+import * as Spotify from "server/auth/providers/spotify"
+import * as Discord from "server/auth/providers/discord"
 
 export type RawGrant = {
 	provider: string

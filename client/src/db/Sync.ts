@@ -78,11 +78,11 @@ class Sync {
 			changes.length === 0
 				? new Uint8Array(0)
 				: encode({
-						_tag: tags.Changes,
-						changes,
-						sender: this.args.siteId,
-						since: [lastSentVersion, 0],
-					})
+					_tag: tags.Changes,
+					changes,
+					sender: this.args.siteId,
+					since: [lastSentVersion, 0],
+				})
 
 		console.log(`[DB] Sending ${changes.length} changes since ${lastSentVersion}`)
 

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
-import auth from "~/auth"
+import auth from "."
 import fastify, { type FastifyInstance, type Session } from "fastify"
 import { sql } from "shared/sql"
 import crypto from "node:crypto"
@@ -131,7 +131,7 @@ describe(
 				.replace(/=/g, "")
 				.replace(/-/g, "+")
 				.replace(/_/g, "/")
-			app.auth.sessionStore.set(sessionId, sessionData, () => {})
+			app.auth.sessionStore.set(sessionId, sessionData, () => { })
 
 			// simulate post-grant redirect
 			const foo = await app.inject({

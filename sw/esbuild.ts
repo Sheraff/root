@@ -1,10 +1,10 @@
-/// <reference types="node" />
 /* eslint-disable no-undef */
 
+import { compressBuffer } from "scripts/compressBuffer"
 import * as esbuild from "esbuild"
 import { readFile, readdir, writeFile } from "node:fs/promises"
 import { join } from "node:path"
-import { compressBuffer } from "scripts/compressBuffer"
+
 import { loadEnv } from "vite"
 
 const options: esbuild.BuildOptions = {
@@ -17,8 +17,12 @@ const options: esbuild.BuildOptions = {
 		".sql": "text",
 		".html": "text",
 	},
+	tsconfig: "./tsconfig.app.json",
 	// alias: {
-	// 	shared: "../shared",
+	// 	"shared": "../shared/src",
+	// 	"scripts": "../scripts/src",
+	// 	"assets": "../assets/src",
+	// 	"sw": "../sw/src",
 	// },
 }
 

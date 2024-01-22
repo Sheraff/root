@@ -6,7 +6,7 @@ import { cryb64, type Change, type Changes } from "@vlcn.io/ws-common"
 import { sql } from "shared/sql"
 import { readFile } from "node:fs/promises"
 import { fileURLToPath } from "node:url"
-import { makeDbLogger } from "~/utils/dbLogger"
+import { makeDbLogger } from "server/utils/dbLogger"
 
 export type CrsqliteDatabase = Database.Database & {
 	getChanges(sinceVersion: bigint, requestorSiteId: Uint8Array): Change[]

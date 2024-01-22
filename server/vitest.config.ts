@@ -1,10 +1,17 @@
+
 import { ViteRawLoader } from "scripts/ViteRawLoader"
-import viteTsconfigPaths from "vite-tsconfig-paths"
+import { normalizePath } from "vite"
 import { defineConfig } from "vitest/config"
 
 export default defineConfig({
-	plugins: [viteTsconfigPaths(), ViteRawLoader()],
+	plugins: [ViteRawLoader()],
 	envDir: "..",
+	resolve: {
+		alias: {
+			// use alias to avoid having "server" as a package dependency of "server"
+			"server/": `${normalizePath(__dirname)}/src/`,
+		}
+	},
 	test: {
 		passWithNoTests: true,
 		// reporters: process.env.GITHUB_ACTIONS ? ['default', new VitestGHAReporter()] : 'default',
@@ -12,7 +19,7 @@ export default defineConfig({
 		includeSource: ["src/**/*.{js,ts}"],
 		alias: [
 			{ find: /^(.*)\.txt$/, replacement: "$1.txt?raw" },
-			{ find: /^(.*)\.sql$/, replacement: "$1.sql?raw" },
+			// { find: /^(.*)\.sql$/, replacement: "$1.sql?raw" },
 		],
 	},
 	// esbuild: {},

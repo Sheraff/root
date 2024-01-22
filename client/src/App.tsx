@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react"
-import { type Provider } from "~/auth/providers"
-import { useAuth } from "~/auth/useAuth"
-import { Content } from "~/db/DbTest"
-import { DbProvider } from "~/db/ParentTest"
+import { type Provider } from "client/auth/providers"
+import { useAuth } from "client/auth/useAuth"
+import { Content } from "client/db/DbTest"
+import { DbProvider } from "client/db/ParentTest"
+import { fooBar } from "shared/foo/bar"
+import { useServiceWorker } from "client/sw/useServiceWorker"
+
+
+fooBar()
 
 function Demo() {
 	const [protectedRes, setProtectedRes] = useState<unknown>()
@@ -15,6 +20,7 @@ function Demo() {
 				setProtectedRes({ error: String(e) })
 			})
 	}, [])
+
 	const [openRes, setOpenRes] = useState<unknown>()
 	useEffect(() => {
 		fetch("/api/hello")
@@ -25,6 +31,7 @@ function Demo() {
 				setOpenRes({ error: String(e) })
 			})
 	}, [])
+
 	return (
 		<>
 			<h2>Open</h2>
@@ -149,6 +156,17 @@ function NotLoggedIn({
 }
 
 export default function App() {
+	const { data: sw } = useServiceWorker()
+	useEffect(() => {
+		if (!sw) return
+		sw.postMessage({
+			type: "FOO",
+			payload: {
+				foo: "hello SW! from client"
+			}
+		})
+	}, [sw])
+
 	const state = useAuth()
 
 	return (

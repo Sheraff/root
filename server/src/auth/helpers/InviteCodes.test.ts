@@ -1,7 +1,7 @@
 import Database from "better-sqlite3"
 import { describe, expect, it } from "vitest"
-import { makeInviteCodes } from "~/auth/helpers/InviteCodes"
-import schemaContent from "~/auth/schema.sql"
+import { makeInviteCodes } from "./InviteCodes"
+import schemaContent from "../schema.sql"
 
 describe("InviteCodes", () => {
 	it("stores, retrieves, deletes sessions", () => {
