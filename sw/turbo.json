@@ -18,12 +18,12 @@
 			],
 			"dependsOn": [
 				"client#build",
-				"scripts#tsc"
+				"scripts#build"
 			]
 		},
 		"tsc": {
 			"dependsOn": [
-				"scripts#tsc"
+				"scripts#build"
 			]
 		},
 		"dev": {
@@ -33,7 +33,7 @@
 				"../client/public/sw.js"
 			],
 			"dependsOn": [
-				"scripts#tsc"
+				"scripts#build"
 			]
 		}
 	}

@@ -4,8 +4,9 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"tsc": "tsc --build",
-		"clear": "rm -rf node_modules; rm -rf .turbo; rm tsconfig.lib.tsbuildinfo; find src -name \"*.js\" -type f -delete"
+		"tsc": "tsc --noEmit",
+		"build": "esbuild `find src -name '*.ts'` --outdir=src",
+		"clear": "rm -rf node_modules; rm -rf .turbo; rm tsconfig.lib.tsbuildinfo; find src -name '*.js' -type f -delete"
 	},
 	"exports": {
 		"./*": "./src/*"

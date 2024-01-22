@@ -4,10 +4,15 @@
 		"//"
 	],
 	"pipeline": {
-		"tsc": {
+		"build": {
 			"outputs": [
 				"src/**/*.js"
 			],
+			"inputs": [
+				"src/**/*.ts"
+			]
+		},
+		"tsc": {
 			"inputs": [
 				"src/**/*.ts"
 			]

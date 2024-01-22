@@ -6,7 +6,7 @@
 	"pipeline": {
 		"test": {
 			"dependsOn": [
-				"scripts#tsc"
+				"scripts#build"
 			]
 		}
 	}

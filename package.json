@@ -16,7 +16,7 @@
 		"tsc": "FORCE_COLOR=1 turbo tsc",
 		"deps": "knip",
 		"clear": "FORCE_COLOR=1 turbo clear; rm -rf dist; rm -rf node_modules; rm -rf .turbo;",
-		"build:common": "FORCE_COLOR=1 turbo tsc --log-order=grouped --filter=scripts"
+		"build:common": "FORCE_COLOR=1 turbo build --log-order=grouped --filter=scripts"
 	},
 	"dependencies": {
 		"@fastify/cookie": "^9.3.1",

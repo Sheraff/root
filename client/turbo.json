@@ -19,24 +19,24 @@
 				"../dist/client/**"
 			],
 			"dependsOn": [
-				"scripts#tsc"
+				"scripts#build"
 			]
 		},
 		"tsc": {
 			"dependsOn": [
-				"scripts#tsc"
+				"scripts#build"
 			]
 		},
 		"test": {
 			"dependsOn": [
-				"scripts#tsc"
+				"scripts#build"
 			]
 		},
 		"dev": {
 			"cache": false,
 			"persistent": true,
 			"dependsOn": [
-				"scripts#tsc"
+				"scripts#build"
 			]
 		}
 	}
