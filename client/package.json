@@ -9,7 +9,10 @@
 		"dev": "vite",
 		"test": "vitest",
 		"build": "vite build",
-		"tsc": "tsc --noEmit",
+		"tsc:build:css": "tcm src",
+		"tsc:app": "tsc --noEmit --project tsconfig.app.json",
+		"tsc:tools": "tsc --noEmit --project tsconfig.tools.json",
+		"tsc": "echo \"done\"",
 		"lint": "eslint . --config ../.eslintrc.json",
 		"lint:fix": "eslint . --config ../.eslintrc.json --fix",
 		"format": "prettier --check . --config ../.prettierrc --log-level warn",
@@ -17,8 +20,8 @@
 		"clear": "rm -rf node_modules; rm -rf .turbo; rm public/sw.js; rm public/sw.js.map"
 	},
 	"dependencies": {
-		"shared": "workspace:shared@*",
-		"assets": "workspace:assets@*"
+		"assets": "workspace:assets@*",
+		"shared": "workspace:shared@*"
 	},
 	"devDependencies": {
 		"scripts": "workspace:scripts@*"

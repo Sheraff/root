@@ -1,20 +1,9 @@
 {
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
-		"types": [
-			"node",
-			"vitest/importMeta",
-		],
+		"types": ["node", "vitest/importMeta"],
 		"module": "ESNext"
 	},
-	"files": [
-		"vitest.config.ts",
-	],
-	"include": [
-		"**/*.spec.ts",
-		"**/*.test.ts",
-		"../types/*.d.ts",
-		"../scripts/src/**/*.ts",
-		"../node_modules/**/*"
-	]
+	"files": ["vitest.config.ts"],
+	"include": ["../types/*.d.ts", "../scripts/src/**/*.ts", "../node_modules/**/*"]
 }

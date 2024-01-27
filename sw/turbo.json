@@ -1,13 +1,9 @@
 {
 	"$schema": "https://turbo.build/schema.json",
-	"extends": [
-		"//"
-	],
+	"extends": ["//"],
 	"pipeline": {
 		"build": {
-			"outputs": [
-				"../dist/sw/**"
-			],
+			"outputs": ["../dist/sw/**"],
 			"inputs": [
 				"esbuild.ts",
 				"tsconfig.app.json",
@@ -16,25 +12,37 @@
 				"../dist/client/assets/**",
 				"../assets/src/**"
 			],
-			"dependsOn": [
-				"client#build",
-				"scripts#build"
+			"dependsOn": ["client#build", "scripts#build"]
+		},
+		"tsc:tools": {
+			"inputs": [
+				"esbuild.ts",
+				"types/*.d.ts",
+				"../types/*.d.ts",
+				"../scripts/src/**/*.ts",
+				"tsconfig.json",
+				"tsconfig.tools.json"
+			]
+		},
+		"tsc:app": {
+			"inputs": [
+				"src/**/*.ts",
+				"src/**/*.tsx",
+				"types/*.d.ts",
+				"../types/*.d.ts",
+				"../shared/src/**/*.ts",
+				"tsconfig.json",
+				"tsconfig.app.json"
 			]
 		},
 		"tsc": {
-			"dependsOn": [
-				"scripts#build"
-			]
+			"dependsOn": ["sw#tsc:tools", "sw#tsc:app"]
 		},
 		"dev": {
 			"cache": false,
 			"persistent": true,
-			"outputs": [
-				"../client/public/sw.js"
-			],
-			"dependsOn": [
-				"scripts#build"
-			]
+			"outputs": ["../client/public/sw.js"],
+			"dependsOn": ["scripts#build"]
 		}
 	}
 }

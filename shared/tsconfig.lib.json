@@ -1,15 +1,8 @@
 {
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
-		"types": [],
+		"types": []
 	},
-	"exclude": [
-		"**/*.test.ts",
-		"vitest.config.ts"
-	],
-	"include": [
-		"**/*.ts",
-		"types/*.d.ts",
-		"../types/*.d.ts",
-	]
+	"exclude": ["vitest.config.ts"],
+	"include": ["**/*.ts", "types/*.d.ts", "../types/*.d.ts"]
 }

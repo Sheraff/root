@@ -1,15 +1,9 @@
 {
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
-		"composite": true,
-		"lib": [
-			"ESNext"
-		],
+		"lib": ["ESNext"],
 		"outDir": "../dist/server",
-		"types": [
-			"node",
-			"vitest/importMeta",
-		]
+		"types": ["node", "vitest/importMeta"]
 	},
 	"include": [
 		"src/**/*.ts",
@@ -17,10 +11,6 @@
 		"types/*.d.ts",
 		"../types/*.d.ts",
 		"../shared/src/**/*.ts",
-		"../scripts/src/**/*.ts",
-	],
-	"exclude": [
-		"**/*.spec.ts",
-		"**/*.test.ts",
+		"../scripts/src/**/*.ts"
 	]
 }

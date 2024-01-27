@@ -8,7 +8,8 @@ const config: KnipConfig = {
 		"assets",
 	],
 	"ignore": [
-		"**/*.test.ts"
+		"**/*.test.ts",
+		"**/types/*.d.ts"
 	],
 	"includeEntryExports": true,
 }

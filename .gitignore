@@ -8,3 +8,4 @@ client/public/sw.js.map
 .dist
 client/stats.html
 vitest.config.ts.*
+*.module.css.d.ts

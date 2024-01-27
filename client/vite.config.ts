@@ -9,7 +9,6 @@ import { compressBuffer } from "scripts/compressBuffer"
 import { ViteRawLoader } from "scripts/ViteRawLoader"
 import { walkFsTree } from "scripts/walkFsTree"
 
-
 config({ path: "../.env" })
 
 function SwHotReload(): PluginOption {
@@ -142,7 +141,7 @@ export default defineConfig({
 		alias: {
 			// use alias to avoid having "client" as a package dependency of "client"
 			"client/": `${normalizePath(__dirname)}/src/`,
-		}
+		},
 	},
 	server: {
 		port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
@@ -184,5 +183,12 @@ export default defineConfig({
 		]
 			.filter((p) => p.enabled)
 			.map((p) => p.name),
+	},
+	test: {
+		passWithNoTests: true,
+		alias: [
+			{ find: /^(.*)\.txt$/, replacement: "$1.txt?raw" },
+			{ find: /^(.*)\.sql$/, replacement: "$1.sql?raw" },
+		],
 	},
 })

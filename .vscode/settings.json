@@ -34,7 +34,8 @@
 		"client/public/sw.js": true,
 		"client/public/sw.js.map": true,
 		"client/stats.html": true,
-		"**/vitest.config.ts.*": true
+		"**/vitest.config.ts.*": true,
+		"**/*.module.css.d.ts": true,
 	},
 	"npm.packageManager": "pnpm",
 	"typescript.tsdk": "node_modules/typescript/lib",

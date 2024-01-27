@@ -4,9 +4,13 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"tsc": "tsc --noEmit",
+		"tsc": "tsc --noEmit --project tsconfig.lib.json",
 		"build": "esbuild `find src -name '*.ts'` --outdir=src",
-		"clear": "rm -rf node_modules; rm -rf .turbo; rm tsconfig.lib.tsbuildinfo; find src -name '*.js' -type f -delete"
+		"clear": "rm -rf node_modules; rm -rf .turbo; rm tsconfig.lib.tsbuildinfo; find src -name '*.js' -type f -delete",
+		"lint": "eslint . --config ../.eslintrc.json",
+		"lint:fix": "eslint . --config ../.eslintrc.json --fix",
+		"format": "prettier --check . --config ../.prettierrc --log-level warn",
+		"format:fix": "prettier --write . --config ../.prettierrc --log-level warn"
 	},
 	"exports": {
 		"./*": "./src/*"

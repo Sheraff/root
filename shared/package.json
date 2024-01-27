@@ -5,7 +5,9 @@
 	"type": "module",
 	"scripts": {
 		"test": "vitest",
-		"tsc": "tsc --noEmit",
+		"tsc:lib": "tsc --noEmit --project tsconfig.lib.json",
+		"tsc:tools": "tsc --noEmit --project tsconfig.tools.json",
+		"tsc": "echo \"done\"",
 		"lint": "eslint . --config ../.eslintrc.json",
 		"lint:fix": "eslint . --config ../.eslintrc.json --fix",
 		"format": "prettier --check . --config ../.prettierrc --log-level warn",

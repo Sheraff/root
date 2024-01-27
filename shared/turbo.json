@@ -1,13 +1,31 @@
 {
 	"$schema": "https://turbo.build/schema.json",
-	"extends": [
-		"//"
-	],
+	"extends": ["//"],
 	"pipeline": {
-		"test": {
-			"dependsOn": [
-				"scripts#build"
+		"tsc:tools": {
+			"inputs": [
+				"vitest.config.ts",
+				"../types/*.d.ts",
+				"../scripts/src/**/*.ts",
+				"tsconfig.json",
+				"tsconfig.tools.json"
 			]
+		},
+		"tsc:lib": {
+			"inputs": [
+				"**/*.ts",
+				"types/*.d.ts",
+				"../types/*.d.ts",
+				"!vitest.config.ts",
+				"tsconfig.json",
+				"tsconfig.lib.json"
+			]
+		},
+		"tsc": {
+			"dependsOn": ["shared#tsc:tools", "shared#tsc:lib"]
+		},
+		"test": {
+			"dependsOn": ["scripts#build"]
 		}
 	}
 }

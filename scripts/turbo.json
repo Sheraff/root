@@ -1,21 +1,13 @@
 {
 	"$schema": "https://turbo.build/schema.json",
-	"extends": [
-		"//"
-	],
+	"extends": ["//"],
 	"pipeline": {
 		"build": {
-			"outputs": [
-				"src/**/*.js"
-			],
-			"inputs": [
-				"src/**/*.ts"
-			]
+			"outputs": ["src/**/*.js"],
+			"inputs": ["src/**/*.ts"]
 		},
 		"tsc": {
-			"inputs": [
-				"src/**/*.ts"
-			]
+			"inputs": ["src/**/*.ts"]
 		}
 	}
 }

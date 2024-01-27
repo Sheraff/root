@@ -39,7 +39,7 @@ function clearCookieCache() {
 }
 
 //eslint-disable-next-line @typescript-eslint/no-explicit-any -- cookieStore is not in lib.dom.d.ts because it's only supported in Chrome
-const cookieStore = (window as any).cookieStore as EventTarget
+const cookieStore = (globalThis as any).cookieStore as EventTarget
 
 /**
  * Should transition state from "unauthenticated" to "creating-account"
@@ -56,7 +56,7 @@ function submitInviteCode(inviteCode: string) {
  * Should transition state from "creating-account" to "signed-in"
  */
 function createAccount(provider: string) {
-	window.location.href = `/api/oauth/connect/${provider}`
+	globalThis.location.href = `/api/oauth/connect/${provider}`
 }
 
 /**
@@ -77,7 +77,7 @@ function signOut() {
  * Should transition state from "unauthenticated" to "signed-in" (only if account already exists)
  */
 function signIn(provider: string) {
-	window.location.href = `/api/oauth/connect/${provider}`
+	globalThis.location.href = `/api/oauth/connect/${provider}`
 }
 
 function linkAccount(provider: string) {
