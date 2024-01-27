@@ -3,7 +3,6 @@
 import * as esbuild from "esbuild"
 import { type ChildProcess, spawn } from "node:child_process"
 import { join } from "node:path"
-import { watch as chokidar } from "chokidar"
 
 const options: esbuild.BuildOptions = {
 	entryPoints: ["src/app.ts"],
@@ -81,34 +80,12 @@ async function makeEsbuildWatcher() {
 	return context
 }
 
-async function makeChokidarWatcher() {
-	const watcher = chokidar("../assets/src/*.sql", {
-		ignoreInitial: true,
-		persistent: true,
-		atomic: true,
-		awaitWriteFinish: {
-			stabilityThreshold: 50,
-		},
-	})
-	await new Promise((resolve) => watcher.once("ready", resolve))
-	return watcher
-}
-
 async function watch() {
-	const [context, watcher] = await Promise.all([makeEsbuildWatcher(), makeChokidarWatcher()])
-	let debounce: NodeJS.Timeout | null = null
-	watcher.on("all", (event, path) => {
-		if (debounce) clearTimeout(debounce)
-		console.log(`File ${path} modified (${event}), rebuilding server esbuild...`)
-		debounce = setTimeout(() => {
-			debounce = null
-			context.rebuild()
-		}, 100)
-	})
+	const context = await makeEsbuildWatcher()
 	await context.watch()
 	process.on("SIGINT", async () => {
 		console.log("Stopping server esbuild...")
-		await Promise.all([context.dispose(), watcher.close()])
+		context.dispose()
 		process.exit(0)
 	})
 }
