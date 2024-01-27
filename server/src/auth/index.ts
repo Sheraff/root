@@ -93,6 +93,7 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 		cookie: {
 			secure: false, // TODO: set to true when using HTTPS
 			sameSite: "lax",
+			maxAge: 50 * 24 * 60 * 60, // 50 days
 		},
 		store: sessionStore,
 		cookieName: "session",

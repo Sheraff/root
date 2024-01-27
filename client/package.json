@@ -6,7 +6,7 @@
 	"main": "main.tsx",
 	"scripts": {
 		"analyze": "VITE_ANALYZE=1 vite build",
-		"dev": "vite --open",
+		"dev": "vite",
 		"test": "vitest",
 		"build": "vite build",
 		"tsc": "tsc --noEmit",
