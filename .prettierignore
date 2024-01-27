@@ -1,4 +1,3 @@
 pnpm-lock.yaml
 dist
 vitest.config.ts.*
-*.module.css.d.ts

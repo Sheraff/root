@@ -1,3 +1,4 @@
 public/sw.js
 public/sw.js.map
 stats.html
+**/*.module.css.d.ts
