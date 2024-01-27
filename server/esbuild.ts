@@ -3,7 +3,6 @@
 import * as esbuild from "esbuild"
 import { type ChildProcess, spawn } from "node:child_process"
 import { join } from "node:path"
-import { cp } from "node:fs/promises"
 import { watch as chokidar } from "chokidar"
 
 const options: esbuild.BuildOptions = {
@@ -38,10 +37,6 @@ async function build() {
 		"import.meta.vitest": "undefined",
 	}
 	await esbuild.build(options)
-	await cp("../assets/src", "../dist/schemas", {
-		recursive: true,
-		filter: (source) => source.endsWith(".sql"),
-	})
 }
 
 async function makeEsbuildWatcher() {
@@ -62,10 +57,6 @@ async function makeEsbuildWatcher() {
 					}
 				})
 				build.onEnd(async () => {
-					await cp("../assets/src", "node_modules/.cache/schemas", {
-						recursive: true,
-						filter: (source) => source.endsWith(".sql"),
-					})
 					process.env.ROOT = join(process.cwd(), "..")
 					const run = () =>
 						spawn(

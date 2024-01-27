@@ -3,7 +3,7 @@
 	"extends": ["//"],
 	"pipeline": {
 		"build": {
-			"outputs": ["../dist/server/**", "../dist/schemas/**"],
+			"outputs": ["../dist/server/**"],
 			"inputs": ["../assets/src/**", "esbuild.ts", "tsconfig.app.json", "src/**"],
 			"dependsOn": ["scripts#build"]
 		},

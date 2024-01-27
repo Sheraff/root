@@ -9,7 +9,6 @@ type StmtAsync = Awaited<ReturnType<DBAsync["prepare"]>>
 type SyncArgs = Readonly<{
 	db: DBAsync
 	name: string
-	schemaName: string
 	schemaVersion: bigint
 	pullChangesetStmt: StmtAsync
 	applyChangesetStmt: StmtAsync
@@ -24,7 +23,7 @@ class Sync {
 
 	constructor(args: SyncArgs) {
 		this.args = args
-		this.syncEndpoint = `${Sync.endpoint}/${args.name}?schemaName=${args.schemaName}&schemaVersion=${args.schemaVersion}`
+		this.syncEndpoint = `${Sync.endpoint}/${args.name}?schemaVersion=${args.schemaVersion}`
 	}
 
 	key(key: string) {
@@ -60,7 +59,6 @@ class Sync {
 		const lastSentVersion = this.lastSent
 		const lastSeenVersion = this.lastSeen
 		const params = new URLSearchParams({
-			schemaName: this.args.schemaName,
 			schemaVersion: this.args.schemaVersion.toString(10),
 			requestor: bytesToHex(this.args.siteId),
 			since: lastSeenVersion.toString(10),
@@ -154,17 +152,12 @@ class Sync {
 }
 
 async function createSync(db: CtxAsync["db"], room: string) {
-	const [schemaNameRow] = await db.execA<[string]>(
-		sql`SELECT value FROM crsql_master WHERE key = 'schema_name'`
-	)
-	const schemaName = schemaNameRow?.[0]
-	if (!schemaName) {
-		throw new Error("[DB] The database does not have a schema applied.")
-	}
-
 	const [schemaVersionRow] = await db.execA<[number | bigint | undefined]>(
 		sql`SELECT value FROM crsql_master WHERE key = 'schema_version'`
 	)
+	if (!schemaVersionRow) {
+		throw new Error("[DB] The database does not have a schema applied.")
+	}
 	const schemaVersion = BigInt(schemaVersionRow?.[0] ?? -1)
 
 	const [pullChangesetStmt, applyChangesetStmt] = await Promise.all([
@@ -190,7 +183,6 @@ async function createSync(db: CtxAsync["db"], room: string) {
 	return new Sync({
 		db,
 		name: room,
-		schemaName,
 		schemaVersion,
 		pullChangesetStmt,
 		applyChangesetStmt,

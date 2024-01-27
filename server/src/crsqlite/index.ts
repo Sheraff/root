@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify"
 import { makeCrsqliteDb, type CrsqliteDatabase } from "server/crsqlite/db"
 import { encode, decode, tags, hexToBytes } from "@vlcn.io/ws-common"
 import { compressBuffer } from "scripts/compressBuffer"
+import schema from "assets/test-v0.sql"
 
 export default function crsqlite(
 	fastify: FastifyInstance,
@@ -25,7 +26,6 @@ export default function crsqlite(
 
 	let lastDb: {
 		name: string
-		schemaName: string
 		version: bigint
 		dbPath?: string
 		db: CrsqliteDatabase
@@ -43,11 +43,10 @@ export default function crsqlite(
 		done()
 	})
 
-	async function getDb(name: string, schemaName: string, version: bigint) {
+	async function getDb(name: string, version: bigint) {
 		if (
 			lastDb &&
 			lastDb.name === name &&
-			lastDb.schemaName === schemaName &&
 			lastDb.version === version &&
 			lastDb.dbPath === dbPath
 		) {
@@ -57,13 +56,12 @@ export default function crsqlite(
 		lastDb = null
 		const db = await makeCrsqliteDb(fastify, {
 			name,
-			schemaName,
 			version,
+			schema,
 			dbPath,
 		})
 		lastDb = {
 			name,
-			schemaName,
 			version,
 			dbPath,
 			db,
@@ -78,7 +76,6 @@ export default function crsqlite(
 	fastify.post<{
 		Params: { name: string }
 		Querystring: {
-			schemaName: string
 			schemaVersion: string
 			requestor: string
 			since: string
@@ -98,11 +95,7 @@ export default function crsqlite(
 		async handler(req, res) {
 			let db: CrsqliteDatabase
 			try {
-				db = await getDb(
-					req.params.name,
-					req.query.schemaName,
-					BigInt(req.query.schemaVersion)
-				)
+				db = await getDb(req.params.name, BigInt(req.query.schemaVersion))
 			} catch (error: any) {
 				if (
 					error.code === "SQLITE_IOERR_WRITE" ||

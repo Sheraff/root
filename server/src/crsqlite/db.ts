@@ -4,8 +4,6 @@ import type { FastifyInstance } from "fastify"
 import { extensionPath } from "@vlcn.io/crsqlite"
 import { cryb64, type Change, type Changes } from "@vlcn.io/ws-common"
 import { sql } from "shared/sql"
-import { readFile } from "node:fs/promises"
-import { fileURLToPath } from "node:url"
 import { makeDbLogger } from "server/utils/dbLogger"
 
 export type CrsqliteDatabase = Database.Database & {
@@ -69,16 +67,16 @@ export async function makeCrsqliteDb(
 	fastify: FastifyInstance,
 	options: {
 		name?: string
-		schemaName: string
 		version: bigint
 		dbPath?: string
+		schema: string
 	}
 ) {
 	const name =
 		options.name && options.dbPath
 			? path.join(options.dbPath, `${options.name}.sqlite3`)
 			: ":memory:"
-	fastify.log.info(`Creating database @ ${name}`)
+	fastify.log.info(`Connecting to database @ ${name}`)
 	const db = new Database(name, {
 		verbose: makeDbLogger(fastify),
 	})
@@ -91,32 +89,27 @@ export async function makeCrsqliteDb(
 		const masterStatement = db
 			.prepare(sql`SELECT value FROM crsql_master WHERE key = ?`)
 			.pluck()
-		const schemaName = masterStatement.get("schema_name") as string | undefined
-
-		if (schemaName && schemaName !== options.schemaName) {
-			// we will not allow reformatting a db to a new schema
-			throw new Error(
-				`Server has schema "${schemaName}" but client requested "${options.schemaName}"`
-			)
-		}
 
 		const schemaVersion = masterStatement.safeIntegers().get("schema_version") as
 			| bigint
 			| undefined
-		if (schemaName === options.schemaName && options.version === schemaVersion) {
+		if (options.version === schemaVersion) {
 			return wrapDatabase(db)
 		}
-		fastify.log.warn(
-			`Mismatch schema version. Client requested "${options.schemaName}" v${options.version} but server is on "${schemaName}" v${schemaVersion}`
-		)
+		if (schemaVersion) {
+			fastify.log.warn(
+				`Mismatch schema version for database "${name}". Client requested v${options.version} but server is on v${schemaVersion}. Will try to auto-migrate...`
+			)
+		} else {
+			fastify.log.info(`First client request for database "${name}". Initializing...`)
+		}
 
-		const raw = await readFile(getSchemaPath(options.schemaName), "utf-8")
-		const content = raw.replace(/[\s\n\t]+/g, " ").trim()
+		const content = options.schema.replace(/[\s\n\t]+/g, " ").trim()
 
 		const residentVersion = cryb64(content)
 		if (residentVersion !== options.version) {
 			throw new Error(
-				`Server has schema version ${residentVersion} but client requested ${options.version}`
+				`Server has schema version v${residentVersion} but client requested v${options.version} for database "${name}"`
 			)
 		}
 
@@ -127,7 +120,6 @@ export async function makeCrsqliteDb(
 		db.transaction(() => {
 			autoMigrateStatement.run(content)
 			masterInsertStatement.run("schema_version", options.version.toString())
-			masterInsertStatement.run("schema_name", options.schemaName)
 		})()
 	} catch (e) {
 		db.prepare(sql`SELECT crsql_finalize()`).run()
@@ -136,12 +128,4 @@ export async function makeCrsqliteDb(
 	}
 
 	return wrapDatabase(db)
-}
-
-function getSchemaPath(schemaName: string) {
-	if (schemaName.includes("..") || schemaName.includes("/") || schemaName.includes("\\")) {
-		throw new Error(`${schemaName} must not include '..', '/', or '\\'`)
-	}
-	const __dirname = path.dirname(fileURLToPath(new URL(import.meta.url)))
-	return path.join(__dirname, "../schemas", `${schemaName}.sql`)
 }
