@@ -5,7 +5,7 @@
 	"type": "module",
 	"main": "src/index.ts",
 	"scripts": {
-		"dev": "tsx --tsconfig ./tsconfig.tools.json esbuild.ts",
+		"dev": "tsx esbuild.ts",
 		"build": "tsx esbuild.ts --build",
 		"tsc": "tsc --noEmit",
 		"lint": "eslint . --config ../.eslintrc.json",
