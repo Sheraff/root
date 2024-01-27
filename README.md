@@ -99,40 +99,10 @@ pnpm clear # clear cache (turbo, vite, pnpm, esbuild, pnpm)
 
 ## TODO
 
-- create folder for schemas, no need for actual package, just TS aliases to a folder at the root
-  ```json
-  "@schemas/*": ["../shared/src/schemas/*"],
-  ```
-  This allows for better search of .sql files (since this won't be auto-imported unless we do complicated build / dev step)
-
-- setup
-  - fix tsconfig (& cie) to have
-    - import suggestion from every repo
-    - extension-less imports (or at least correct extension in the suggestions)
-    - dependencies (scripts / shared) work after install / dev / build
-  - rename ./dist folder to ./.dist (for uniformity with in-package builds)
 - finish auth
   - better utils for "protected" stuff (client & server)
 - database
   - figure out migrations story
-  - we shouldn't need dynamic schema imports, use regular import, and hash content for "schema name"
-    - this would also allow us to remove chokidar entirely
   - better DX (sync hook, db provider, ...)
-
-
-
-What I want
-
-- tricky folders
-  - `/scripts` for build-time code (CI, vite / vitest plugins, ...), node only
-  - `/shared` for run-time code (client, server, service worker), node & browser
-- TS everywhere (ideally no JSDoc / .mjs / .d.ts)
-- vscode import autocomplete across packages
-- go-to-definition works (doesn't send you to an obscure .d.ts file)
-- no barrel files, autocomplete proposes deep imports
-- ideally `/shared` doesn't need to be built, because it would mean a long running task depending on another long running task
-- `knip` understands the config
-- "exotic imports" (.sql) work across packages
-  - bonus: go to definition works
-  - bonus: import autocomplete works
-- bonus: imports have nice names (like `shared/foo`) to avoid collisions with local stuff
+- dev server
+  - when updating a shared .sql schema, /client Vite HMR finishes before /server esbuild watch full server restart, which leads the request to `/api/changes` (to re-sync the db from the client) to fail
