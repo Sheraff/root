@@ -65,7 +65,7 @@ export function makeInviteCodes(db: BetterSqlite3.Database) {
 	const getAllStatement = db.prepare(sql`SELECT * FROM invites`)
 
 	const deleteExpiredStatement = db.prepare(
-		sql`DELETE FROM invites WHERE datetime('now') > datetime(expires_at)`,
+		sql`DELETE FROM invites WHERE datetime('now') > datetime(expires_at)`
 	)
 
 	const deleteReturnStatement = db.prepare<{
@@ -98,7 +98,7 @@ export function makeInviteCodes(db: BetterSqlite3.Database) {
 		fillInvites(invites, (invite: Invite) => insertStatement.run(invite))
 		const minExpiresAt = invites.reduce(
 			(min, i) => (i.expires_at < min ? i.expires_at : min),
-			invites[0]!.expires_at,
+			invites[0]!.expires_at
 		)
 		timeout = setTimeout(cleanAndFill, new Date(minExpiresAt).getTime() - Date.now())
 	}

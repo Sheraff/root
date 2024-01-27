@@ -30,9 +30,13 @@ export function useDbMutation<TBindings extends ReadonlyArray<string> = [], TDat
 	return useMutation<TReturnData, unknown, TBindings>({
 		mutationFn(bindings) {
 			if (returning) {
-				return statement.current?.then((s) => s.all(null, ...bindings)) as Promise<TReturnData>
+				return statement.current?.then((s) =>
+					s.all(null, ...bindings)
+				) as Promise<TReturnData>
 			} else {
-				return statement.current?.then((s) => s.run(null, ...bindings)) as Promise<TReturnData>
+				return statement.current?.then((s) =>
+					s.run(null, ...bindings)
+				) as Promise<TReturnData>
 			}
 		},
 	})

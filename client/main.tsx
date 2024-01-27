@@ -19,7 +19,7 @@ root.render(
 	<QueryClientProvider client={client}>
 		<App />
 		<ReactQueryDevtools initialIsOpen={false} />
-	</QueryClientProvider>,
+	</QueryClientProvider>
 )
 
 enableServiceWorker(client)

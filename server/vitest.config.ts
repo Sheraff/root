@@ -1,4 +1,3 @@
-
 import { ViteRawLoader } from "scripts/ViteRawLoader"
 import { normalizePath } from "vite"
 import { defineConfig } from "vitest/config"
@@ -10,7 +9,7 @@ export default defineConfig({
 		alias: {
 			// use alias to avoid having "server" as a package dependency of "server"
 			"server/": `${normalizePath(__dirname)}/src/`,
-		}
+		},
 	},
 	test: {
 		passWithNoTests: true,

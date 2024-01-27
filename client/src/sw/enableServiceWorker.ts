@@ -23,7 +23,6 @@ async function loadServiceWorker(client?: QueryClient, id?: string) {
 	}
 }
 
-
 export function enableServiceWorker(client?: QueryClient) {
 	window.addEventListener("load", () => loadServiceWorker(client), { once: true })
 

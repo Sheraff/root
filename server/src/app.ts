@@ -57,13 +57,16 @@ if (process.env.NODE_ENV === "production") {
 
 // Start the server
 const start = async () => {
-	const port = process.env.NODE_ENV === "production" ? env.PORT : env.DEV_PROXY_SERVER_PORT ?? 8123
+	const port =
+		process.env.NODE_ENV === "production" ? env.PORT : env.DEV_PROXY_SERVER_PORT ?? 8123
 	try {
 		await app.listen({
 			port,
 			host: "localhost",
 			listenTextResolver: (address) =>
-				process.env.NODE_ENV === "production" ? `Listening on ${address}` : `API server started`,
+				process.env.NODE_ENV === "production"
+					? `Listening on ${address}`
+					: `API server started`,
 		})
 		process.on("SIGINT", async () => {
 			console.log("\nSIGINT received, shutting down...")

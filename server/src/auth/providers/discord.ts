@@ -6,12 +6,12 @@ import { env } from "server/env"
 export const options: GrantProvider | undefined = !env.DISCORD_CLIENT_ID
 	? undefined
 	: {
-		client_id: env.DISCORD_CLIENT_ID,
-		client_secret: env.DISCORD_CLIENT_SECRET,
-		scope: ["identify"],
-		response: ["tokens", "profile"],
-		nonce: true,
-	}
+			client_id: env.DISCORD_CLIENT_ID,
+			client_secret: env.DISCORD_CLIENT_SECRET,
+			scope: ["identify"],
+			response: ["tokens", "profile"],
+			nonce: true,
+		}
 
 // type DiscordUser = {
 // 	id: string

@@ -78,11 +78,11 @@ class Sync {
 			changes.length === 0
 				? new Uint8Array(0)
 				: encode({
-					_tag: tags.Changes,
-					changes,
-					sender: this.args.siteId,
-					since: [lastSentVersion, 0],
-				})
+						_tag: tags.Changes,
+						changes,
+						sender: this.args.siteId,
+						since: [lastSentVersion, 0],
+					})
 
 		console.log(`[DB] Sending ${changes.length} changes since ${lastSentVersion}`)
 
@@ -107,7 +107,9 @@ class Sync {
 			} else {
 				const [, error] = sentChangesResult?.split("=") ?? []
 				console.error(
-					new Error(`[DB] Server rejected changes: needed Changes message, received ${error} tag`),
+					new Error(
+						`[DB] Server rejected changes: needed Changes message, received ${error} tag`
+					)
 				)
 			}
 		}
@@ -132,7 +134,7 @@ class Sync {
 						// record who send us the change
 						msg.sender,
 						c[7],
-						c[8],
+						c[8]
 					)
 				}
 			})
@@ -153,7 +155,7 @@ class Sync {
 
 async function createSync(db: CtxAsync["db"], room: string) {
 	const [schemaNameRow] = await db.execA<[string]>(
-		sql`SELECT value FROM crsql_master WHERE key = 'schema_name'`,
+		sql`SELECT value FROM crsql_master WHERE key = 'schema_name'`
 	)
 	const schemaName = schemaNameRow?.[0]
 	if (!schemaName) {
@@ -161,7 +163,7 @@ async function createSync(db: CtxAsync["db"], room: string) {
 	}
 
 	const [schemaVersionRow] = await db.execA<[number | bigint | undefined]>(
-		sql`SELECT value FROM crsql_master WHERE key = 'schema_version'`,
+		sql`SELECT value FROM crsql_master WHERE key = 'schema_version'`
 	)
 	const schemaVersion = BigInt(schemaVersionRow?.[0] ?? -1)
 

@@ -2,7 +2,7 @@ import { onFetch } from "sw/onFetch"
 import { CACHES } from "sw/config"
 import type { Message } from "shared/workerEvents"
 
-export { }
+export {}
 
 declare global {
 	var sw: ServiceWorkerGlobalScope // eslint-disable-line no-var
@@ -19,7 +19,7 @@ sw.addEventListener("install", (event) => {
 			await sw.skipWaiting()
 
 			console.debug("[SW] installed.")
-		})(),
+		})()
 	)
 })
 
@@ -34,14 +34,14 @@ sw.addEventListener("activate", (event) => {
 			await Promise.allSettled(
 				cacheNames
 					.filter((cacheName) => !appCaches.includes(cacheName))
-					.map((cacheName) => caches.delete(cacheName)),
+					.map((cacheName) => caches.delete(cacheName))
 			)
 
 			// immediately claim clients to avoid de-sync
 			await sw.clients.claim()
 
 			console.debug("[SW] activated.")
-		})(),
+		})()
 	)
 })
 

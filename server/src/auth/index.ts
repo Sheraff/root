@@ -111,7 +111,7 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 				callback: "/api/oauth/finalize",
 			},
 			...grantOptions,
-		}),
+		})
 	)
 
 	const createUserStatement = authDB.prepare<{
@@ -125,7 +125,7 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 		provider: string
 		providerUserId: string
 	}>(
-		sql`INSERT INTO accounts VALUES (@accountId, @userId, @provider, @providerUserId, datetime('now'));`,
+		sql`INSERT INTO accounts VALUES (@accountId, @userId, @provider, @providerUserId, datetime('now'));`
 	)
 
 	const createAccountWhereNotExistsStatement = authDB.prepare<{
@@ -134,17 +134,17 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 		provider: string
 		providerUserId: string
 	}>(
-		sql`INSERT OR IGNORE INTO accounts VALUES (@accountId, @userId, @provider, @providerUserId, datetime('now'))`,
+		sql`INSERT OR IGNORE INTO accounts VALUES (@accountId, @userId, @provider, @providerUserId, datetime('now'))`
 	)
 
 	const createUserAccount = authDB.transaction(
 		(
 			user: { userId: string; email: string },
-			account: { accountId: string; userId: string; provider: string; providerUserId: string },
+			account: { accountId: string; userId: string; provider: string; providerUserId: string }
 		) => {
 			createUserStatement.run(user)
 			createAccountStatement.run(account)
-		},
+		}
 	)
 
 	const userFromSessionStatement = authDB.prepare<{
@@ -154,7 +154,7 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 			FROM sessions
 			INNER JOIN accounts ON sessions.provider_user_id = accounts.provider_user_id AND sessions.provider = accounts.provider
 			INNER JOIN users ON accounts.user_id = users.id
-			WHERE sessions.id = @id AND datetime('now') < datetime(expires_at)`,
+			WHERE sessions.id = @id AND datetime('now') < datetime(expires_at)`
 	)
 
 	function getUserFromSession(req: FastifyRequest) {
@@ -174,7 +174,7 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 		sql`SELECT users.id as id, users.email as email
 			FROM accounts
 			INNER JOIN users ON accounts.user_id = users.id
-			WHERE accounts.provider_user_id = @id AND accounts.provider = @provider`,
+			WHERE accounts.provider_user_id = @id AND accounts.provider = @provider`
 	)
 
 	fastify.post(
@@ -213,7 +213,7 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 			})
 			res.status(200)
 			return res.send({ message: "invite accepted, proceed to /api/oauth/connect/:provider" })
-		},
+		}
 	)
 
 	fastify.get("/api/oauth/invite", function (req, res) {
@@ -306,7 +306,7 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 					accountId,
 					provider: grantData.provider,
 					providerUserId: grantData.id,
-				},
+				}
 			)
 			req.session.set("user", { id: userId, email: grantData.email })
 			return res.redirect(302, "/")

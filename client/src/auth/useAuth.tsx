@@ -4,24 +4,24 @@ import { providers, type Provider } from "client/auth/providers"
 
 type States =
 	| {
-		type: "unauthenticated"
-		submitInviteCode: (inviteCode: string) => Promise<Response>
-		signIn: (provider: string) => void
-		providers: Array<Provider>
-	}
+			type: "unauthenticated"
+			submitInviteCode: (inviteCode: string) => Promise<Response>
+			signIn: (provider: string) => void
+			providers: Array<Provider>
+	  }
 	| {
-		type: "creating-account"
-		createAccount: (provider: string) => void
-		cancelCreateAccount: () => void
-		providers: Array<Provider>
-	}
+			type: "creating-account"
+			createAccount: (provider: string) => void
+			cancelCreateAccount: () => void
+			providers: Array<Provider>
+	  }
 	| {
-		type: "signed-in"
-		userId: string
-		signOut: () => Promise<Response>
-		linkAccount: (provider: string) => void
-		providers: Array<Provider>
-	}
+			type: "signed-in"
+			userId: string
+			signOut: () => Promise<Response>
+			linkAccount: (provider: string) => void
+			providers: Array<Provider>
+	  }
 
 let cookieCache: Map<string, string | undefined> | null = null
 function getCookie(key: string) {
@@ -94,10 +94,10 @@ const filteredProviders = providers.filter((p) => __AUTH_PROVIDERS__.includes(p.
 
 export function useAuth(): States {
 	const [userId, setUserId] = useState<string | undefined>(() =>
-		getCookie(PUBLIC_CONFIG.userIdCookie),
+		getCookie(PUBLIC_CONFIG.userIdCookie)
 	)
 	const [creatingAccount, setCreatingAccount] = useState(() =>
-		getCookie(PUBLIC_CONFIG.accountCreationCookie),
+		getCookie(PUBLIC_CONFIG.accountCreationCookie)
 	)
 
 	useEffect(() => {
@@ -114,7 +114,7 @@ export function useAuth(): States {
 					setCreatingAccount(getCookie(PUBLIC_CONFIG.accountCreationCookie))
 				}, 10)
 			},
-			{ signal: controller.signal },
+			{ signal: controller.signal }
 		)
 
 		return () => controller.abort()

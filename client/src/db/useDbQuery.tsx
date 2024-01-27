@@ -209,7 +209,11 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 						console.log("updating after table change", updates, ...queries.keys())
 						for (const update of updates) {
 							for (const [, queryKey] of queries) {
-								const filterKey = [UNIQUE_KEY, ...queryKey, { [update]: true }] as const
+								const filterKey = [
+									UNIQUE_KEY,
+									...queryKey,
+									{ [update]: true },
+								] as const
 								client.invalidateQueries({
 									exact: false,
 									queryKey: filterKey,
@@ -259,7 +263,7 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 				// this error should only be logged while we evaluate the stability of this react-query adapter, remove it after a while
 				console.error(
 					"Query not found when trying to remove observer. This can happen just after a Hot Reload, but is an actual error otherwise.",
-					hash,
+					hash
 				)
 				return
 			}
@@ -406,10 +410,14 @@ export function useDbQuery<
 			statement.raw(false)
 			try {
 				const data = (await statement.all(transaction)) as TQueryFnData[]
-				transaction.exec(/*sql*/ `RELEASE use_query_${transactionId};`).then(releaser, releaser)
+				transaction
+					.exec(/*sql*/ `RELEASE use_query_${transactionId};`)
+					.then(releaser, releaser)
 				return data
 			} catch (e) {
-				transaction.exec(/*sql*/ `ROLLBACK TO use_query_${transactionId};`).then(releaser, releaser)
+				transaction
+					.exec(/*sql*/ `ROLLBACK TO use_query_${transactionId};`)
+					.then(releaser, releaser)
 				throw e
 			}
 		},

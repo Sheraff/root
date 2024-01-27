@@ -6,12 +6,12 @@ import { object, parse, string } from "valibot"
 export const options: GrantProvider | undefined = !env.GOOGLE_CLIENT_ID
 	? undefined
 	: {
-		client_id: env.GOOGLE_CLIENT_ID,
-		client_secret: env.GOOGLE_CLIENT_SECRET,
-		scope: ["openid", "https://www.googleapis.com/auth/userinfo.email"],
-		response: ["tokens", "profile"],
-		nonce: true,
-	}
+			client_id: env.GOOGLE_CLIENT_ID,
+			client_secret: env.GOOGLE_CLIENT_SECRET,
+			scope: ["openid", "https://www.googleapis.com/auth/userinfo.email"],
+			response: ["tokens", "profile"],
+			nonce: true,
+		}
 
 // type GoogleUser = {
 // 	sub: string

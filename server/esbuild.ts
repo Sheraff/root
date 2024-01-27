@@ -64,8 +64,12 @@ async function makeEsbuildWatcher() {
 					const run = () =>
 						spawn(
 							"node",
-							["--env-file=../.env", "--enable-source-maps", "node_modules/.cache/server/app.mjs"],
-							{ stdio: "inherit", env: process.env },
+							[
+								"--env-file=../.env",
+								"--enable-source-maps",
+								"node_modules/.cache/server/app.mjs",
+							],
+							{ stdio: "inherit", env: process.env }
 						)
 					if (childProcess) {
 						childProcess.on("exit", () => (childProcess = run()))

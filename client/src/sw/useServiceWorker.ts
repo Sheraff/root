@@ -12,7 +12,7 @@ export function useServiceWorker() {
 		queryKey: SW_CACHE_KEY,
 		staleTime: Infinity,
 		gcTime: Infinity,
-		queryFn: () => navigator.serviceWorker.ready
-			.then(r => r.active as KnownServiceWorker | null)
+		queryFn: () =>
+			navigator.serviceWorker.ready.then((r) => r.active as KnownServiceWorker | null),
 	})
 }

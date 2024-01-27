@@ -66,7 +66,7 @@ describe("SessionStore", () => {
 			provider: "hello",
 		}
 
-		store.set("1", session, () => { })
+		store.set("1", session, () => {})
 		const getCallback = vi.fn()
 		store.get("1", getCallback)
 		expect(getCallback).toHaveBeenCalledOnce()

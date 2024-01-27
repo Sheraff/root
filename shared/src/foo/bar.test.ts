@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { fooBar } from './bar'
+import { fooBar } from "./bar"
 
 describe("fooBar", () => {
 	it("returns fooBar", () => {

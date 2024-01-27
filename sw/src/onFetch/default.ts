@@ -21,8 +21,8 @@ function simpleNetworkFirst(event: FetchEvent, request: Request) {
 						headers: {
 							"Content-Type": "text/html; charset=utf-8",
 						},
-					}),
-			),
+					})
+			)
 		)
 }
 
@@ -51,14 +51,14 @@ function networkFirst(event: FetchEvent, request: Request, url: URL) {
 								headers: {
 									"Content-Type": "text/html; charset=utf-8",
 								},
-							}),
+							})
 						)
 					} else if (fetchResponse) {
 						resolve(fetchResponse)
 					}
 				})
 			},
-			navigator.connection?.rtt !== undefined ? navigator.connection.rtt + 100 : 850,
+			navigator.connection?.rtt !== undefined ? navigator.connection.rtt + 100 : 850
 		)
 		fetch(request, { signal: controller.signal })
 			.then((response) => {
@@ -73,19 +73,21 @@ function networkFirst(event: FetchEvent, request: Request, url: URL) {
 					resolve(response)
 				} else if (timeout) {
 					clearTimeout(timeout)
-					caches.match(event.request.url, { cacheName: CACHES.assets }).then((cacheResponse) => {
-						if (cacheResponse) resolve(cacheResponse)
-						else if (url.pathname === "/") {
-							resolve(
-								new Response(indexHtml, {
-									status: 200,
-									headers: {
-										"Content-Type": "text/html; charset=utf-8",
-									},
-								}),
-							)
-						} else resolve(response)
-					})
+					caches
+						.match(event.request.url, { cacheName: CACHES.assets })
+						.then((cacheResponse) => {
+							if (cacheResponse) resolve(cacheResponse)
+							else if (url.pathname === "/") {
+								resolve(
+									new Response(indexHtml, {
+										status: 200,
+										headers: {
+											"Content-Type": "text/html; charset=utf-8",
+										},
+									})
+								)
+							} else resolve(response)
+						})
 				} else {
 					fetchResponse = response
 				}

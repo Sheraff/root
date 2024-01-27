@@ -60,7 +60,7 @@ export function encrypt(data: object): string {
 
 export function decrypt<Schema extends BaseSchema>(
 	cipherText: string,
-	schema: Schema,
+	schema: Schema
 ): { success: Output<Schema> } | { error: Error } {
 	try {
 		const inputData = Buffer.from(cipherText, "hex")
@@ -81,7 +81,8 @@ export function decrypt<Schema extends BaseSchema>(
 
 		// Decrypt data
 		// @ts-expect-error -- TS expects the wrong createDecipher return type here
-		const decrypted = decipher.update(encryptedData, "binary", "utf-8") + decipher.final("utf-8")
+		const decrypted =
+			decipher.update(encryptedData, "binary", "utf-8") + decipher.final("utf-8")
 		const unknown = JSON.parse(decrypted)
 		const success = parse(schema, unknown)
 

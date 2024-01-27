@@ -6,7 +6,7 @@ import { compressBuffer } from "scripts/compressBuffer"
 export default function crsqlite(
 	fastify: FastifyInstance,
 	{ dbPath }: { dbPath: string },
-	done: () => void,
+	done: () => void
 ) {
 	fastify.addContentTypeParser(
 		"application/octet-stream",
@@ -20,7 +20,7 @@ export default function crsqlite(
 				error.statusCode = 400
 				done(error, undefined)
 			}
-		},
+		}
 	)
 
 	let lastDb: {
@@ -98,11 +98,19 @@ export default function crsqlite(
 		async handler(req, res) {
 			let db: CrsqliteDatabase
 			try {
-				db = await getDb(req.params.name, req.query.schemaName, BigInt(req.query.schemaVersion))
+				db = await getDb(
+					req.params.name,
+					req.query.schemaName,
+					BigInt(req.query.schemaVersion)
+				)
 			} catch (error: any) {
-				if (error.code === "SQLITE_IOERR_WRITE" || error.message?.includes("readonly database")) {
+				if (
+					error.code === "SQLITE_IOERR_WRITE" ||
+					error.message?.includes("readonly database")
+				) {
 					res.status(400).send({
-						message: "make and push changes first to create or migrate the DB on the server.",
+						message:
+							"make and push changes first to create or migrate the DB on the server.",
 					})
 					return
 				}
@@ -140,7 +148,7 @@ export default function crsqlite(
 				const compressed = await compressBuffer(encoded, 3)
 				const percent = Math.round((compressed.byteLength / encoded.byteLength) * 100)
 				fastify.log.info(
-					`Returning ${changes.length} changes, compressed to ${percent}% (${encoded.byteLength} -> ${compressed.byteLength})`,
+					`Returning ${changes.length} changes, compressed to ${percent}% (${encoded.byteLength} -> ${compressed.byteLength})`
 				)
 				res.header("Content-Encoding", "br")
 				res.send(compressed)

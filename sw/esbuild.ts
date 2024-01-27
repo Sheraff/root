@@ -61,7 +61,7 @@ async function build() {
 	// env
 	const env = loadEnv("production", "..")
 	options.define = Object.fromEntries(
-		Object.entries(env).map(([key, value]) => [`import.meta.env.${key}`, JSON.stringify(value)]),
+		Object.entries(env).map(([key, value]) => [`import.meta.env.${key}`, JSON.stringify(value)])
 	)
 	options.define["import.meta.env.MODE"] = "'production'"
 	options.define["import.meta.env.DEV"] = "false"
@@ -87,7 +87,7 @@ async function watch() {
 	// env
 	const env = loadEnv("development", "..")
 	options.define = Object.fromEntries(
-		Object.entries(env).map(([key, value]) => [`import.meta.env.${key}`, JSON.stringify(value)]),
+		Object.entries(env).map(([key, value]) => [`import.meta.env.${key}`, JSON.stringify(value)])
 	)
 	options.define["import.meta.env.MODE"] = "'production'"
 	options.define["import.meta.env.DEV"] = "true"

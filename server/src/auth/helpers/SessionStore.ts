@@ -63,7 +63,7 @@ export function makeStore(db: BetterSqlite3.Database): SessionStore & {
 	const setStatement = db.prepare<Entry>(
 		sql`INSERT OR REPLACE INTO sessions VALUES (
 			@id, @session, @expires_at, @provider, @provider_user_id, @provider_email, @created_at
-		)`,
+		)`
 	)
 
 	const getStatement = db.prepare<{

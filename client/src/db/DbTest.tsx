@@ -91,7 +91,7 @@ export function Content({ name }: { name: string }) {
 
 	const result = useQuery<{ id: string; content: string }>(
 		ctx,
-		sql`SELECT id, content, position FROM test ORDER BY position, id ASC`,
+		sql`SELECT id, content, position FROM test ORDER BY position, id ASC`
 	)
 
 	const [toggle, setToggle] = useState(true)
@@ -107,7 +107,9 @@ export function Content({ name }: { name: string }) {
 				Toggle bis {String(!toggleBis)}
 			</Button>
 			{toggleBis && <TestBis name={name} />}
-			<Button onClick={() => setToggle2((toggle) => !toggle)}>Toggle 2 {String(!toggle2)}</Button>
+			<Button onClick={() => setToggle2((toggle) => !toggle)}>
+				Toggle 2 {String(!toggle2)}
+			</Button>
 			{toggle2 && <Test2 name={name} />}
 			<ul>
 				{result.data?.map((item) => (
@@ -126,16 +128,9 @@ export function Content({ name }: { name: string }) {
 					event.currentTarget.reset()
 				}}
 			>
-				<input
-					type="text"
-					name="content"
-					required
-				/>
+				<input type="text" name="content" required />
 				<div>
-					<Button
-						type="button"
-						onClick={dropData}
-					>
+					<Button type="button" onClick={dropData}>
 						Clear list
 					</Button>
 					<Button>Add to list</Button>

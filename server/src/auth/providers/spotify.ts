@@ -6,12 +6,12 @@ import { object, parse, string } from "valibot"
 export const options: GrantProvider | undefined = !env.SPOTIFY_CLIENT_ID
 	? undefined
 	: {
-		client_id: env.SPOTIFY_CLIENT_ID,
-		client_secret: env.SPOTIFY_CLIENT_SECRET,
-		scope: ["user-read-email", "user-read-private"],
-		response: ["tokens", "profile"],
-		nonce: true,
-	}
+			client_id: env.SPOTIFY_CLIENT_ID,
+			client_secret: env.SPOTIFY_CLIENT_SECRET,
+			scope: ["user-read-email", "user-read-private"],
+			response: ["tokens", "profile"],
+			nonce: true,
+		}
 
 // type SpotifyUser = {
 // 	display_name: string

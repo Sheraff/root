@@ -129,13 +129,7 @@ function NotLoggedIn({
 					submitInviteCode(code)
 				}}
 			>
-				<input
-					type="text"
-					name="code"
-					required
-					minLength={17}
-					maxLength={17}
-				/>
+				<input type="text" name="code" required minLength={17} maxLength={17} />
 				<button type="submit">Submit</button>
 			</form>
 			<hr />
@@ -162,8 +156,8 @@ export default function App() {
 		sw.postMessage({
 			type: "FOO",
 			payload: {
-				foo: "hello SW! from client"
-			}
+				foo: "hello SW! from client",
+			},
 		})
 	}, [sw])
 

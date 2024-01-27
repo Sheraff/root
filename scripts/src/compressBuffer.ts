@@ -2,7 +2,7 @@ import { brotliCompress, constants } from "node:zlib"
 
 export function compressBuffer(
 	buffer: Buffer | ArrayBuffer,
-	quality: number = constants.BROTLI_MAX_QUALITY,
+	quality: number = constants.BROTLI_MAX_QUALITY
 ) {
 	return new Promise<Buffer>((resolve, reject) => {
 		brotliCompress(
@@ -20,7 +20,7 @@ export function compressBuffer(
 				} else {
 					resolve(result)
 				}
-			},
+			}
 		)
 	})
 }

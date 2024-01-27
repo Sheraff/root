@@ -18,7 +18,7 @@ describe(
 		it("creates a database with the correct schema", async () => {
 			const tables = app.auth.db
 				.prepare(
-					sql`SELECT name FROM sqlite_schema WHERE type ='table' AND name NOT LIKE 'sqlite_%';`,
+					sql`SELECT name FROM sqlite_schema WHERE type ='table' AND name NOT LIKE 'sqlite_%';`
 				)
 				.all() as { name: string }[]
 			expect(tables.map((t) => t.name)).toEqual(["users", "sessions", "accounts", "invites"])
@@ -131,7 +131,7 @@ describe(
 				.replace(/=/g, "")
 				.replace(/-/g, "+")
 				.replace(/_/g, "/")
-			app.auth.sessionStore.set(sessionId, sessionData, () => { })
+			app.auth.sessionStore.set(sessionId, sessionData, () => {})
 
 			// simulate post-grant redirect
 			const foo = await app.inject({
@@ -164,5 +164,5 @@ describe(
 			expect(user?.email).toBe("foo")
 		})
 	},
-	{ sequential: true },
+	{ sequential: true }
 )

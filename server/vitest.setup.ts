@@ -13,7 +13,7 @@ const extra = Object.fromEntries(
 	readFileSync(join(__dirname, "..", ".env"), "utf-8")
 		.split("\n")
 		.filter((l) => l.trim() && !l.startsWith("#"))
-		.map((l) => l.split("=", 2)),
+		.map((l) => l.split("=", 2))
 )
 
 Object.assign(process.env, extra)

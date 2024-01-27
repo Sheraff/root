@@ -8,7 +8,7 @@ export default defineConfig({
 		alias: {
 			// use alias to avoid having "shared" as a package dependency of "shared"
 			"shared/": `${normalizePath(__dirname)}/src/`,
-		}
+		},
 	},
 	test: {
 		passWithNoTests: true,

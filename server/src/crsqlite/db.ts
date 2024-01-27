@@ -19,7 +19,7 @@ function wrapDatabase(db: Database.Database): CrsqliteDatabase {
 	const getChangesStatement = db
 		.prepare(
 			sql`SELECT "table", "pk", "cid", "val", "col_version", "db_version", NULL, "cl", "seq" FROM crsql_changes 
-				WHERE db_version > ? AND site_id IS NOT ?`,
+				WHERE db_version > ? AND site_id IS NOT ?`
 		)
 		.raw(true)
 		.safeIntegers()
@@ -29,7 +29,7 @@ function wrapDatabase(db: Database.Database): CrsqliteDatabase {
 	const applyChangesStatement = db.prepare(
 		sql`INSERT INTO crsql_changes
 			("table", "pk", "cid", "val", "col_version", "db_version", "site_id", "cl", "seq")
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
 	)
 
 	const close = db.close.bind(db)
@@ -44,7 +44,17 @@ function wrapDatabase(db: Database.Database): CrsqliteDatabase {
 		applyChanges(msg: Changes) {
 			db.transaction((msg) => {
 				for (const c of msg.changes) {
-					applyChangesStatement.run(c[0], c[1], c[2], c[3], c[4], c[5], msg.sender, c[7], c[8])
+					applyChangesStatement.run(
+						c[0],
+						c[1],
+						c[2],
+						c[3],
+						c[4],
+						c[5],
+						msg.sender,
+						c[7],
+						c[8]
+					)
 				}
 			})(msg)
 		},
@@ -62,7 +72,7 @@ export async function makeCrsqliteDb(
 		schemaName: string
 		version: bigint
 		dbPath?: string
-	},
+	}
 ) {
 	const name =
 		options.name && options.dbPath
@@ -78,22 +88,26 @@ export async function makeCrsqliteDb(
 
 	try {
 		// auto-migrate
-		const masterStatement = db.prepare(sql`SELECT value FROM crsql_master WHERE key = ?`).pluck()
+		const masterStatement = db
+			.prepare(sql`SELECT value FROM crsql_master WHERE key = ?`)
+			.pluck()
 		const schemaName = masterStatement.get("schema_name") as string | undefined
 
 		if (schemaName && schemaName !== options.schemaName) {
 			// we will not allow reformatting a db to a new schema
 			throw new Error(
-				`Server has schema "${schemaName}" but client requested "${options.schemaName}"`,
+				`Server has schema "${schemaName}" but client requested "${options.schemaName}"`
 			)
 		}
 
-		const schemaVersion = masterStatement.safeIntegers().get("schema_version") as bigint | undefined
+		const schemaVersion = masterStatement.safeIntegers().get("schema_version") as
+			| bigint
+			| undefined
 		if (schemaName === options.schemaName && options.version === schemaVersion) {
 			return wrapDatabase(db)
 		}
 		fastify.log.warn(
-			`Mismatch schema version. Client requested "${options.schemaName}" v${options.version} but server is on "${schemaName}" v${schemaVersion}`,
+			`Mismatch schema version. Client requested "${options.schemaName}" v${options.version} but server is on "${schemaName}" v${schemaVersion}`
 		)
 
 		const raw = await readFile(getSchemaPath(options.schemaName), "utf-8")
@@ -102,13 +116,13 @@ export async function makeCrsqliteDb(
 		const residentVersion = cryb64(content)
 		if (residentVersion !== options.version) {
 			throw new Error(
-				`Server has schema version ${residentVersion} but client requested ${options.version}`,
+				`Server has schema version ${residentVersion} but client requested ${options.version}`
 			)
 		}
 
 		const autoMigrateStatement = db.prepare(sql`SELECT crsql_automigrate(?)`)
 		const masterInsertStatement = db.prepare(
-			sql`INSERT OR REPLACE INTO crsql_master (key, value) VALUES (?, ?)`,
+			sql`INSERT OR REPLACE INTO crsql_master (key, value) VALUES (?, ?)`
 		)
 		db.transaction(() => {
 			autoMigrateStatement.run(content)

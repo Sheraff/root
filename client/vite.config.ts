@@ -100,14 +100,14 @@ function Compress(): PluginOption {
 							const compressedPath = node.path + ".br"
 							writeFile(compressedPath, compressed)
 						})
-						.catch((error) => _logger.error(error)),
+						.catch((error) => _logger.error(error))
 				)
 			})
 			await Promise.all(promises)
 			if (stats.count > 0) {
 				const percent = Math.round((stats.after / stats.before) * 100)
 				_logger.info(
-					`Compressed ${stats.before} bytes to ${stats.after} bytes (${percent}%) in ${stats.count} files`,
+					`Compressed ${stats.before} bytes to ${stats.after} bytes (${percent}%) in ${stats.count} files`
 				)
 			}
 		},
@@ -129,7 +129,7 @@ if (process.env.VITE_ANALYZE) {
 			brotliSize: true,
 			gzipSize: true,
 			openOptions: { app: { name: "google chrome" } },
-		}),
+		})
 	)
 }
 

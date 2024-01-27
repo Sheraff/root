@@ -43,7 +43,7 @@ async function recurse(initial_folder: string, nodeCallback: NodeCallback): Prom
 				const add = await recurse(full_path, nodeCallback)
 				count += add
 			}
-		}),
+		})
 	)
 
 	return count
