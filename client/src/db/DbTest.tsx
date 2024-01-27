@@ -5,6 +5,7 @@ import { sql } from "shared/sql"
 import { useSync } from "client/db/Sync"
 import { useDbQuery } from "client/db/useDbQuery"
 import { useDbMutation } from "client/db/useDbMutation"
+import { Button } from "client/Button/Button"
 
 function Test({ name }: { name: string }) {
 	const other = useDbQuery<{ id: string; content: string; position: number }>({
@@ -100,18 +101,18 @@ export function Content({ name }: { name: string }) {
 	return (
 		<>
 			<h2>Database</h2>
-			<button onClick={() => setToggle((toggle) => !toggle)}>Toggle {String(!toggle)}</button>
+			<Button onClick={() => setToggle((toggle) => !toggle)}>Toggle {String(!toggle)}</Button>
 			{toggle && <Test name={name} />}
-			<button onClick={() => setToggleBis((toggle) => !toggle)}>
+			<Button onClick={() => setToggleBis((toggle) => !toggle)}>
 				Toggle bis {String(!toggleBis)}
-			</button>
+			</Button>
 			{toggleBis && <TestBis name={name} />}
-			<button onClick={() => setToggle2((toggle) => !toggle)}>Toggle 2 {String(!toggle2)}</button>
+			<Button onClick={() => setToggle2((toggle) => !toggle)}>Toggle 2 {String(!toggle2)}</Button>
 			{toggle2 && <Test2 name={name} />}
 			<ul>
 				{result.data?.map((item) => (
 					<li key={item.id}>
-						{item.content} <button onClick={() => removeData(item.id)}>delete</button>
+						{item.content} <Button onClick={() => removeData(item.id)}>delete</Button>
 					</li>
 				))}
 			</ul>
@@ -131,19 +132,19 @@ export function Content({ name }: { name: string }) {
 					required
 				/>
 				<div>
-					<button
+					<Button
 						type="button"
 						onClick={dropData}
 					>
 						Clear list
-					</button>
-					<button>Add to list</button>
+					</Button>
+					<Button>Add to list</Button>
 				</div>
 			</form>
 			<hr />
 			{sync && (
 				<>
-					<button onClick={() => sync.roundTrip()}>Sync</button>
+					<Button onClick={() => sync.roundTrip()}>Sync</Button>
 				</>
 			)}
 		</>

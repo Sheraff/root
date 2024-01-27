@@ -5,7 +5,7 @@ import { Content } from "client/db/DbTest"
 import { DbProvider } from "client/db/ParentTest"
 import { fooBar } from "shared/foo/bar"
 import { useServiceWorker } from "client/sw/useServiceWorker"
-
+import { Button } from "client/Button/Button"
 
 fooBar()
 
@@ -57,18 +57,18 @@ function LoggedIn({
 		<>
 			<div>Logged in as {userId}</div>
 			<hr />
-			<button onClick={signOut}>Logout</button>
+			<Button onClick={signOut}>Logout</Button>
 			<hr />
 			<div>
 				<p>Link accounts</p>
 				{providers.map((provider) => (
-					<button
+					<Button
 						key={provider.key}
 						onClick={() => linkAccount(provider.key)}
 						style={{ backgroundColor: provider.color, color: provider.textColor }}
 					>
 						{provider.name}
-					</button>
+					</Button>
 				))}
 			</div>
 			<hr />

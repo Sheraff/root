@@ -1,7 +1,6 @@
 {
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
-		"composite": true,
 		"jsx": "react-jsx",
 		"lib": [
 			"DOM",
@@ -13,10 +12,15 @@
 			"vitest/importMeta",
 			"vite/client"
 		],
+		"plugins": [
+			{
+				"name": "typescript-plugin-css-modules"
+			}
+		]
 	},
 	"files": [
 		"main.tsx",
-		"types/vite.d.ts"
+		"types/vite.d.ts",
 	],
 	"include": [
 		"src/**/*.ts",
