@@ -28,6 +28,7 @@
 		"@vlcn.io/react": "3.1.0",
 		"@vlcn.io/ws-common": "0.2.0",
 		"better-sqlite3": "^9.3.0",
+		"clsx": "^2.1.0",
 		"dotenv": "^16.4.1",
 		"fastify": "^4.25.2",
 		"grant": "^5.4.22",

@@ -17,3 +17,8 @@
 	white-space: nowrap;
 	margin-right: 10px;
 }
+
+.dark {
+	color: white;
+	background-color: #001529;
+}

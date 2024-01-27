@@ -65,7 +65,8 @@ function LoggedIn({
 					<Button
 						key={provider.key}
 						onClick={() => linkAccount(provider.key)}
-						style={{ backgroundColor: provider.color, color: provider.textColor }}
+						dark
+						style={{ backgroundColor: provider.color }}
 					>
 						{provider.name}
 					</Button>
@@ -94,16 +95,17 @@ function CreateAccount({
 		<>
 			<div>Create Account</div>
 			{providers.map((provider) => (
-				<button
+				<Button
 					key={provider.key}
 					onClick={() => createAccount(provider.key)}
-					style={{ backgroundColor: provider.color, color: provider.textColor }}
+					dark
+					style={{ backgroundColor: provider.color }}
 				>
 					{provider.name}
-				</button>
+				</Button>
 			))}
 			<hr />
-			<button onClick={cancelCreateAccount}>Cancel</button>
+			<Button onClick={cancelCreateAccount}>Cancel</Button>
 		</>
 	)
 }
@@ -130,18 +132,19 @@ function NotLoggedIn({
 				}}
 			>
 				<input type="text" name="code" required minLength={17} maxLength={17} />
-				<button type="submit">Submit</button>
+				<Button type="submit">Submit</Button>
 			</form>
 			<hr />
 			<div>Sign in</div>
 			{providers.map((provider) => (
-				<button
+				<Button
 					key={provider.key}
 					onClick={() => signIn(provider.key)}
-					style={{ backgroundColor: provider.color, color: provider.textColor }}
+					dark
+					style={{ backgroundColor: provider.color }}
 				>
 					{provider.name}
-				</button>
+				</Button>
 			))}
 			<hr />
 			<Demo />
