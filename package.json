@@ -23,30 +23,30 @@
 		"@fastify/session": "^10.7.0",
 		"@fastify/static": "6.12.0",
 		"@tanstack/react-query": "^5.17.19",
-		"@tanstack/react-query-devtools": "^5.17.19",
-		"@vlcn.io/crsqlite": "0.16.1",
+		"@tanstack/react-query-devtools": "^5.17.21",
+		"@vlcn.io/crsqlite": "0.16.3",
 		"@vlcn.io/react": "3.1.0",
 		"@vlcn.io/ws-common": "0.2.0",
-		"better-sqlite3": "^9.2.2",
-		"dotenv": "^16.3.2",
+		"better-sqlite3": "^9.3.0",
+		"dotenv": "^16.4.1",
 		"fastify": "^4.25.2",
 		"grant": "^5.4.22",
 		"pino-pretty": "10.3.1",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"valibot": "0.26.0"
+		"valibot": "0.27.0"
 	},
 	"devDependencies": {
 		"@total-typescript/ts-reset": "0.5.1",
-		"@types/better-sqlite3": "^7.6.8",
+		"@types/better-sqlite3": "^7.6.9",
 		"@types/node": "20.10.5",
 		"@types/react": "18.2.48",
 		"@types/react-dom": "18.2.18",
-		"@typescript-eslint/eslint-plugin": "^6.19.0",
-		"@typescript-eslint/parser": "^6.19.0",
+		"@typescript-eslint/eslint-plugin": "^6.19.1",
+		"@typescript-eslint/parser": "^6.19.1",
 		"@vitejs/plugin-react-swc": "3.5.0",
 		"chokidar": "3.5.3",
-		"esbuild": "0.19.11",
+		"esbuild": "0.19.12",
 		"eslint": "^8.56.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-react-refresh": "^0.4.5",
@@ -59,7 +59,7 @@
 		"typescript": "^5.3.3",
 		"typescript-plugin-css-modules": "^5.0.2",
 		"vite": "^5.0.12",
-		"vitest": "^1.2.1"
+		"vitest": "^1.2.2"
 	},
 	"engines": {
 		"node": ">=20.9.0"
