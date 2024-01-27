@@ -80,9 +80,8 @@ export function decrypt<Schema extends BaseSchema>(
 		decipher.setAuthTag(authTag)
 
 		// Decrypt data
-		// @ts-expect-error -- TS expects the wrong createDecipher return type here
 		const decrypted =
-			decipher.update(encryptedData, "binary", "utf-8") + decipher.final("utf-8")
+			decipher.update(encryptedData, undefined, "utf-8") + decipher.final("utf-8")
 		const unknown = JSON.parse(decrypted)
 		const success = parse(schema, unknown)
 
