@@ -36,7 +36,10 @@
 		"client/public/sw.js.map": true,
 		"client/stats.html": true,
 		"**/vitest.config.ts.*": true,
-		"**/*.module.css.d.ts": true
+		"**/*.module.css.d.ts": true,
+		"**/*.sql.d.ts": true,
+		"**/*.sql.d.ts.map": true,
+		"**/*.js": true
 	},
 	"npm.packageManager": "pnpm",
 	"typescript.tsdk": "node_modules/typescript/lib",
@@ -65,6 +68,7 @@
 		"*package.json": "${capture}.eslint*, ${capture}.prettier*, ${capture}pnpm*, ${capture}turbo*, ${capture}tsconfig.json, ${capture}vite.config.ts, ${capture}vitest.*, ${capture}.gitignore, ${capture}esbuild.*, ${capture}knip.*, ${capture}.nvmrc",
 		"*.js": "${capture}.js.*, ${capture}.d.ts*",
 		"*.css": "${capture}.css.*",
-		"*.wasm": "${capture}.wasm.*"
+		"*.wasm": "${capture}.wasm.*",
+		"*.sql": "${capture}.sql.d.ts, ${capture}.sql.d.ts.map"
 	}
 }

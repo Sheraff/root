@@ -130,7 +130,11 @@ importers:
         specifier: ^1.2.2
         version: 1.2.2(@types/node@20.10.5)
 
-  assets: {}
+  assets:
+    devDependencies:
+      scripts:
+        specifier: workspace:scripts@*
+        version: link:../scripts
 
   client:
     dependencies:

@@ -3,7 +3,16 @@
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",
+	"scripts": {
+		"tsc:build": "tsx ./esbuild.ts --build",
+		"tsc:watch": "tsx ./esbuild.ts",
+		"dev": "pnpm tsc:watch",
+		"clear": "rm -rf node_modules; rm -rf .turbo; find src -name '*.d.ts*' -type f -delete"
+	},
 	"exports": {
 		"./*": "./src/*"
+	},
+	"devDependencies": {
+		"scripts": "workspace:scripts@*"
 	}
 }
