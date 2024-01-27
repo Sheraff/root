@@ -38,6 +38,11 @@ async function watch() {
 			buildMap(path)
 		}
 	})
+	process.on("SIGINT", async () => {
+		console.log("Stopping assets watcher...")
+		await watcher.close()
+		process.exit(0)
+	})
 }
 
 async function build() {
