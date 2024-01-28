@@ -1,4 +1,4 @@
-import { ViteRawLoader } from "scripts/ViteRawLoader"
+import { ViteRawLoader } from "script/ViteRawLoader"
 import { defineConfig, normalizePath } from "vite"
 
 export default defineConfig({

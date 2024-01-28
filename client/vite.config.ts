@@ -5,9 +5,9 @@ import { visualizer } from "rollup-plugin-visualizer"
 import { config } from "dotenv"
 import { readFile, rm, writeFile } from "node:fs/promises"
 import { join, resolve } from "node:path"
-import { compressBuffer } from "scripts/compressBuffer"
-import { ViteRawLoader } from "scripts/ViteRawLoader"
-import { walkFsTree } from "scripts/walkFsTree"
+import { compressBuffer } from "script/compressBuffer"
+import { ViteRawLoader } from "script/ViteRawLoader"
+import { walkFsTree } from "script/walkFsTree"
 
 config({ path: "../.env" })
 

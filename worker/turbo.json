@@ -3,7 +3,7 @@
 	"extends": ["//"],
 	"pipeline": {
 		"build": {
-			"outputs": ["../dist/sw/**"],
+			"outputs": ["../dist/worker/**"],
 			"inputs": [
 				"esbuild.ts",
 				"tsconfig.app.json",
@@ -12,14 +12,14 @@
 				"../dist/client/assets/**",
 				"../assets/src/**"
 			],
-			"dependsOn": ["client#build", "scripts#build"]
+			"dependsOn": ["client#build", "script#build"]
 		},
 		"tsc:tools": {
 			"inputs": [
 				"esbuild.ts",
 				"types/*.d.ts",
 				"../types/*.d.ts",
-				"../scripts/src/**/*.ts",
+				"../script/src/**/*.ts",
 				"tsconfig.json",
 				"tsconfig.tools.json"
 			]
@@ -36,13 +36,13 @@
 			]
 		},
 		"tsc": {
-			"dependsOn": ["sw#tsc:tools", "sw#tsc:app"]
+			"dependsOn": ["worker#tsc:tools", "worker#tsc:app"]
 		},
 		"dev": {
 			"cache": false,
 			"persistent": true,
 			"outputs": ["../client/public/sw.js"],
-			"dependsOn": ["scripts#build"]
+			"dependsOn": ["script#build"]
 		}
 	}
 }

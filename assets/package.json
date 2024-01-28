@@ -13,6 +13,6 @@
 		"./*": "./src/*"
 	},
 	"devDependencies": {
-		"scripts": "workspace:scripts@*"
+		"script": "workspace:script@*"
 	}
 }

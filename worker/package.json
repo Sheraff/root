@@ -1,5 +1,5 @@
 {
-	"name": "sw",
+	"name": "worker",
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",
@@ -22,6 +22,6 @@
 		"client": "workspace:client@*"
 	},
 	"devDependencies": {
-		"scripts": "workspace:scripts@*"
+		"script": "workspace:script@*"
 	}
 }

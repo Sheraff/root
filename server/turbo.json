@@ -5,12 +5,12 @@
 		"build": {
 			"outputs": ["../dist/server/**"],
 			"inputs": ["../assets/src/**", "esbuild.ts", "tsconfig.app.json", "src/**"],
-			"dependsOn": ["scripts#build"]
+			"dependsOn": ["script#build"]
 		},
 		"tsc:tools": {
 			"inputs": [
 				"../types/*.d.ts",
-				"../scripts/src/**/*.ts",
+				"../script/src/**/*.ts",
 				"tsconfig.json",
 				"tsconfig.tools.json"
 			]
@@ -22,7 +22,7 @@
 				"types/*.d.ts",
 				"../types/*.d.ts",
 				"../shared/src/**/*.ts",
-				"../scripts/src/**/*.ts",
+				"../script/src/**/*.ts",
 				"tsconfig.json",
 				"tsconfig.app.json"
 			]
@@ -31,12 +31,12 @@
 			"dependsOn": ["server#tsc:tools", "server#tsc:app"]
 		},
 		"test": {
-			"dependsOn": ["scripts#build"]
+			"dependsOn": ["script#build"]
 		},
 		"dev": {
 			"cache": false,
 			"persistent": true,
-			"dependsOn": ["scripts#build"]
+			"dependsOn": ["script#build"]
 		}
 	}
 }

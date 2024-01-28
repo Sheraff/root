@@ -135,9 +135,9 @@ importers:
 
   assets:
     devDependencies:
-      scripts:
-        specifier: workspace:scripts@*
-        version: link:../scripts
+      script:
+        specifier: workspace:script@*
+        version: link:../script
 
   client:
     dependencies:
@@ -148,11 +148,11 @@ importers:
         specifier: workspace:shared@*
         version: link:../shared
     devDependencies:
-      scripts:
-        specifier: workspace:scripts@*
-        version: link:../scripts
+      script:
+        specifier: workspace:script@*
+        version: link:../script
 
-  scripts: {}
+  script: {}
 
   server:
     dependencies:
@@ -163,17 +163,17 @@ importers:
         specifier: workspace:shared@*
         version: link:../shared
     devDependencies:
-      scripts:
-        specifier: workspace:scripts@*
-        version: link:../scripts
+      script:
+        specifier: workspace:script@*
+        version: link:../script
 
   shared:
     devDependencies:
-      scripts:
-        specifier: workspace:scripts@*
-        version: link:../scripts
+      script:
+        specifier: workspace:script@*
+        version: link:../script
 
-  sw:
+  worker:
     dependencies:
       assets:
         specifier: workspace:assets@*
@@ -185,9 +185,9 @@ importers:
         specifier: workspace:shared@*
         version: link:../shared
     devDependencies:
-      scripts:
-        specifier: workspace:scripts@*
-        version: link:../scripts
+      script:
+        specifier: workspace:script@*
+        version: link:../script
 
 packages:
 

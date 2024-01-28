@@ -15,7 +15,7 @@
 		"clear": "rm -rf node_modules; rm -rf .turbo;"
 	},
 	"devDependencies": {
-		"scripts": "workspace:scripts@*"
+		"script": "workspace:script@*"
 	},
 	"exports": {
 		"./*": "./src/*"

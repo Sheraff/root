@@ -2,7 +2,7 @@
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"lib": ["WebWorker", "ESNext"],
-		"outDir": "../dist/sw",
+		"outDir": "../dist/worker",
 		"types": ["vitest/importMeta"]
 	},
 	"include": [

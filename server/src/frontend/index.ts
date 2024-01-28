@@ -18,7 +18,7 @@ export default function frontend(fastify: FastifyInstance, opts: object, done: (
 		preCompressed: true,
 	})
 
-	const swDir = path.join(__dirname, "../../dist/sw")
+	const swDir = path.join(__dirname, "../../dist/worker")
 
 	fastify.get("/sw.js", function (req, reply) {
 		reply.sendFile("sw.js", swDir)

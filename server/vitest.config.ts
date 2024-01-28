@@ -1,4 +1,4 @@
-import { ViteRawLoader } from "scripts/ViteRawLoader"
+import { ViteRawLoader } from "script/ViteRawLoader"
 import { normalizePath } from "vite"
 import { defineConfig } from "vitest/config"
 

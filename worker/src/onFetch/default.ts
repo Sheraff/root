@@ -1,4 +1,4 @@
-import { CACHES } from "sw/config"
+import { CACHES } from "worker/config"
 import indexHtml from "client/index.html"
 
 function simpleNetworkFirst(event: FetchEvent, request: Request) {

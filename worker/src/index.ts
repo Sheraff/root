@@ -1,5 +1,5 @@
-import { onFetch } from "sw/onFetch"
-import { CACHES } from "sw/config"
+import { onFetch } from "worker/onFetch"
+import { CACHES } from "worker/config"
 import type { Message } from "shared/workerEvents"
 
 export {}

@@ -25,9 +25,9 @@ const options: esbuild.BuildOptions = {
 	},
 	// alias: {
 	// 	"shared": "../shared/src",
-	// 	"scripts": "../scripts/src",
+	// 	"script": "../script/src",
 	// 	"assets": "../assets/src",
-	// 	"sw": "../sw/src",
+	// 	"worker": "../worker/src",
 	// },
 }
 

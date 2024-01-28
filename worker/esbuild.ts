@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-import { compressBuffer } from "scripts/compressBuffer"
+import { compressBuffer } from "script/compressBuffer"
 import * as esbuild from "esbuild"
 import { readFile, readdir, writeFile } from "node:fs/promises"
 import { join } from "node:path"
@@ -20,9 +20,9 @@ const options: esbuild.BuildOptions = {
 	tsconfig: "./tsconfig.app.json",
 	// alias: {
 	// 	"shared": "../shared/src",
-	// 	"scripts": "../scripts/src",
+	// 	"script": "../script/src",
 	// 	"assets": "../assets/src",
-	// 	"sw": "../sw/src",
+	// 	"worker": "../worker/src",
 	// },
 }
 
@@ -66,7 +66,7 @@ async function compressFile(relative: string) {
 }
 
 async function build() {
-	options.outfile = "../dist/sw/sw.js"
+	options.outfile = "../dist/worker/sw.js"
 	options.minifySyntax = true
 	options.plugins = [injectViteHtml]
 
@@ -90,7 +90,7 @@ async function build() {
 
 	//
 	await esbuild.build(options)
-	await compressFile("../dist/sw/sw.js")
+	await compressFile("../dist/worker/sw.js")
 }
 
 async function watch() {

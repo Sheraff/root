@@ -22,6 +22,6 @@
 		"assets": "workspace:assets@*"
 	},
 	"devDependencies": {
-		"scripts": "workspace:scripts@*"
+		"script": "workspace:script@*"
 	}
 }

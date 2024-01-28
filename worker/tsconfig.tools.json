@@ -6,5 +6,5 @@
 		"target": "ESNext"
 	},
 	"files": ["esbuild.ts"],
-	"include": ["types/*.d.ts", "../types/*.d.ts", "../scripts/src/**/*.ts"]
+	"include": ["types/*.d.ts", "../types/*.d.ts", "../script/src/**/*.ts"]
 }
