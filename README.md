@@ -104,5 +104,3 @@ pnpm clear # clear cache (turbo, vite, pnpm, esbuild, pnpm)
 - database
   - figure out migrations story
   - better DX (sync hook, db provider, ...)
-- dev server
-  - when updating a shared .sql schema, /client Vite HMR finishes before /server esbuild watch full server restart, which leads the request to `/api/changes` (to re-sync the db from the client) to fail
