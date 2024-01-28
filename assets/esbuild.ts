@@ -39,8 +39,9 @@ async function watch() {
 		}
 	})
 	process.on("SIGINT", async () => {
-		console.log("Stopping assets watcher...")
+		console.log("\nStopping assets watcher...")
 		await watcher.close()
+		console.log("Assets watcher stopped, exiting.")
 		process.exit(0)
 	})
 }

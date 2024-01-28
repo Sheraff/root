@@ -43,6 +43,18 @@ const injectViteHtml: esbuild.Plugin = {
 	},
 }
 
+const logger: esbuild.Plugin = {
+	name: "logger",
+	setup(build) {
+		build.onStart(() => {
+			console.log("Building SW...")
+		})
+		build.onEnd(() => {
+			console.log("Rebuilt SW")
+		})
+	},
+}
+
 /** @param {string} relative */
 async function compressFile(relative: string) {
 	const path = join(process.cwd(), relative)
@@ -97,12 +109,15 @@ async function watch() {
 	// assets
 	options.define["__CLIENT_ASSETS__"] = JSON.stringify(["/"])
 
+	options.plugins = [logger]
+
 	//
 	const context = await esbuild.context(options)
 	await context.watch()
 	process.on("SIGINT", async () => {
-		console.log("Stopping SW esbuild...")
+		console.log("\nStopping SW esbuild...")
 		await context.dispose()
+		console.log("SW esbuild stopped, exiting.")
 		process.exit(0)
 	})
 }

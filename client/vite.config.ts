@@ -20,14 +20,16 @@ function SwHotReload(): PluginOption {
 		configResolved({ logger }) {
 			_logger = logger
 		},
+
 		handleHotUpdate({ file, server, timestamp }) {
 			if (file.endsWith("sw.js")) {
-				_logger.info(`${timestamp} [SW] hmr update, registering new worker...`)
 				server.ws.send({
 					type: "custom",
 					event: "sw-rebuild",
 					data: { id: id++ },
 				})
+				const time = new Date(timestamp).toLocaleTimeString("en-US")
+				_logger.info(`${time} [SW] hmr update, registering new worker...`)
 			}
 		},
 	}
