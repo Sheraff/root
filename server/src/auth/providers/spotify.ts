@@ -1,6 +1,6 @@
 import { type GrantProvider } from "grant"
-import { env } from "server/env"
-import { type GrantData, type RawGrant } from "server/auth/providers"
+import { env } from "@repo/server/env"
+import { type GrantData, type RawGrant } from "@repo/server/auth/providers"
 import { object, parse, string } from "valibot"
 
 export const options: GrantProvider | undefined = !env.SPOTIFY_CLIENT_ID

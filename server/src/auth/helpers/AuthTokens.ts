@@ -7,7 +7,7 @@
 
 import crypto, { type CipherGCMTypes } from "node:crypto"
 import { type BaseSchema, type Output, parse } from "valibot"
-import { env } from "server/env"
+import { env } from "@repo/server/env"
 
 const ALGORITHM: CipherGCMTypes = "aes-256-gcm"
 const PASSWORD = env.SESSION_COOKIE_SECRET

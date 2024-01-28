@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { createRoot } from "react-dom/client"
 import App from "./src/App"
-import { enableServiceWorker } from "client/sw/enableServiceWorker"
+import { enableServiceWorker } from "@repo/client/sw/enableServiceWorker"
 
 const client = new QueryClient({
 	defaultOptions: {

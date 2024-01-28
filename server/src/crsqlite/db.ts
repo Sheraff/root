@@ -3,8 +3,8 @@ import path from "node:path"
 import type { FastifyInstance } from "fastify"
 import { extensionPath } from "@vlcn.io/crsqlite"
 import { cryb64, type Change, type Changes } from "@vlcn.io/ws-common"
-import { sql } from "shared/sql"
-import { makeDbLogger } from "server/utils/dbLogger"
+import { sql } from "@repo/shared/sql"
+import { makeDbLogger } from "@repo/server/utils/dbLogger"
 
 export type CrsqliteDatabase = Database.Database & {
 	getChanges(sinceVersion: bigint, requestorSiteId: Uint8Array): Change[]

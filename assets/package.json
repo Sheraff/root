@@ -1,5 +1,5 @@
 {
-	"name": "assets",
+	"name": "@repo/assets",
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",
@@ -13,6 +13,6 @@
 		"./*": "./src/*"
 	},
 	"devDependencies": {
-		"script": "workspace:script@*"
+		"@repo/script": "workspace:@repo/script@*"
 	}
 }

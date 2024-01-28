@@ -1,5 +1,5 @@
 {
-	"name": "worker",
+	"name": "@repo/worker",
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",
@@ -17,11 +17,11 @@
 		"clear": "rm -rf node_modules; rm -rf .turbo;"
 	},
 	"dependencies": {
-		"shared": "workspace:shared@*",
-		"assets": "workspace:assets@*",
-		"client": "workspace:client@*"
+		"@repo/shared": "workspace:@repo/shared@*",
+		"@repo/assets": "workspace:@repo/assets@*",
+		"@repo/client": "workspace:@repo/client@*"
 	},
 	"devDependencies": {
-		"script": "workspace:script@*"
+		"@repo/script": "workspace:@repo/script@*"
 	}
 }

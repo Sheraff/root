@@ -1,8 +1,8 @@
 import type { FastifyInstance } from "fastify"
-import { makeCrsqliteDb, type CrsqliteDatabase } from "server/crsqlite/db"
+import { makeCrsqliteDb, type CrsqliteDatabase } from "@repo/server/crsqlite/db"
 import { encode, decode, tags, hexToBytes } from "@vlcn.io/ws-common"
-import { compressBuffer } from "script/compressBuffer"
-import schema from "assets/test-v0.sql"
+import { compressBuffer } from "@repo/script/compressBuffer"
+import schema from "@repo/assets/test-v0.sql"
 
 export default function crsqlite(
 	fastify: FastifyInstance,

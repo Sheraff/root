@@ -1,7 +1,7 @@
+import { walkFsTree } from "@repo/script/walkFsTree"
 import { watch as chokidar } from "chokidar"
 import { writeFile } from "node:fs/promises"
 import { basename, dirname, join, relative } from "node:path"
-import { walkFsTree } from "script/walkFsTree"
 
 function dTsTemplate(name: string) {
 	return `declare const query: string

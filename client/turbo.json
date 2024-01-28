@@ -14,7 +14,7 @@
 				"../assets/src/**"
 			],
 			"outputs": ["../dist/client/**"],
-			"dependsOn": ["script#build"]
+			"dependsOn": ["@repo/script#build"]
 		},
 		"tsc:tools": {
 			"inputs": [
@@ -43,18 +43,18 @@
 				"tsconfig.json",
 				"tsconfig.app.json"
 			],
-			"dependsOn": ["client#tsc:build:css"]
+			"dependsOn": ["@repo/client#tsc:build:css"]
 		},
 		"tsc": {
-			"dependsOn": ["client#tsc:tools", "client#tsc:app"]
+			"dependsOn": ["@repo/client#tsc:tools", "@repo/client#tsc:app"]
 		},
 		"test": {
-			"dependsOn": ["script#build"]
+			"dependsOn": ["@repo/script#build"]
 		},
 		"dev": {
 			"cache": false,
 			"persistent": true,
-			"dependsOn": ["script#build"]
+			"dependsOn": ["@repo/script#build"]
 		}
 	}
 }

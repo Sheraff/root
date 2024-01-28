@@ -1,4 +1,4 @@
-import { sql } from "shared/sql"
+import { sql } from "@repo/shared/sql"
 import type { CtxAsync } from "@vlcn.io/react"
 import { encode, decode, tags, bytesToHex } from "@vlcn.io/ws-common"
 import { useState, useEffect } from "react"

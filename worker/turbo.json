@@ -12,7 +12,7 @@
 				"../dist/client/assets/**",
 				"../assets/src/**"
 			],
-			"dependsOn": ["client#build", "script#build"]
+			"dependsOn": ["@repo/client#build", "@repo/script#build"]
 		},
 		"tsc:tools": {
 			"inputs": [
@@ -36,13 +36,13 @@
 			]
 		},
 		"tsc": {
-			"dependsOn": ["worker#tsc:tools", "worker#tsc:app"]
+			"dependsOn": ["@repo/worker#tsc:tools", "@repo/worker#tsc:app"]
 		},
 		"dev": {
 			"cache": false,
 			"persistent": true,
 			"outputs": ["../client/public/sw.js"],
-			"dependsOn": ["script#build"]
+			"dependsOn": ["@repo/script#build"]
 		}
 	}
 }

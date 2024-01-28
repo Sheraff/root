@@ -5,7 +5,7 @@ import { type ChildProcess, spawn } from "node:child_process"
 import { join } from "node:path"
 import fastify from "fastify"
 import proxy from "@fastify/http-proxy"
-import { env } from "server/env"
+import { env } from "@repo/server/env"
 
 const options: esbuild.BuildOptions = {
 	entryPoints: ["src/app.ts"],
@@ -24,10 +24,10 @@ const options: esbuild.BuildOptions = {
 		".js": ".mjs",
 	},
 	// alias: {
-	// 	"shared": "../shared/src",
-	// 	"script": "../script/src",
-	// 	"assets": "../assets/src",
-	// 	"worker": "../worker/src",
+	// 	"@repo/shared": "../shared/src",
+	// 	"@repo/script": "../script/src",
+	// 	"@repo/assets": "../assets/src",
+	// 	"@repo/worker": "../worker/src",
 	// },
 }
 

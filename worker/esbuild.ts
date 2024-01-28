@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-import { compressBuffer } from "script/compressBuffer"
+import { compressBuffer } from "@repo/script/compressBuffer"
 import * as esbuild from "esbuild"
 import { readFile, readdir, writeFile } from "node:fs/promises"
 import { join } from "node:path"
@@ -19,10 +19,10 @@ const options: esbuild.BuildOptions = {
 	},
 	tsconfig: "./tsconfig.app.json",
 	// alias: {
-	// 	"shared": "../shared/src",
+	// 	"@repo/shared": "../shared/src",
 	// 	"script": "../script/src",
-	// 	"assets": "../assets/src",
-	// 	"worker": "../worker/src",
+	// 	"@repo/assets": "../assets/src",
+	// 	"@repo/worker": "../worker/src",
 	// },
 }
 

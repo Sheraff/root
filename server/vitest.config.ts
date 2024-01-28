@@ -1,4 +1,4 @@
-import { ViteRawLoader } from "script/ViteRawLoader"
+import { ViteRawLoader } from "@repo/script/ViteRawLoader"
 import { normalizePath } from "vite"
 import { defineConfig } from "vitest/config"
 
@@ -8,7 +8,7 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			// use alias to avoid having "server" as a package dependency of "server"
-			"server/": `${normalizePath(__dirname)}/src/`,
+			"@repo/server/": `${normalizePath(__dirname)}/src/`,
 		},
 	},
 	test: {

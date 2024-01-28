@@ -1,4 +1,4 @@
-import { defaultFetch } from "worker/onFetch/default"
+import { defaultFetch } from "@repo/worker/onFetch/default"
 
 export function onFetch(event: FetchEvent) {
 	const request = event.request

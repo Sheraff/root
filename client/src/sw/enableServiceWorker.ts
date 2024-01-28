@@ -1,5 +1,5 @@
 import { type QueryClient } from "@tanstack/react-query"
-import { SW_CACHE_KEY } from "client/sw/useServiceWorker"
+import { SW_CACHE_KEY } from "@repo/client/sw/useServiceWorker"
 
 async function loadServiceWorker(client?: QueryClient, id?: string) {
 	try {

@@ -5,9 +5,9 @@ import { visualizer } from "rollup-plugin-visualizer"
 import { config } from "dotenv"
 import { readFile, rm, writeFile } from "node:fs/promises"
 import { join, resolve } from "node:path"
-import { compressBuffer } from "script/compressBuffer"
-import { ViteRawLoader } from "script/ViteRawLoader"
-import { walkFsTree } from "script/walkFsTree"
+import { compressBuffer } from "@repo/script/compressBuffer"
+import { ViteRawLoader } from "@repo/script/ViteRawLoader"
+import { walkFsTree } from "@repo/script/walkFsTree"
 
 config({ path: "../.env" })
 
@@ -142,7 +142,7 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			// use alias to avoid having "client" as a package dependency of "client"
-			"client/": `${normalizePath(__dirname)}/src/`,
+			"@repo/client/": `${normalizePath(__dirname)}/src/`,
 		},
 	},
 	server: {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { PUBLIC_CONFIG } from "shared/env/publicConfig"
-import { providers, type Provider } from "client/auth/providers"
+import { PUBLIC_CONFIG } from "@repo/shared/env/publicConfig"
+import { providers, type Provider } from "@repo/client/auth/providers"
 
 type States =
 	| {

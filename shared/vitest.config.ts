@@ -1,4 +1,4 @@
-import { ViteRawLoader } from "script/ViteRawLoader"
+import { ViteRawLoader } from "@repo/script/ViteRawLoader"
 import { defineConfig, normalizePath } from "vite"
 
 export default defineConfig({
@@ -7,7 +7,7 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			// use alias to avoid having "shared" as a package dependency of "shared"
-			"shared/": `${normalizePath(__dirname)}/src/`,
+			"@repo/shared/": `${normalizePath(__dirname)}/src/`,
 		},
 	},
 	test: {

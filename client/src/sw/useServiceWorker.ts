@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { type Message } from "shared/workerEvents"
+import { type Message } from "@repo/shared/workerEvents"
 
 export const SW_CACHE_KEY = ["sw"]
 

@@ -1,5 +1,5 @@
 {
-	"name": "shared",
+	"name": "@repo/shared",
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",
@@ -15,7 +15,7 @@
 		"clear": "rm -rf node_modules; rm -rf .turbo;"
 	},
 	"devDependencies": {
-		"script": "workspace:script@*"
+		"@repo/script": "workspace:@repo/script@*"
 	},
 	"exports": {
 		"./*": "./src/*"

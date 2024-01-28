@@ -1,11 +1,11 @@
 import { useDB, useQuery } from "@vlcn.io/react"
 import { useEffect, useState } from "react"
-import { sql } from "shared/sql"
+import { sql } from "@repo/shared/sql"
 
-import { useSync } from "client/db/Sync"
-import { useDbQuery } from "client/db/useDbQuery"
-import { useDbMutation } from "client/db/useDbMutation"
-import { Button } from "client/Button/Button"
+import { useSync } from "@repo/client/db/Sync"
+import { useDbQuery } from "@repo/client/db/useDbQuery"
+import { useDbMutation } from "@repo/client/db/useDbMutation"
+import { Button } from "@repo/client/Button/Button"
 
 function Test({ name }: { name: string }) {
 	const other = useDbQuery<{ id: string; content: string; position: number }>({

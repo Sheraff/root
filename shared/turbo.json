@@ -22,10 +22,10 @@
 			]
 		},
 		"tsc": {
-			"dependsOn": ["shared#tsc:tools", "shared#tsc:lib"]
+			"dependsOn": ["@repo/shared#tsc:tools", "@repo/shared#tsc:lib"]
 		},
 		"test": {
-			"dependsOn": ["script#build"]
+			"dependsOn": ["@repo/script#build"]
 		}
 	}
 }
