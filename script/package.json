@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"tsc": "tsc --noEmit --project tsconfig.lib.json",
-		"build": "esbuild `find src -name '*.ts'` --outdir=src",
+		"build": "esbuild `find src -name '*.ts'` --outdir=src --bundle --platform=node --format=esm",
 		"clear": "rm -rf node_modules; rm -rf .turbo; rm tsconfig.lib.tsbuildinfo; find src -name '*.js' -type f -delete",
 		"lint": "eslint . --config ../.eslintrc.json",
 		"lint:fix": "eslint . --config ../.eslintrc.json --fix",
