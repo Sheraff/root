@@ -38,6 +38,7 @@
 		"valibot": "0.27.0"
 	},
 	"devDependencies": {
+		"@fastify/http-proxy": "^9.3.0",
 		"@total-typescript/ts-reset": "0.5.1",
 		"@types/better-sqlite3": "^7.6.9",
 		"@types/node": "20.10.5",

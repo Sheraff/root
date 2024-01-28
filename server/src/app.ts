@@ -23,6 +23,8 @@ const app = fastify({
 	},
 })
 
+app.get("/health", { logLevel: "silent" }, (_, res) => res.status(200).send("OK"))
+
 /**
  * Register the auth routes + session management.
  * Reserves the following routes:
@@ -57,8 +59,7 @@ if (process.env.NODE_ENV === "production") {
 
 // Start the server
 const start = async () => {
-	const port =
-		process.env.NODE_ENV === "production" ? env.PORT : env.DEV_PROXY_SERVER_PORT ?? 8123
+	const port = process.env.NODE_ENV === "production" ? env.PORT : 8877
 	try {
 		await app.listen({
 			port,
