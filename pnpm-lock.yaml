@@ -159,13 +159,12 @@ importers:
       '@repo/assets':
         specifier: workspace:@repo/assets@*
         version: link:../assets
-      '@repo/shared':
-        specifier: workspace:@repo/shared@*
-        version: link:../shared
-    devDependencies:
       '@repo/script':
         specifier: workspace:@repo/script@*
         version: link:../script
+      '@repo/shared':
+        specifier: workspace:@repo/shared@*
+        version: link:../shared
 
   shared:
     devDependencies:

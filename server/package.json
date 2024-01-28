@@ -19,7 +19,8 @@
 	},
 	"dependencies": {
 		"@repo/shared": "workspace:@repo/shared@*",
-		"@repo/assets": "workspace:@repo/assets@*"
+		"@repo/assets": "workspace:@repo/assets@*",
+		"@repo/script": "workspace:@repo/script@*"
 	},
 	"devDependencies": {
 		"@repo/script": "workspace:@repo/script@*"
