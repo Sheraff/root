@@ -1,11 +1,11 @@
 import fastify from "fastify"
-import api from "server/api"
-import auth from "server/auth"
-import frontend from "server/frontend"
-import { env } from "server/env"
-import crsqlite from "server/crsqlite"
-import { DB_ROOT } from "server/utils/dbRoot"
-import { fooBar } from "shared/foo/bar"
+import api from "@repo/server/api"
+import auth from "@repo/server/auth"
+import frontend from "@repo/server/frontend"
+import { env } from "@repo/server/env"
+import crsqlite from "@repo/server/crsqlite"
+import { DB_ROOT } from "@repo/server/utils/dbRoot"
+import { fooBar } from "@repo/shared/foo/bar"
 
 fooBar()
 

@@ -1,7 +1,7 @@
 import { type GrantProvider } from "grant"
 import { object, parse, string } from "valibot"
-import { type GrantData, type RawGrant } from "server/auth/providers"
-import { env } from "server/env"
+import { type GrantData, type RawGrant } from "@repo/server/auth/providers"
+import { env } from "@repo/server/env"
 
 export const options: GrantProvider | undefined = !env.DISCORD_CLIENT_ID
 	? undefined

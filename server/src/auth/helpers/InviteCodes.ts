@@ -1,4 +1,4 @@
-import { sql } from "shared/sql"
+import { sql } from "@repo/shared/sql"
 import type BetterSqlite3 from "better-sqlite3"
 import wordList from "./5-letter-words.txt"
 

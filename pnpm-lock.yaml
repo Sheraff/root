@@ -135,58 +135,57 @@ importers:
 
   assets:
     devDependencies:
-      script:
-        specifier: workspace:script@*
+      '@repo/script':
+        specifier: workspace:@repo/script@*
         version: link:../script
 
   client:
     dependencies:
-      assets:
-        specifier: workspace:assets@*
+      '@repo/assets':
+        specifier: workspace:@repo/assets@*
         version: link:../assets
-      shared:
-        specifier: workspace:shared@*
+      '@repo/shared':
+        specifier: workspace:@repo/shared@*
         version: link:../shared
     devDependencies:
-      script:
-        specifier: workspace:script@*
+      '@repo/script':
+        specifier: workspace:@repo/script@*
         version: link:../script
 
   script: {}
 
   server:
     dependencies:
-      assets:
-        specifier: workspace:assets@*
+      '@repo/assets':
+        specifier: workspace:@repo/assets@*
         version: link:../assets
-      shared:
-        specifier: workspace:shared@*
-        version: link:../shared
-    devDependencies:
-      script:
-        specifier: workspace:script@*
+      '@repo/script':
+        specifier: workspace:@repo/script@*
         version: link:../script
+      '@repo/shared':
+        specifier: workspace:@repo/shared@*
+        version: link:../shared
 
   shared:
     devDependencies:
-      script:
-        specifier: workspace:script@*
+      '@repo/script':
+        specifier: workspace:@repo/script@*
         version: link:../script
 
   worker:
     dependencies:
-      assets:
-        specifier: workspace:assets@*
+      '@repo/assets':
+        specifier: workspace:@repo/assets@*
         version: link:../assets
-      client:
-        specifier: workspace:client@*
+      '@repo/client':
+        specifier: workspace:@repo/client@*
         version: link:../client
-      shared:
-        specifier: workspace:shared@*
+      '@repo/shared':
+        specifier: workspace:@repo/shared@*
         version: link:../shared
     devDependencies:
-      script:
-        specifier: workspace:script@*
+      '@repo/script':
+        specifier: workspace:@repo/script@*
         version: link:../script
 
 packages:

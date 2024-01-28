@@ -5,7 +5,7 @@
 		"build": {
 			"outputs": ["../dist/server/**"],
 			"inputs": ["../assets/src/**", "esbuild.ts", "tsconfig.app.json", "src/**"],
-			"dependsOn": ["script#build"]
+			"dependsOn": ["@repo/script#build"]
 		},
 		"tsc:tools": {
 			"inputs": [
@@ -28,15 +28,15 @@
 			]
 		},
 		"tsc": {
-			"dependsOn": ["server#tsc:tools", "server#tsc:app"]
+			"dependsOn": ["@repo/server#tsc:tools", "@repo/server#tsc:app"]
 		},
 		"test": {
-			"dependsOn": ["script#build"]
+			"dependsOn": ["@repo/script#build"]
 		},
 		"dev": {
 			"cache": false,
 			"persistent": true,
-			"dependsOn": ["script#build"]
+			"dependsOn": ["@repo/script#build"]
 		}
 	}
 }

@@ -1,5 +1,5 @@
-import { CACHES } from "worker/config"
-import indexHtml from "client/index.html"
+import { CACHES } from "@repo/worker/config"
+import indexHtml from "@repo/client/index.html"
 
 function simpleNetworkFirst(event: FetchEvent, request: Request) {
 	return fetch(request)

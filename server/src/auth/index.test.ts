@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import auth from "."
 import fastify, { type FastifyInstance, type Session } from "fastify"
-import { sql } from "shared/sql"
+import { sql } from "@repo/shared/sql"
 import crypto from "node:crypto"
 
 describe(

@@ -9,12 +9,12 @@
 		"skipDefaultLibCheck": true,
 		"lib": ["ESNext"],
 		"paths": {
-			"assets/*": ["assets/src/*"],
-			"script/*": ["script/src/*"],
-			"shared/*": ["shared/src/*"],
-			"client/*": ["client/src/*"],
-			"server/*": ["server/src/*"],
-			"worker/*": ["worker/src/*"]
+			"@repo/assets/*": ["assets/src/*"],
+			"@repo/script/*": ["script/src/*"],
+			"@repo/shared/*": ["shared/src/*"],
+			"@repo/client/*": ["client/src/*"],
+			"@repo/server/*": ["server/src/*"],
+			"@repo/worker/*": ["worker/src/*"]
 		},
 		// strict
 		"strict": true,

@@ -1,6 +1,6 @@
 import { type GrantProvider } from "grant"
-import { env } from "server/env"
-import { type GrantData, type RawGrant } from "server/auth/providers"
+import { env } from "@repo/server/env"
+import { type GrantData, type RawGrant } from "@repo/server/auth/providers"
 import { array, minLength, object, parse, string } from "valibot"
 
 export const options: GrantProvider | undefined = !env.TWITCH_CLIENT_ID

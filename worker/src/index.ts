@@ -1,6 +1,6 @@
-import { onFetch } from "worker/onFetch"
-import { CACHES } from "worker/config"
-import type { Message } from "shared/workerEvents"
+import { onFetch } from "@repo/worker/onFetch"
+import { CACHES } from "@repo/worker/config"
+import type { Message } from "@repo/shared/workerEvents"
 
 export {}
 

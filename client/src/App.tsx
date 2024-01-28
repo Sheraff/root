@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
-import { type Provider } from "client/auth/providers"
-import { useAuth } from "client/auth/useAuth"
-import { Content } from "client/db/DbTest"
-import { DbProvider } from "client/db/ParentTest"
-import { fooBar } from "shared/foo/bar"
-import { useServiceWorker } from "client/sw/useServiceWorker"
-import { Button } from "client/Button/Button"
+import { type Provider } from "@repo/client/auth/providers"
+import { useAuth } from "@repo/client/auth/useAuth"
+import { Content } from "@repo/client/db/DbTest"
+import { DbProvider } from "@repo/client/db/ParentTest"
+import { fooBar } from "@repo/shared/foo/bar"
+import { useServiceWorker } from "@repo/client/sw/useServiceWorker"
+import { Button } from "@repo/client/Button/Button"
 
 fooBar()
 
