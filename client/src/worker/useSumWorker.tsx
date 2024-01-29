@@ -1,9 +1,10 @@
 import { useEffect } from "react"
 import type { Incoming, Outgoing } from "client/worker/sum.worker"
+import Worker from "client/worker/sum.worker?worker"
 
 export function useSumWorker() {
 	useEffect(() => {
-		const worker = new Worker(new URL("./sum.worker", import.meta.url), { type: "module" })
+		const worker = new Worker()
 
 		function post(data: Incoming, transfer?: Transferable[]) {
 			worker.postMessage(data, { transfer })
