@@ -6,6 +6,7 @@ import { DbProvider } from "client/db/ParentTest"
 import { fooBar } from "shared/foo/bar"
 import { useServiceWorker } from "client/sw/useServiceWorker"
 import { Button } from "client/Button/Button"
+import { useSumWorker } from "client/worker/useSumWorker"
 
 fooBar()
 
@@ -163,6 +164,8 @@ export default function App() {
 			},
 		})
 	}, [sw])
+
+	useSumWorker()
 
 	const state = useAuth()
 
