@@ -4,10 +4,7 @@ import { basename, dirname, join, relative } from "node:path"
 import { walkFsTree } from "script/walkFsTree"
 
 function dTsTemplate(name: string) {
-	return `declare const query: string
-export = query
-//# sourceMappingURL=${name}.d.ts.map
-`
+	return `declare const query: string; export = query //# sourceMappingURL=${name}.d.ts.map`
 }
 
 function dTsMapTemplate(name: string) {
