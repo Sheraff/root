@@ -29,17 +29,17 @@
 		"pnpm-lock.yaml": true
 	},
 	"files.exclude": {
-		// "**/dist/**": true,
-		// "**/node_modules/**": true,
-		// "**/.turbo": true,
-		// "client/public/sw.js": true,
-		// "client/public/sw.js.map": true,
-		// "client/stats.html": true,
-		// "**/vitest.config.ts.*": true,
-		// "**/*.module.css.d.ts": true,
-		// "**/*.sql.d.ts": true,
-		// "**/*.sql.d.ts.map": true,
-		// "**/*.js": true
+		"**/dist/**": true,
+		"**/node_modules/**": true,
+		"**/.turbo": true,
+		"client/public/sw.js": true,
+		"client/public/sw.js.map": true,
+		"client/stats.html": true,
+		"**/vitest.config.ts.*": true,
+		"**/*.module.css.d.ts": true,
+		"**/*.sql.d.ts": true,
+		"**/*.sql.d.ts.map": true,
+		"**/*.js": true
 	},
 	"npm.packageManager": "pnpm",
 	"typescript.tsdk": "node_modules/typescript/lib",
