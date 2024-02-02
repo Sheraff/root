@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { makeStore } from "./SessionStore"
 import schemaContent from "../schema.sql"
 
-describe("SessionStore", () => {
+describe.concurrent("SessionStore", () => {
 	beforeEach(() => {
 		vi.useFakeTimers()
 	})

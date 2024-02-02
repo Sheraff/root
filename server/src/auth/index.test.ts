@@ -4,7 +4,7 @@ import fastify, { type FastifyInstance, type Session } from "fastify"
 import { sql } from "shared/sql"
 import crypto from "node:crypto"
 
-describe(
+describe.sequential(
 	"api",
 	() => {
 		let app: FastifyInstance
