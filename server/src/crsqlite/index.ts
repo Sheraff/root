@@ -135,16 +135,16 @@ export default function crsqlite(
 			res.header("Content-Type", "application/octet-stream")
 
 			if (encoded.byteLength < 1501) {
-				fastify.log.info(`Returning ${changes.length} changes`)
 				res.send(encoded)
+				fastify.log.info(`Returning ${changes.length} changes`)
 			} else {
 				const compressed = await compressBuffer(encoded, 3)
+				res.header("Content-Encoding", "br")
+				res.send(compressed)
 				const percent = Math.round((compressed.byteLength / encoded.byteLength) * 100)
 				fastify.log.info(
 					`Returning ${changes.length} changes, compressed to ${percent}% (${encoded.byteLength} -> ${compressed.byteLength})`
 				)
-				res.header("Content-Encoding", "br")
-				res.send(compressed)
 			}
 		},
 	})
