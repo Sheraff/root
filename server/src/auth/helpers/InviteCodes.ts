@@ -95,7 +95,7 @@ export function makeInviteCodes(db: BetterSqlite3.Database) {
 		if (timeout) clearTimeout(timeout)
 		deleteExpiredStatement.run({ now: new Date().toISOString() })
 		const invites = getAllStatement.all() as Invite[]
-		fillInvites(invites, (invite: Invite) => insertStatement.run(invite))
+		fillInvites(invites, insertStatement.run)
 		const minExpiresAt = invites.reduce(
 			(min, i) => (i.expires_at < min ? i.expires_at : min),
 			invites[0]!.expires_at
