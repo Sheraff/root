@@ -1,3 +1,3 @@
 export const CACHES = {
-	assets: "assets - v0",
+	assets: `assets - ${__CLIENT_ASSETS_HASH__}`,
 }

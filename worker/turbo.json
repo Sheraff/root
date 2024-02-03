@@ -8,8 +8,7 @@
 				"esbuild.ts",
 				"tsconfig.app.json",
 				"src/**",
-				"../dist/client/index.html",
-				"../dist/client/assets/**",
+				"../dist/client/**",
 				"../assets/src/**"
 			],
 			"dependsOn": ["client#build", "script#build"]

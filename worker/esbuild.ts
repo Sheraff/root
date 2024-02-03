@@ -6,6 +6,8 @@ import { readFile, readdir, writeFile } from "node:fs/promises"
 import { join } from "node:path"
 
 import { loadEnv } from "vite"
+import { createHash } from "node:crypto"
+import { createReadStream } from "node:fs"
 
 const options: esbuild.BuildOptions = {
 	entryPoints: ["src/index.ts"],
@@ -81,12 +83,25 @@ async function build() {
 	options.define["import.meta.env.SSR"] = "false"
 
 	// assets
-	const files = await readdir(join(process.cwd(), "../dist/client/assets"))
-	const re = /\.(js|css|wasm)$/
-	options.define["__CLIENT_ASSETS__"] = JSON.stringify([
-		"/",
-		...files.filter((f) => re.test(f)).map((f) => `/assets/${f}`),
-	])
+	const outDir = join(process.cwd(), "../dist/client")
+	const buildInclude = /\.(js|css|wasm)$/
+	const buildFiles = readdir(join(outDir, "assets")).then((files) =>
+		files.filter((f) => buildInclude.test(f)).map((f) => `/assets/${f}`)
+	)
+	const staticExclude = ["index.html"]
+	const staticFiles = readdir(outDir, { withFileTypes: true }).then((files) =>
+		files.filter((f) => f.isFile() && !staticExclude.includes(f.name)).map((f) => `/${f.name}`)
+	)
+	const files = await Promise.all(["/", buildFiles, staticFiles])
+	options.define["__CLIENT_ASSETS__"] = JSON.stringify(files.flat())
+
+	// cache versioning
+	const hash = createHash("sha256")
+	for (let file of files.flat()) {
+		file = file === "/" ? "index.html" : file
+		createReadStream(join(outDir, file)).pipe(hash)
+	}
+	options.define["__CLIENT_ASSETS_HASH__"] = JSON.stringify(hash.digest("hex"))
 
 	//
 	await esbuild.build(options)
@@ -108,6 +123,7 @@ async function watch() {
 
 	// assets
 	options.define["__CLIENT_ASSETS__"] = JSON.stringify(["/"])
+	options.define["__CLIENT_ASSETS_HASH__"] = JSON.stringify("0")
 
 	options.plugins = [logger]
 
