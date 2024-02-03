@@ -1,0 +1,48 @@
+{
+	"$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+	"version": "0.2",
+	"language": "en",
+	"ignorePaths": ["pnpm-lock.yaml"],
+	"dictionaries": [
+		"en_US",
+		"softwareTerms",
+		"misc",
+		"typescript",
+		"node",
+		"html",
+		"css",
+		"npm",
+		"fonts",
+		"five"
+	],
+	"words": [
+		"automigrate",
+		"brotli",
+		"clsx",
+		"crdt",
+		"crsql",
+		"crsqlite",
+		"cryb",
+		"dbname",
+		"datetime",
+		"fastify",
+		"fract",
+		"knip",
+		"outdir",
+		"outfile",
+		"pino",
+		"pnpm",
+		"SAVEPOINT",
+		"siteid",
+		"spotify",
+		"sqlite",
+		"SQLITE_IOERR_WRITE",
+		"tanstack",
+		"tsbuildinfo",
+		"valibot",
+		"vlcn"
+	],
+	"dictionaryDefinitions": [
+		{ "name": "five", "path": "./server/src/auth/helpers/5-letter-words.txt" }
+	]
+}

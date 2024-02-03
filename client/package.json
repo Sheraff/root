@@ -17,6 +17,7 @@
 		"lint:fix": "eslint . --config ../.eslintrc.json --fix",
 		"format": "prettier --check . --config ../.prettierrc --log-level warn",
 		"format:fix": "prettier --write . --config ../.prettierrc --log-level warn",
+		"spell": "cspell --config ../.cspell.json --quiet --gitignore \"**/*\"",
 		"clear": "rm -rf node_modules; rm -rf .turbo; rm public/sw.js; rm public/sw.js.map; find src -name '*.module.css.d.ts' -type f -delete"
 	},
 	"dependencies": {

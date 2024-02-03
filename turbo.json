@@ -12,6 +12,7 @@
 		"lint:fix": {},
 		"format": {},
 		"format:fix": {},
+		"spell": {},
 		"clear": {
 			"cache": false
 		},
@@ -19,9 +20,7 @@
 			"cache": false
 		}
 	},
-	"globalDotEnv": [
-		".env"
-	],
+	"globalDotEnv": [".env"],
 	"globalDependencies": [
 		"tsconfig.base.json",
 		".env",

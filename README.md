@@ -37,6 +37,7 @@ A workspace, with
 - turbo (monorepo manager / script cache)
 - valibot (data validation)
 - ts-reset (better typescript defaults)
+- cspell (code spell-checking)
 - a `script` folder for build-time shared code (node only, for CI, vite plugins, ...)
 - a `shared` folder for run-time shared code (all environments, for client, server, service worker, ...)
 
@@ -92,6 +93,7 @@ pnpm lint # eslint check
 pnpm lint:fix # eslint fix
 pnpm tsc # typescript check
 pnpm knip # check for unused code
+pnpm spell # check for spelling errors
 pnpm clear # clear cache (turbo, vite, pnpm, esbuild, ...)
 pnpm analyze # bundle size analysis
 ```

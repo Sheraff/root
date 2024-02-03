@@ -7,6 +7,7 @@
 		"tsc:build": "tsx ./esbuild.ts --build",
 		"tsc:watch": "tsx ./esbuild.ts",
 		"dev": "pnpm tsc:watch",
+		"spell": "cspell --config ../.cspell.json --quiet --gitignore \"**/*\"",
 		"clear": "rm -rf node_modules; rm -rf .turbo; find src -name '*.d.ts*' -type f -delete"
 	},
 	"exports": {

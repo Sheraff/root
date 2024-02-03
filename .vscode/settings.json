@@ -1,30 +1,4 @@
 {
-	"cSpell.words": [
-		"automigrate",
-		"brotli",
-		"clsx",
-		"crdt",
-		"crsql",
-		"crsqlite",
-		"cryb",
-		"datetime",
-		"fastify",
-		"fract",
-		"knip",
-		"outdir",
-		"outfile",
-		"pino",
-		"pnpm",
-		"SAVEPOINT",
-		"siteid",
-		"spotify",
-		"sqlite",
-		"SQLITE_IOERR_WRITE",
-		"tanstack",
-		"tsbuildinfo",
-		"valibot",
-		"vlcn"
-	],
 	"search.exclude": {
 		"node_modules": true,
 		"pnpm-lock.yaml": true

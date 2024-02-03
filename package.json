@@ -15,6 +15,7 @@
 		"format:fix": "FORCE_COLOR=1 turbo format:fix --continue",
 		"tsc": "FORCE_COLOR=1 turbo tsc --continue",
 		"knip": "knip",
+		"spell": "FORCE_COLOR=1 turbo spell --continue --log-order=grouped && cspell --config ./.cspell.json --quiet --gitignore \"*\" \"types/*\"",
 		"clear": "FORCE_COLOR=1 turbo clear; rm -rf dist; rm -rf node_modules; rm -rf .turbo;",
 		"build:common": "FORCE_COLOR=1 turbo build --log-order=grouped --filter=script"
 	},
@@ -49,6 +50,7 @@
 		"@vitejs/plugin-react-swc": "3.6.0",
 		"@vitest/web-worker": "^1.2.2",
 		"chokidar": "3.5.3",
+		"cspell": "^8.3.2",
 		"esbuild": "0.20.0",
 		"eslint": "^8.56.0",
 		"eslint-config-prettier": "^9.1.0",

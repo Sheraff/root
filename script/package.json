@@ -10,7 +10,8 @@
 		"lint": "eslint . --config ../.eslintrc.json",
 		"lint:fix": "eslint . --config ../.eslintrc.json --fix",
 		"format": "prettier --check . --config ../.prettierrc --log-level warn",
-		"format:fix": "prettier --write . --config ../.prettierrc --log-level warn"
+		"format:fix": "prettier --write . --config ../.prettierrc --log-level warn",
+		"spell": "cspell --config ../.cspell.json --quiet --gitignore \"**/*\""
 	},
 	"exports": {
 		"./*": "./src/*"
