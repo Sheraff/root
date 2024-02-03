@@ -101,6 +101,10 @@ pnpm clear # clear cache (turbo, vite, pnpm, esbuild, pnpm)
 
 - finish auth
   - better utils for "protected" stuff (client & server)
+  - add endpoint for "which providers are already associated with current user"
+    - on the client side, this can be used to hide the "associate" button for these providers
+    - on the client side, this gives us the opportunity to make an "online-only" component demo
+    - this is a good opportunity to make a trpc-like fullstack type-safe query system
 - database
   - figure out migrations story
   - better DX (sync hook, db provider, ...)
