@@ -5,8 +5,16 @@ import type { Message } from "shared/workerEvents"
 export {}
 
 declare global {
-	var sw: ServiceWorkerGlobalScope // eslint-disable-line no-var
+	const sw: ServiceWorkerGlobalScope
+
+	interface WorkerNavigator {
+		connection?: {
+			downlink: number
+			rtt: number
+		}
+	}
 }
+// @ts-expect-error -- forcing here so it's available everywhere
 globalThis.sw = self as unknown as ServiceWorkerGlobalScope
 
 sw.addEventListener("install", (event) => {
