@@ -1,24 +1,33 @@
 /// <reference lib="webworker" />
 
-export type Incoming =
+export type Incoming = { id: number } & (
 	| { type: "add"; data: { a: number; b: number } }
-	| { type: "b"; data: { b: string } }
+	| { type: "sub"; data: { a: number; b: number } }
 	| { type: "c"; data: { c: string } }
-
-export type Outgoing =
-	| { type: "res"; data: { result: number } }
-	| { type: "b"; data: { result: string } }
+)
+export type Outgoing = { id: number } & (
+	| { type: "add"; data: { result: number } }
+	| { type: "sub"; data: { result: number } }
 	| { type: "c"; data: { result: string } }
+)
 
-onmessage = (e: MessageEvent<Incoming>) => handleMessage(e.data)
-function post(data: Outgoing, transfer?: Transferable[]) {
-	postMessage(data, { transfer })
+self.onmessage = (e: MessageEvent<Incoming>) => handleMessage(e.data)
+
+function post<I extends Incoming>(
+	sourceEvent: I,
+	data: Extract<Outgoing, { type: I["type"] }>["data"],
+	transfer?: Transferable[]
+) {
+	self.postMessage({ id: sourceEvent.id, type: sourceEvent.type, data }, { transfer })
 }
 
 function handleMessage(event: Incoming) {
-	// ...
+	console.log("[worker] Received:", event.data)
 	if (event.type === "add") {
-		console.log("[worker] Received:", event.data)
-		post({ type: "res", data: { result: event.data.a + event.data.b } })
+		const { a, b } = event.data
+		post(event, { result: a + b })
+	} else if (event.type === "sub") {
+		const { a, b } = event.data
+		post(event, { result: a - b })
 	}
 }

@@ -5,9 +5,14 @@ import Worker from "client/worker/sum.worker?worker"
 export function useSumWorker() {
 	useEffect(() => {
 		const worker = new Worker()
+		let id = 0
 
-		function post(data: Incoming, transfer?: Transferable[]) {
-			worker.postMessage(data, { transfer })
+		function post<I extends Incoming["type"]>(
+			type: I,
+			data: Extract<Incoming, { type: I }>["data"],
+			transfer?: Transferable[]
+		) {
+			worker.postMessage({ type, data, id: id++ }, { transfer })
 		}
 
 		const onMessage = ({ data: event }: MessageEvent<Outgoing>) => {
@@ -15,7 +20,7 @@ export function useSumWorker() {
 		}
 		worker.addEventListener("message", onMessage)
 
-		post({ type: "add", data: { a: 3, b: 4 } })
+		post("add", { a: 1, b: 2 })
 
 		return () => {
 			worker.removeEventListener("message", onMessage)
