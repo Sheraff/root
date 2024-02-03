@@ -91,8 +91,9 @@ pnpm format:fix # prettier fix
 pnpm lint # eslint check
 pnpm lint:fix # eslint fix
 pnpm tsc # typescript check
-pnpm deps # check for unused code
-pnpm clear # clear cache (turbo, vite, pnpm, esbuild, pnpm)
+pnpm knip # check for unused code
+pnpm clear # clear cache (turbo, vite, pnpm, esbuild, ...)
+pnpm analyze # bundle size analysis
 ```
 
 ---
