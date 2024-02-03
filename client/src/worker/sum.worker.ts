@@ -22,7 +22,7 @@ function post<I extends Incoming>(
 }
 
 function handleMessage(event: Incoming) {
-	console.log("[worker] Received:", event.data)
+	console.info("[worker] Received:", event.data)
 	if (event.type === "add") {
 		const { a, b } = event.data
 		post(event, { result: a + b })
