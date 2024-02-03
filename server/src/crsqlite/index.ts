@@ -84,6 +84,24 @@ export default function crsqlite(
 		config: {
 			rawBody: true,
 		},
+		schema: {
+			params: {
+				properties: {
+					name: { type: "string" },
+				},
+				required: ["name"],
+				type: "object",
+			},
+			querystring: {
+				properties: {
+					schemaVersion: { type: "string" },
+					requestor: { type: "string" },
+					since: { type: "string" },
+				},
+				required: ["schemaVersion", "requestor", "since"],
+				type: "object",
+			},
+		},
 		onRequest(request, reply, done) {
 			if (!request.session?.user) {
 				fastify.log.warn("/api/changes/:name ::: unauthorized")
