@@ -7,13 +7,46 @@
 			"persistent": true
 		},
 		"test": {},
+		"//#root:test": {
+			"dependsOn": ["script#build"],
+			"cache": false,
+			"persistent": true
+		},
 		"tsc": {},
-		"lint": {},
-		"lint:fix": {},
-		"format": {},
-		"format:fix": {},
-		"spell": {},
+		"lint": {
+			"inputs": ["$TURBO_DEFAULT$", "./.eslintrc.json"]
+		},
+		"//#root:lint": {
+			"inputs": ["$TURBO_DEFAULT$", "./.eslintrc.json"]
+		},
+		"lint:fix": {
+			"inputs": ["$TURBO_DEFAULT$", "./.eslintrc.json"]
+		},
+		"//#root:lint:fix": {
+			"inputs": ["$TURBO_DEFAULT$", "./.eslintrc.json"]
+		},
+		"format": {
+			"inputs": ["$TURBO_DEFAULT$", "./.prettierrc.json"]
+		},
+		"//#root:format": {
+			"inputs": ["$TURBO_DEFAULT$", "./.prettierrc.json"]
+		},
+		"format:fix": {
+			"inputs": ["$TURBO_DEFAULT$", "./.prettierrc.json"]
+		},
+		"//#root:format:fix": {
+			"inputs": ["$TURBO_DEFAULT$", "./.prettierrc.json"]
+		},
+		"spell": {
+			"inputs": ["$TURBO_DEFAULT$", "./.cspell.json"]
+		},
+		"//#root:spell": {
+			"inputs": ["$TURBO_DEFAULT$", "./.cspell.json"]
+		},
 		"clear": {
+			"cache": false
+		},
+		"//#root:clear": {
 			"cache": false
 		},
 		"analyze": {
@@ -26,7 +59,7 @@
 		".env",
 		"types/*.d.ts",
 		".eslintrc.json",
-		".prettierrc",
+		".prettierrc.json",
 		"package.json"
 	]
 }

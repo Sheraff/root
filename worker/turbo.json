@@ -42,6 +42,9 @@
 			"persistent": true,
 			"outputs": ["../client/public/sw.js"],
 			"dependsOn": ["script#build"]
+		},
+		"test": {
+			"dependsOn": ["script#build"]
 		}
 	}
 }
