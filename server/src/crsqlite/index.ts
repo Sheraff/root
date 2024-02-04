@@ -1,8 +1,9 @@
-import type { FastifyInstance } from "fastify"
+import type { FastifyInstance, FastifyError } from "fastify"
 import { makeCrsqliteDb, type CrsqliteDatabase } from "server/crsqlite/db"
 import { encode, decode, tags, hexToBytes } from "@vlcn.io/ws-common"
 import { compressBuffer } from "script/compressBuffer"
 import schema from "assets/test-v0.sql"
+import type { SqliteError } from "server/types/Sqlite"
 
 export default function crsqlite(
 	fastify: FastifyInstance,
@@ -17,7 +18,8 @@ export default function crsqlite(
 				done(null, {
 					raw: body,
 				})
-			} catch (error: any) {
+			} catch (e: any) {
+				const error = e as FastifyError
 				error.statusCode = 400
 				done(error, undefined)
 			}
@@ -43,7 +45,7 @@ export default function crsqlite(
 		done()
 	})
 
-	async function getDb(name: string, version: bigint) {
+	function getDb(name: string, version: bigint) {
 		if (
 			lastDb &&
 			lastDb.name === name &&
@@ -54,7 +56,7 @@ export default function crsqlite(
 		}
 		lastDb?.db.close()
 		lastDb = null
-		const db = await makeCrsqliteDb(fastify, {
+		const db = makeCrsqliteDb(fastify, {
 			name,
 			version,
 			schema,
@@ -105,7 +107,7 @@ export default function crsqlite(
 		onRequest(request, reply, done) {
 			if (!request.session?.user) {
 				fastify.log.warn("/api/changes/:name ::: unauthorized")
-				reply.status(401).send({ error: "unauthorized" })
+				void reply.status(401).send({ error: "unauthorized" })
 				return done()
 			}
 			done()
@@ -113,13 +115,14 @@ export default function crsqlite(
 		async handler(req, res) {
 			let db: CrsqliteDatabase
 			try {
-				db = await getDb(req.params.name, BigInt(req.query.schemaVersion))
-			} catch (error: any) {
+				db = getDb(req.params.name, BigInt(req.query.schemaVersion))
+			} catch (e: any) {
+				const error = e as SqliteError
 				if (
 					error.code === "SQLITE_IOERR_WRITE" ||
 					error.message?.includes("readonly database")
 				) {
-					res.status(400).send({
+					void res.status(400).send({
 						message:
 							"make and push changes first to create or migrate the DB on the server.",
 					})
@@ -132,16 +135,16 @@ export default function crsqlite(
 			if (data.length > 0) {
 				const msg = decode(data)
 				if (msg._tag !== tags.Changes) {
-					res.header("Vlcn-Accept-Changes", `error=${msg._tag}`)
+					void res.header("Vlcn-Accept-Changes", `error=${msg._tag}`)
 				} else {
 					fastify.log.info(`Applying ${msg.changes.length} changes`)
 					db.applyChanges(msg)
-					res.header("Vlcn-Accept-Changes", `ok`)
+					void res.header("Vlcn-Accept-Changes", `ok`)
 				}
 			}
 
-			const requestorSiteId = hexToBytes(req.query.requestor!)
-			const sinceVersion = BigInt(req.query.since!)
+			const requestorSiteId = hexToBytes(req.query.requestor)
+			const sinceVersion = BigInt(req.query.since)
 
 			const changes = db.getChanges(sinceVersion, requestorSiteId)
 			const encoded = encode({
@@ -150,15 +153,15 @@ export default function crsqlite(
 				sender: db.getId(),
 				since: [sinceVersion, 0],
 			})
-			res.header("Content-Type", "application/octet-stream")
+			void res.header("Content-Type", "application/octet-stream")
 
 			if (encoded.byteLength < 1501) {
-				res.send(encoded)
+				void res.send(encoded)
 				fastify.log.info(`Returning ${changes.length} changes`)
 			} else {
 				const compressed = await compressBuffer(encoded, 3)
-				res.header("Content-Encoding", "br")
-				res.send(compressed)
+				void res.header("Content-Encoding", "br")
+				void res.send(compressed)
 				const percent = Math.round((compressed.byteLength / encoded.byteLength) * 100)
 				fastify.log.info(
 					`Returning ${changes.length} changes, compressed to ${percent}% (${encoded.byteLength} -> ${compressed.byteLength})`

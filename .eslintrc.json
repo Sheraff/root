@@ -2,8 +2,24 @@
 	"root": true,
 	"parser": "@typescript-eslint/parser",
 	"plugins": ["@typescript-eslint", "react-refresh"],
-	"extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
-	"ignorePatterns": ["node_modules/*", "dist/*", "client/public/sw*"],
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/recommended",
+		"prettier",
+		"plugin:@typescript-eslint/recommended-type-checked"
+	],
+	"ignorePatterns": [
+		"node_modules/*",
+		"**/node_modules/*",
+		"**/.turbo/*",
+		"dist/*",
+		"client/public/sw*",
+		"**/*.js",
+		"**/*.map",
+		"**/vitest.config.ts.*",
+		"**/*.module.css.d.ts",
+		"**/*.sql.d.ts"
+	],
 	"rules": {
 		"no-fallthrough": "off",
 		"no-constant-condition": "off",
@@ -16,5 +32,28 @@
 		"no-empty": "off",
 		"react-refresh/only-export-components": ["error", { "allowConstantExport": true }],
 		"no-unused-labels": "off"
-	}
+	},
+	"parserOptions": {
+		"project": ["tsconfig.tools.json"]
+	},
+	"overrides": [
+		{
+			"files": ["vitest.workspace.ts"],
+			"parserOptions": {
+				"project": ["tsconfig.tools.json"]
+			}
+		},
+		{
+			"files": ["types/*.d.ts"],
+			"parserOptions": {
+				"project": ["tsconfig.json"]
+			}
+		},
+		{
+			"files": ["**/*.test.ts"],
+			"rules": {
+				"@typescript-eslint/no-unsafe-assignment": "off"
+			}
+		}
+	]
 }

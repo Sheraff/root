@@ -4,6 +4,5 @@
 		"types": ["node"],
 		"lib": ["ESNext"]
 	},
-	"exclude": ["**/*.test.ts", "vitest.config.ts"],
 	"include": ["**/*.ts", "../types/*.d.ts"]
 }

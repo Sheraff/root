@@ -87,7 +87,7 @@ export function makeStore(db: BetterSqlite3.Database): SessionStore & {
 		close() {
 			clearInterval(expiredIntervalId)
 		},
-		async set(sessionId, session, callback) {
+		set(sessionId, session, callback) {
 			try {
 				const age = session.cookie.maxAge ?? oneDay
 				const now = new Date()
@@ -108,7 +108,7 @@ export function makeStore(db: BetterSqlite3.Database): SessionStore & {
 				callback(err)
 			}
 		},
-		async get(sessionId, callback) {
+		get(sessionId, callback) {
 			const cached = getCache.get(sessionId)
 			if (cached) return callback(null, cached)
 			try {
@@ -124,7 +124,7 @@ export function makeStore(db: BetterSqlite3.Database): SessionStore & {
 				callback(err)
 			}
 		},
-		async destroy(sessionId, callback) {
+		destroy(sessionId, callback) {
 			try {
 				destroyStatement.run({ id: sessionId })
 				getCache.delete(sessionId)

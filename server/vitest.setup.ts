@@ -14,6 +14,6 @@ const extra = Object.fromEntries(
 		.split("\n")
 		.filter((l) => l.trim() && !l.startsWith("#"))
 		.map((l) => l.split("=", 2))
-)
+) as Record<string, string | undefined>
 
 Object.assign(process.env, extra)

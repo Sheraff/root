@@ -17,11 +17,11 @@ async function buildMap(path: string) {
 		writeFile(`${path}.d.ts`, dTsTemplate(name)),
 		writeFile(`${path}.d.ts.map`, dTsMapTemplate(name)),
 	])
-	promise.then(() => console.log("Built TS maps for:", path))
+	void promise.then(() => console.log("Built TS maps for:", path))
 	return promise
 }
 
-async function watch() {
+function watch() {
 	const watcher = chokidar("./src/*.sql", {
 		ignoreInitial: false,
 		persistent: true,
@@ -32,12 +32,13 @@ async function watch() {
 	})
 	watcher.on("add", (path, stats) => {
 		if (stats?.isFile()) {
-			buildMap(path)
+			void buildMap(path)
 		}
 	})
+	// eslint-disable-next-line @typescript-eslint/no-misused-promises
 	process.on("SIGINT", async () => {
 		console.log("\nStopping assets watcher...")
-		await watcher.close()
+		await watcher.close().catch(console.error)
 		console.log("Assets watcher stopped, exiting.")
 		process.exit(0)
 	})
@@ -57,7 +58,7 @@ async function build() {
 }
 
 if (process.argv.includes("--build")) {
-	build()
+	void build()
 } else {
-	watch()
+	void watch()
 }

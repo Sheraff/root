@@ -53,7 +53,7 @@ sw.addEventListener("activate", (event) => {
 					includeUncontrolled: false,
 				})
 				for (const tab of tabs) {
-					tab.navigate(tab.url)
+					void tab.navigate(tab.url)
 				}
 			} else {
 				await sw.clients.claim()
@@ -66,14 +66,14 @@ sw.addEventListener("activate", (event) => {
 
 sw.addEventListener("fetch", onFetch)
 
-sw.addEventListener("message", async (event) => {
+sw.addEventListener("message", (event) => {
 	const data = event.data as Message
 	if (data.type === "UPDATE") {
 		activationType = "prod"
-		sw.skipWaiting()
+		sw.skipWaiting().catch(console.error)
 	} else if (data.type === "HMR") {
 		activationType = "hmr"
-		sw.skipWaiting()
+		sw.skipWaiting().catch(console.error)
 	} else {
 		console.debug("[SW] received message:", data)
 	}

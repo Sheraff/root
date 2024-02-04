@@ -124,12 +124,14 @@ function Compress(): PluginOption {
 							const after = compressed.byteLength
 							stats.after += after
 							const compressedPath = node.path + ".br"
-							writeFile(compressedPath, compressed)
+							writeFile(compressedPath, compressed).catch((error) =>
+								_logger.error(String(error))
+							)
 							_logger.info(
 								`Compress ${coloredFile(node.path)} ${chalk.gray("from")} ${chalk.bold(readableSize(before))} ${chalk.gray("to")} ${chalk.bold(readableSize(after))} ${chalk.gray(`| ${Math.round((after / before) * 100)}%`)}`
 							)
 						})
-						.catch((error) => _logger.error(error))
+						.catch((error) => _logger.error(String(error)))
 				)
 			})
 			await Promise.all(promises)

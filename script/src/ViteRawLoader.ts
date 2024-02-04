@@ -5,7 +5,7 @@ import { type Plugin } from "vite"
 export function ViteRawLoader(): Plugin {
 	return {
 		name: "vite-plugin-raw-loader",
-		async load(url) {
+		load(url) {
 			const extension = extname(url)
 			if (extension === ".sql" || extension === ".txt") {
 				const input = readFileSync(url, "utf8")

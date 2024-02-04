@@ -69,7 +69,7 @@ function NotLoggedIn({
 	signIn,
 	providers,
 }: {
-	submitInviteCode: (code: string) => void
+	submitInviteCode: (code: string) => Promise<unknown>
 	signIn: (provider: string) => void
 	providers: Array<Provider>
 }) {
@@ -81,8 +81,8 @@ function NotLoggedIn({
 			<form
 				onSubmit={(event) => {
 					event.preventDefault()
-					const code = event.currentTarget.code.value
-					submitInviteCode(code)
+					const code = (event.currentTarget.code as HTMLInputElement).value
+					void submitInviteCode(code)
 				}}
 			>
 				<input type="text" name="code" required minLength={17} maxLength={17} />
@@ -111,22 +111,22 @@ function LoggedIn({
 	providers,
 }: {
 	userId: string
-	signOut: () => void
-	linkAccount: (provider: string) => void
+	signOut: () => Promise<unknown>
+	linkAccount: (provider: string) => Promise<void>
 	providers: Array<Provider>
 }) {
 	return (
 		<>
 			<div>Logged in as {userId}</div>
 			<hr />
-			<Button onClick={signOut}>Logout</Button>
+			<Button onClick={() => void signOut()}>Logout</Button>
 			<hr />
 			<div>
 				<p>Link accounts</p>
 				{providers.map((provider) => (
 					<Button
 						key={provider.key}
-						onClick={() => linkAccount(provider.key)}
+						onClick={() => void linkAccount(provider.key)}
 						dark
 						style={{ backgroundColor: provider.color }}
 					>

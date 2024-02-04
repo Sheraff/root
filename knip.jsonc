@@ -1,0 +1,11 @@
+{
+	"$schema": "https://unpkg.com/knip@4/schema.json",
+	"ignoreDependencies": [
+		// used by fastify, with just a string reference, no import
+		"pino-pretty",
+		// might not be used everywhere yet
+		"assets"
+	],
+	"ignore": ["**/*.test.ts", "**/types/*.d.ts"],
+	"includeEntryExports": true
+}

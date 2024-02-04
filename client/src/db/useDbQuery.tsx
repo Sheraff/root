@@ -106,7 +106,7 @@ function cleanupQuery({
 
 	console.log("finalizing statement", hash)
 	queryStore.delete(hash)
-	q.statement?.then((s) => s.finalize(null))
+	q.statement?.then((s) => s.finalize(null), console.error)
 	q.statement = null
 
 	// stop listening to table changes
@@ -146,11 +146,9 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 
 	const cacheManager = client.getQueryCache()
 	const unsubscribe = cacheManager.subscribe((event) => {
-		if (event.query.queryKey[0] !== UNIQUE_KEY) return
-		const queryKey = [event.query.queryKey[1], event.query.queryKey[2]] as [
-			dbName: string,
-			sql: string,
-		]
+		const eventQueryKey = event.query.queryKey as readonly unknown[]
+		if (eventQueryKey[0] !== UNIQUE_KEY) return
+		const queryKey = [eventQueryKey[1], eventQueryKey[2]] as [dbName: string, sql: string]
 		const hash = hashKey(queryKey)
 
 		/**
@@ -189,7 +187,7 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 				queryStore.set(hash, q)
 			}
 			if (!q.statement) {
-				q.statement = ctx.db.prepare(event.query.queryKey[2])
+				q.statement = ctx.db.prepare(eventQueryKey[2] as string)
 			}
 			if (q.activeCount !== 1) return
 			if (q.listening) return
@@ -215,10 +213,12 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 									...queryKey,
 									{ [update]: true },
 								] as const
-								client.invalidateQueries({
-									exact: false,
-									queryKey: filterKey,
-								})
+								client
+									.invalidateQueries({
+										exact: false,
+										queryKey: filterKey,
+									})
+									.catch(console.error)
 							}
 						}
 					})
@@ -231,7 +231,7 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 						},
 					})
 				}
-			})
+			}, console.error)
 			return
 		}
 
@@ -318,7 +318,7 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 		})
 		queryStore.forEach((q) => {
 			if (q.dbName === dbName) {
-				q.statement?.then((s) => s.finalize(null))
+				q.statement?.then((s) => s.finalize(null), console.error)
 				queryStore.delete(q.dbName)
 			}
 		})
@@ -406,12 +406,14 @@ export function useDbQuery<
 				releaser()
 				return Promise.reject("Request aborted")
 			}
-			if (!q.statement) {
+			if (!(q.statement as Promise<StmtAsync> | null)) {
 				releaser()
 				throw new Error("Query statement was finalized before being executed")
 			}
 			const transactionId = queryId++
-			transaction.exec(/*sql*/ `SAVEPOINT use_query_${transactionId};`)
+			transaction.exec(/*sql*/ `SAVEPOINT use_query_${transactionId};`).catch((e) => {
+				throw new Error("useQuery transaction failed before SAVEPOINT", { cause: e })
+			})
 			statement.raw(false)
 			try {
 				const data = (await statement.all(transaction)) as TQueryFnData[]
@@ -444,7 +446,7 @@ async function getUsedTables(db: DBAsync, query: string): Promise<string[]> {
 	const cached = usedTableCache.get(cacheKey)
 	if (cached) return cached
 	const sanitized = query.replaceAll("'", "''")
-	const rows = await db.tablesUsedStmt.all(null, sanitized)
+	const rows = (await db.tablesUsedStmt.all(null, sanitized)) as [string][]
 	const result = Array.from(new Set(rows.map((r) => r[0])))
 	usedTableCache.set(cacheKey, result)
 	return result

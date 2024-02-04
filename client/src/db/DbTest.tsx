@@ -85,8 +85,10 @@ export function Content({ name }: { name: string }) {
 	useEffect(() => {
 		if (!sync) return
 		const controller = new AbortController()
-		addEventListener("online", sync.roundTrip, { signal: controller.signal })
-		if (navigator.onLine) sync.roundTrip()
+		addEventListener("online", () => void sync.roundTrip(), { signal: controller.signal })
+		if (navigator.onLine) {
+			void sync.roundTrip()
+		}
 		return () => controller.abort()
 	}, [sync])
 
@@ -111,14 +113,14 @@ export function Content({ name }: { name: string }) {
 			<form
 				onSubmit={(event) => {
 					event.preventDefault()
-					const content = event.currentTarget.content.value
-					addData(content)
+					const content = (event.currentTarget.content as HTMLInputElement).value
+					void addData(content)
 					event.currentTarget.reset()
 				}}
 			>
 				<input type="text" name="content" required />
 				<div>
-					<Button type="button" onClick={dropData}>
+					<Button type="button" onClick={() => void dropData()}>
 						Clear list
 					</Button>
 					<Button>Add to list</Button>
@@ -127,7 +129,7 @@ export function Content({ name }: { name: string }) {
 			<hr />
 			{sync && (
 				<>
-					<Button onClick={() => sync.roundTrip()}>Sync</Button>
+					<Button onClick={() => void sync.roundTrip()}>Sync</Button>
 				</>
 			)}
 		</>

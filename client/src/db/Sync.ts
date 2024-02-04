@@ -1,6 +1,6 @@
 import { sql } from "shared/sql"
 import type { CtxAsync } from "@vlcn.io/react"
-import { encode, decode, tags, bytesToHex } from "@vlcn.io/ws-common"
+import { encode, decode, tags, bytesToHex, type Change } from "@vlcn.io/ws-common"
 import { useState, useEffect } from "react"
 
 type DBAsync = CtxAsync["db"]
@@ -70,7 +70,9 @@ class Sync {
 		const endpoint = `/api/changes/${this.args.name}?${params.toString()}`
 
 		// gather our changes to send to the server
-		const changes = await this.args.pullChangesetStmt.all(null, lastSentVersion)
+		const changes = (await this.args.pullChangesetStmt.all(null, lastSentVersion)) as Readonly<
+			Change[]
+		>
 
 		const requestBody =
 			changes.length === 0
@@ -91,8 +93,8 @@ class Sync {
 		})
 
 		if (!response.ok) {
-			const txt = (await response.json()) as any
-			throw new Error(txt.message || txt)
+			const txt = (await response.json()) as Error
+			throw new Error(txt.message)
 		}
 
 		// SENT CHANGES
@@ -101,7 +103,7 @@ class Sync {
 			if (sentChangesResult === "ok") {
 				// Record that we've sent up to the given db version to the server
 				// so next sync will be a delta.
-				this.lastSent = changes[changes.length - 1][5]
+				this.lastSent = changes[changes.length - 1]![5]
 			} else {
 				const [, error] = sentChangesResult?.split("=") ?? []
 				console.error(
@@ -146,8 +148,8 @@ class Sync {
 	}
 
 	destroy() {
-		this.args.applyChangesetStmt.finalize(null)
-		this.args.pullChangesetStmt.finalize(null)
+		this.args.applyChangesetStmt.finalize(null).catch(console.error)
+		this.args.pullChangesetStmt.finalize(null).catch(console.error)
 	}
 }
 
@@ -203,11 +205,11 @@ export function useSync(db: DBAsync | undefined, name: string | undefined) {
 				return
 			}
 			setSync(s)
-		})
+		}, console.error)
 
 		return () => {
 			mounted = false
-			sync.then((s) => s.destroy())
+			sync.then((s) => s.destroy(), console.error)
 		}
 	}, [db, name])
 

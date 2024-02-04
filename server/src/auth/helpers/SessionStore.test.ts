@@ -48,7 +48,7 @@ describe.concurrent("SessionStore", () => {
 		store.close()
 	})
 
-	it("clears inactive sessions after 1 day", async () => {
+	it("clears inactive sessions after 1 day", () => {
 		const db = new Database("")
 		db.pragma("journal_mode = WAL")
 		db.pragma("synchronous = NORMAL")

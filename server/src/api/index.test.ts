@@ -4,7 +4,7 @@ import fastify from "fastify"
 
 describe.concurrent("api", async () => {
 	const app = fastify()
-	app.register(api)
+	await app.register(api)
 	await app.ready()
 	afterAll(() => app.close())
 	it("works", async () => {

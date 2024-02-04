@@ -29,7 +29,10 @@ async function networkFirst(event: FetchEvent, request: Request, url: URL) {
 				resolve(response)
 				tController.abort()
 				if (import.meta.env.PROD) {
-					caches.open(CACHES.assets).then((cache) => cache.put(event.request.url, clone))
+					caches
+						.open(CACHES.assets)
+						.then((cache) => cache.put(event.request.url, clone))
+						.catch(console.error)
 				}
 			}
 			return response
@@ -49,22 +52,27 @@ async function networkFirst(event: FetchEvent, request: Request, url: URL) {
 					}
 				})
 		})
-		Promise.allSettled([f, t]).then(() => {
-			if (fController.signal.aborted || tController.signal.aborted) return
-			if (url.pathname === "/") {
-				resolve(
-					new Response(indexHtml, {
-						status: 200,
-						headers: {
-							"Content-Type": "text/html; charset=utf-8",
-						},
-					})
-				)
-			} else {
-				console.warn("[SW] onFetch > default > networkFirst: cache miss", event.request.url)
-				resolve(f)
-			}
-		})
+		Promise.allSettled([f, t])
+			.then(() => {
+				if (fController.signal.aborted || tController.signal.aborted) return
+				if (url.pathname === "/") {
+					resolve(
+						new Response(indexHtml, {
+							status: 200,
+							headers: {
+								"Content-Type": "text/html; charset=utf-8",
+							},
+						})
+					)
+				} else {
+					console.warn(
+						"[SW] onFetch > default > networkFirst: cache miss",
+						event.request.url
+					)
+					resolve(f)
+				}
+			})
+			.catch(console.error)
 	})
 }
 

@@ -56,7 +56,7 @@ export function useDbProvider(name: string | undefined, schema: string, schemaNa
 			})
 		return () => {
 			closed = true
-			dbFactory.closeAndRemove(name)
+			void dbFactory.closeAndRemove(name)
 			client.removeQueries({ queryKey: key, exact: true })
 		}
 	}, [name, schema, schemaName])

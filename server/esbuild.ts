@@ -66,7 +66,7 @@ async function makeEsbuildWatcher() {
 						})
 					}
 				})
-				build.onEnd(async () => {
+				build.onEnd(() => {
 					process.env.ROOT = join(process.cwd(), "..")
 					const run = () =>
 						spawn(
@@ -98,7 +98,7 @@ async function watch() {
 	return { status, kill }
 }
 
-async function proxyDevServer(status: Status) {
+function proxyDevServer(status: Status) {
 	const server = fastify()
 
 	let polling: Promise<void> | null = null
@@ -119,21 +119,20 @@ async function proxyDevServer(status: Status) {
 		}
 	}
 
-	server.register(proxy, {
+	void server.register(proxy, {
 		upstream: "http://localhost:8877",
 		logLevel: "silent",
-		preHandler: async (req) => {
+		preHandler: (req) => {
 			if (status.flag) {
 				return
 			}
 			if (!polling) polling = healthPoll()
 			console.log(`Stalled request: ${req.url}`)
-			await polling
-			console.log(`Resume request: ${req.url}`)
+			polling.then(() => console.log(`Resume request: ${req.url}`), console.error)
 		},
 	})
 
-	server.listen({ port: env.DEV_PROXY_SERVER_PORT ?? 8123 })
+	void server.listen({ port: env.DEV_PROXY_SERVER_PORT ?? 8123 })
 
 	const kill = () => {
 		polling = null
@@ -147,11 +146,12 @@ if (process.argv.includes("--build")) {
 	await build()
 } else {
 	const { status, kill: killWatcher } = await watch()
-	const { kill: killProxy } = await proxyDevServer(status)
+	const { kill: killProxy } = proxyDevServer(status)
 
+	// eslint-disable-next-line @typescript-eslint/no-misused-promises
 	process.on("SIGINT", async () => {
 		console.log("Stopping server esbuild...")
-		Promise.all([killWatcher(), killProxy()])
+		await Promise.all([killWatcher(), killProxy()]).catch(console.error)
 		process.exit(0)
 	})
 }

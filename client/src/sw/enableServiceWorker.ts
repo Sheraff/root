@@ -91,12 +91,12 @@ async function loadServiceWorker(client?: QueryClient, id?: string, skip?: boole
 }
 
 export function enableServiceWorker(client?: QueryClient) {
-	window.addEventListener("load", () => loadServiceWorker(client), { once: true })
+	window.addEventListener("load", () => void loadServiceWorker(client), { once: true })
 
 	if (import.meta.hot) {
 		import.meta.hot.on("sw-rebuild", (data: { id: string }) => {
 			console.debug("[SW] Hot Module Reloading...")
-			loadServiceWorker(client, data.id, true)
+			void loadServiceWorker(client, data.id, true)
 		})
 	}
 }

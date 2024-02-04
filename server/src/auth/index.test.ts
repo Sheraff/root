@@ -15,7 +15,7 @@ describe.sequential(
 		})
 		afterEach(() => app.close())
 
-		it("creates a database with the correct schema", async () => {
+		it("creates a database with the correct schema", () => {
 			const tables = app.auth.db
 				.prepare(
 					sql`SELECT name FROM sqlite_schema WHERE type ='table' AND name NOT LIKE 'sqlite_%';`

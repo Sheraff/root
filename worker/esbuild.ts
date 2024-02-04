@@ -188,16 +188,17 @@ async function watch() {
 	//
 	const context = await esbuild.context(options)
 	await context.watch()
+	// eslint-disable-next-line @typescript-eslint/no-misused-promises
 	process.on("SIGINT", async () => {
 		console.log("\nStopping SW esbuild...")
-		await context.dispose()
+		await context.dispose().catch(console.error)
 		console.log("SW esbuild stopped, exiting.")
 		process.exit(0)
 	})
 }
 
 if (process.argv.includes("--build")) {
-	build()
+	void build()
 } else {
-	watch()
+	void watch()
 }

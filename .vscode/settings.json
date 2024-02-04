@@ -16,6 +16,15 @@
 		"**/*.sql.d.ts.map": true,
 		"**/*.js": true
 	},
+	"eslint.workingDirectories": [
+		"./assets",
+		"./client",
+		"./script",
+		"./server",
+		"./shared",
+		"./worker",
+		"."
+	],
 	"npm.packageManager": "pnpm",
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"editor.formatOnSave": true,

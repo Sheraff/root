@@ -11,7 +11,7 @@ export default function frontend(fastify: FastifyInstance, opts: object, done: (
 	const __dirname = path.dirname(__filename)
 	const clientDir = path.join(__dirname, "../../dist/client")
 
-	fastify.register(fastifyStatic, {
+	void fastify.register(fastifyStatic, {
 		root: clientDir,
 		prefix: "/",
 		wildcard: false,
@@ -21,15 +21,15 @@ export default function frontend(fastify: FastifyInstance, opts: object, done: (
 	const swDir = path.join(__dirname, "../../dist/worker")
 
 	fastify.get("/sw.js", function (req, reply) {
-		reply.sendFile("sw.js", swDir)
+		void reply.sendFile("sw.js", swDir)
 	})
 
 	fastify.get("/sw.js.map", function (req, reply) {
-		reply.sendFile("sw.js.map", swDir)
+		void reply.sendFile("sw.js.map", swDir)
 	})
 
 	fastify.get("/*", function (req, reply) {
-		reply.sendFile("index.html", clientDir)
+		void reply.sendFile("index.html", clientDir)
 	})
 
 	done()

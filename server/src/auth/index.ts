@@ -83,12 +83,12 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 		done()
 	})
 
-	fastify.register(cookie, {
+	void fastify.register(cookie, {
 		// hook: "onRequest", // see lifecycle hooks: https://fastify.dev/docs/latest/Reference/Lifecycle/
 		// logLevel: "info",
 	})
 
-	fastify.register(session, {
+	void fastify.register(session, {
 		secret: env.SESSION_COOKIE_SECRET,
 		cookie: {
 			secure: false, // TODO: set to true when using HTTPS
@@ -101,7 +101,7 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 		logLevel: "info",
 	})
 
-	fastify.register(
+	void fastify.register(
 		grant.fastify()({
 			defaults: {
 				origin: "http://localhost:3001",
@@ -197,21 +197,21 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 				inviteCode = parsed.code
 			} catch (err) {
 				fastify.log.error(err as any)
-				res.status(400)
+				void res.status(400)
 				return res.send({ error: "invalid code format" })
 			}
 			const valid = invitesStore.validate(inviteCode)
 			if (!valid) {
-				res.status(403)
+				void res.status(403)
 				return res.send({ error: "invalid code" })
 			}
 			const token = encrypt({ mode: "create" })
-			res.setCookie(PUBLIC_CONFIG.accountCreationCookie, token, {
+			void res.setCookie(PUBLIC_CONFIG.accountCreationCookie, token, {
 				path: "/",
 				sameSite: "lax",
 				maxAge: 3_600,
 			})
-			res.status(200)
+			void res.status(200)
 			return res.send({ message: "invite accepted, proceed to /api/oauth/connect/:provider" })
 		}
 	)
@@ -219,22 +219,22 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 	fastify.get("/api/oauth/invite", function (req, res) {
 		const userId = req.session.user?.id
 		if (!userId) {
-			res.status(401)
+			void res.status(401)
 			return res.send({ error: "unauthorized" })
 		}
 
 		const token = encrypt({ mode: "link", id: userId })
-		res.setCookie(PUBLIC_CONFIG.accountCreationCookie, token, {
+		void res.setCookie(PUBLIC_CONFIG.accountCreationCookie, token, {
 			path: "/",
 			sameSite: "lax",
 			maxAge: 3_600,
 		})
-		res.status(200)
+		void res.status(200)
 		return res.send({ message: "linking accounts, proceed to /api/oauth/connect/:provider" })
 	})
 
 	fastify.get("/api/oauth/finalize", function (req, res) {
-		res.setCookie(PUBLIC_CONFIG.accountCreationCookie, "", {
+		void res.setCookie(PUBLIC_CONFIG.accountCreationCookie, "", {
 			path: "/",
 			sameSite: "lax",
 			maxAge: 0,
@@ -242,14 +242,14 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 
 		// check session, obtained after oauth flow
 		if (!req.session?.grant) {
-			res.status(401)
+			void res.status(401)
 			fastify.log.warn("no session")
 			return res.send({ error: "unauthorized" })
 		}
 		const grantData = getGrantData(req.session.grant)
 		req.session.set("grant", null)
 		if (!grantData) {
-			res.status(401)
+			void res.status(401)
 			fastify.log.warn("no session data")
 			return res.send({ error: "unauthorized" })
 		}
@@ -277,7 +277,7 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 		// check account creation cookie, obtained from invite flow
 		const token = req.cookies[PUBLIC_CONFIG.accountCreationCookie]
 		if (!token) {
-			res.status(401)
+			void res.status(401)
 			fastify.log.warn("no account creation cookie")
 			return res.send({ error: "unauthorized" })
 		}
@@ -287,7 +287,7 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 		])
 		const result = decrypt(token, tokenSchema)
 		if ("error" in result) {
-			res.status(401)
+			void res.status(401)
 			fastify.log.warn("invalid account creation cookie")
 			return res.send({ error: "unauthorized" })
 		}
@@ -325,14 +325,18 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 
 	fastify.addHook("onSend", (req, res, payload, done) => {
 		if (req.session?.user) {
-			res.setCookie(PUBLIC_CONFIG.userIdCookie, req.session.user.id, {
+			void res.setCookie(PUBLIC_CONFIG.userIdCookie, req.session.user.id, {
 				path: "/",
 				sameSite: "lax",
 				maxAge: 2147483647,
 			})
 			return done(null, payload)
 		} else {
-			res.setCookie(PUBLIC_CONFIG.userIdCookie, "", { path: "/", sameSite: "lax", maxAge: 0 })
+			void res.setCookie(PUBLIC_CONFIG.userIdCookie, "", {
+				path: "/",
+				sameSite: "lax",
+				maxAge: 0,
+			})
 			return done(null, payload)
 		}
 	})
@@ -341,10 +345,11 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 		req.session.destroy((err) => {
 			if (err) {
 				fastify.log.error(err)
-				res.status(500)
-				return res.send({ error: "internal server error" })
+				void res.status(500)
+				void res.send({ error: "internal server error" })
+			} else {
+				void res.send({ message: "session destroyed" })
 			}
-			return res.send({ message: "session destroyed" })
 		})
 	})
 
