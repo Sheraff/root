@@ -173,7 +173,7 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 		 */
 		if (event.type === "updated" && event.action.type === "fetch") {
 			console.log("::::::updated:fetch")
-			let q = queryStore.get(hash) as QueryEntry
+			let q = queryStore.get(hash)!
 			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- force exclude `undefined` above for `getUsedTables` promise chain below, because it's never going back to undefined
 			if (!q) {
 				console.log("start listening to", hash)
@@ -363,8 +363,8 @@ export function useDbQuery<
 	dbName: string
 	query: string
 	select?: (data: TQueryFnData[]) => TData
-	bindings?: ReadonlyArray<string>
-	updateTypes?: ReadonlyArray<UpdateType>
+	bindings?: readonly string[]
+	updateTypes?: readonly UpdateType[]
 	enabled?: boolean
 }) {
 	const ctx = useDb(dbName)
@@ -380,7 +380,7 @@ export function useDbQuery<
 		dbName: string,
 		sql: string,
 		updateTypes: Record<UpdateType, boolean>,
-		bindings: ReadonlyArray<string>,
+		bindings: readonly string[],
 	]
 
 	return useQuery({

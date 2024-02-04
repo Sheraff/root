@@ -25,7 +25,7 @@ async function loadServiceWorker(client?: QueryClient, id?: string, skip?: boole
 			client?.setQueryData(SW_UPDATE_KEY, null)
 			if (registration.waiting) {
 				registration.waiting.postMessage({ type: "HMR" })
-				const listen = registration.installing || registration.waiting
+				const listen = registration.installing ?? registration.waiting
 				listen.addEventListener(
 					"statechange",
 					() => {

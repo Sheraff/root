@@ -256,7 +256,7 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 
 		// check if user already exists for this session
 		const user =
-			getUserFromSession(req) ||
+			getUserFromSession(req) ??
 			(userFromGrantStatement.get(grantData) as { id: string; email: string } | undefined)
 		if (user) {
 			createAccountWhereNotExistsStatement.run({

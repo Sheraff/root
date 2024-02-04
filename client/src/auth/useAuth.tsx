@@ -7,20 +7,20 @@ type States =
 			type: "unauthenticated"
 			submitInviteCode: (inviteCode: string) => Promise<Response>
 			signIn: (provider: string) => void
-			providers: Array<Provider>
+			providers: Provider[]
 	  }
 	| {
 			type: "creating-account"
 			createAccount: (provider: string) => void
 			cancelCreateAccount: () => void
-			providers: Array<Provider>
+			providers: Provider[]
 	  }
 	| {
 			type: "signed-in"
 			userId: string
 			signOut: () => Promise<Response>
 			linkAccount: (provider: string) => Promise<void>
-			providers: Array<Provider>
+			providers: Provider[]
 	  }
 
 let cookieCache: Map<string, string | undefined> | null = null

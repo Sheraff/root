@@ -43,7 +43,7 @@ function CreateAccount({
 }: {
 	createAccount: (provider: string) => void
 	cancelCreateAccount: () => void
-	providers: Array<Provider>
+	providers: Provider[]
 }) {
 	return (
 		<>
@@ -71,7 +71,7 @@ function NotLoggedIn({
 }: {
 	submitInviteCode: (code: string) => Promise<unknown>
 	signIn: (provider: string) => void
-	providers: Array<Provider>
+	providers: Provider[]
 }) {
 	return (
 		<>
@@ -113,7 +113,7 @@ function LoggedIn({
 	userId: string
 	signOut: () => Promise<unknown>
 	linkAccount: (provider: string) => Promise<void>
-	providers: Array<Provider>
+	providers: Provider[]
 }) {
 	return (
 		<>

@@ -6,7 +6,7 @@ import { useEffect, useRef } from "react"
 type DBAsync = CtxAsync["db"]
 type StmtAsync = Awaited<ReturnType<DBAsync["prepare"]>>
 
-export function useDbMutation<TBindings extends ReadonlyArray<string> = [], TData = null>({
+export function useDbMutation<TBindings extends readonly string[] = [], TData = null>({
 	dbName,
 	query,
 	returning,

@@ -120,7 +120,7 @@ async function build() {
 		)
 		const f = await Promise.all(["/", buildFiles, staticFiles])
 		const files = f.flat()
-		options.define["__CLIENT_ASSETS__"] = JSON.stringify(files)
+		options.define.__CLIENT_ASSETS__ = JSON.stringify(files)
 		console.log(chalk.gray("SW cached assets list"))
 		files.forEach((f) => {
 			console.log(coloredFile(join("../dist/client", f === "/" ? "index.html" : f)))
@@ -135,7 +135,7 @@ async function build() {
 			await new Promise((resolve) => stream.once("end", resolve))
 		}
 		const key = hash.digest("hex")
-		options.define["__CLIENT_ASSETS_HASH__"] = JSON.stringify(key)
+		options.define.__CLIENT_ASSETS_HASH__ = JSON.stringify(key)
 		console.log(chalk.gray("SW cached assets hash"), key)
 
 		const delta = Date.now() - before
@@ -180,8 +180,8 @@ async function watch() {
 	options.define["import.meta.env.SSR"] = "false"
 
 	// assets
-	options.define["__CLIENT_ASSETS__"] = JSON.stringify(["/"])
-	options.define["__CLIENT_ASSETS_HASH__"] = JSON.stringify("0")
+	options.define.__CLIENT_ASSETS__ = JSON.stringify(["/"])
+	options.define.__CLIENT_ASSETS_HASH__ = JSON.stringify("0")
 
 	options.plugins = [logger]
 
