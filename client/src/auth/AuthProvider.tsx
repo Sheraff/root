@@ -1,22 +1,17 @@
 import { AuthContext } from "client/auth/AuthContext"
 import { useAuth } from "client/auth/useAuth"
 import { useAuthContext } from "client/auth/useAuthContext"
-import { DbProvider } from "client/db/ParentTest"
+import { useDbProvider } from "client/db/DbProvider"
 import { type ReactNode } from "react"
+import schema from "assets/test-v0.sql"
 
-const UserDbProvider = ({ children }: { children: ReactNode }) => {
+export const UserDbProvider = ({ children }: { children: ReactNode }) => {
 	const auth = useAuthContext()
-	if (auth.type === "signed-in") {
-		return <DbProvider name={auth.userId}>{children}</DbProvider>
-	}
-	return <>{children}</>
+	useDbProvider(auth.type === "signed-in" ? auth.userId : undefined, schema, "test-v0")
+	return children
 }
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const auth = useAuth()
-	return (
-		<AuthContext.Provider value={auth}>
-			<UserDbProvider>{children}</UserDbProvider>
-		</AuthContext.Provider>
-	)
+	return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>
 }

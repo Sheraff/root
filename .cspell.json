@@ -40,7 +40,8 @@
 		"tanstack",
 		"tsbuildinfo",
 		"valibot",
-		"vlcn"
+		"vlcn",
+		"bento"
 	],
 	"dictionaryDefinitions": [
 		{ "name": "five", "path": "./server/src/auth/helpers/5-letter-words.txt" }

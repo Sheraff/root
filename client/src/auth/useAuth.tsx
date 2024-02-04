@@ -92,6 +92,10 @@ function linkAccount(provider: string) {
 
 const filteredProviders = providers.filter((p) => __AUTH_PROVIDERS__.includes(p.key))
 
+/**
+ * Hook to manage authentication state. This hook should probably be called only once,
+ * and the state should be passed down to the rest of the app using a context.
+ */
 export function useAuth(): States {
 	const [userId, setUserId] = useState<string | undefined>(() =>
 		getCookie(PUBLIC_CONFIG.userIdCookie)

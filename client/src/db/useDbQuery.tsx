@@ -6,7 +6,7 @@ import {
 	type QueryCache,
 } from "@tanstack/react-query"
 import { type CtxAsync } from "@vlcn.io/react"
-import { useDB } from "client/db/useDb"
+import { useDb } from "client/db/DbProvider"
 import { useLayoutEffect } from "react"
 
 const UNIQUE_KEY = "__vlcn__react_query__cache_manager__"
@@ -334,13 +334,13 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
  * - know which tables are used by a query
  * - know when to invalidate queries
  */
-export function useCacheManager(dbName: string) {
+export function useCacheManager(dbName?: string) {
 	const client = useQueryClient()
-	const ctx = useDB(dbName)
+	const ctx = useDb(dbName)
 
 	// only in dev
 	useLayoutEffect(() => {
-		if (!ctx) return
+		if (!ctx || !dbName) return
 		start(dbName, ctx, client)
 	}, [dbName, ctx, client])
 }
@@ -366,7 +366,7 @@ export function useDbQuery<
 	updateTypes?: ReadonlyArray<UpdateType>
 	enabled?: boolean
 }) {
-	const ctx = useDB(dbName)
+	const ctx = useDb(dbName)
 
 	const queryKey = [
 		UNIQUE_KEY,

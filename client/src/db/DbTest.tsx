@@ -5,7 +5,7 @@ import { useSync } from "client/db/Sync"
 import { useDbQuery } from "client/db/useDbQuery"
 import { useDbMutation } from "client/db/useDbMutation"
 import { Button } from "client/components/Button/Button"
-import { useDB } from "client/db/useDb"
+import { useDb } from "client/db/DbProvider"
 
 function Test({ name }: { name: string }) {
 	const other = useDbQuery<{ id: string; content: string; position: number }>({
@@ -48,7 +48,7 @@ function Test2({ name }: { name: string }) {
 }
 
 export function Content({ name }: { name: string }) {
-	const ctx = useDB(name)
+	const ctx = useDb(name)
 	const sync = useSync(ctx?.db, name)
 
 	const { mutateAsync } = useDbMutation<[id: string, content: string]>({
