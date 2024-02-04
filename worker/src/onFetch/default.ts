@@ -72,7 +72,7 @@ async function networkFirst(event: FetchEvent, request: Request, url: URL) {
 					resolve(f)
 				}
 			})
-			.catch(console.error)
+			.catch(() => {})
 	})
 }
 

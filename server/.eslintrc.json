@@ -2,5 +2,9 @@
 	"extends": "../.eslintrc.json",
 	"parserOptions": {
 		"project": ["tsconfig.app.json", "tsconfig.tools.json"]
+	},
+	"rules": {
+		"@typescript-eslint/no-unnecessary-condition": "off",
+		"@typescript-eslint/no-misused-promises": "off"
 	}
 }

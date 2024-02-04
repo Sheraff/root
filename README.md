@@ -31,7 +31,7 @@ A typescript service worker, with
 A workspace, with
 
 - pnpm (package manager / script runner)
-- eslint (code quality)
+- eslint w/ type-aware linting (code quality)
 - prettier (code formatting)
 - knip (dead code elimination)
 - turbo (monorepo manager / script cache)

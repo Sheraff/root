@@ -123,13 +123,14 @@ function proxyDevServer(status: Status) {
 	void server.register(proxy, {
 		upstream: "http://localhost:8877",
 		logLevel: "silent",
-		preHandler: (req) => {
+		preHandler: async (req) => {
 			if (status.flag) {
 				return
 			}
 			if (!polling) polling = healthPoll()
 			console.log(`Stalled request: ${req.url}`)
-			polling.then(() => console.log(`Resume request: ${req.url}`), console.error)
+			await polling.catch(console.error)
+			console.log(`Resume request: ${req.url}`)
 		},
 	})
 
