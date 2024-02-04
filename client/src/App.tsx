@@ -4,7 +4,7 @@ import { useAuth } from "client/auth/useAuth"
 import { Content } from "client/db/DbTest"
 import { DbProvider } from "client/db/ParentTest"
 import { fooBar } from "shared/foo/bar"
-import { useServiceWorker } from "client/sw/useServiceWorker"
+import { useServiceWorker, useServiceWorkerUpdate } from "client/sw/useServiceWorker"
 import { Button } from "client/Button/Button"
 import { useSumWorker } from "client/worker/useSumWorker"
 
@@ -153,7 +153,7 @@ function NotLoggedIn({
 	)
 }
 
-export default function App() {
+function SwDemo() {
 	const { data: sw } = useServiceWorker()
 	useEffect(() => {
 		if (!sw) return
@@ -165,6 +165,18 @@ export default function App() {
 		})
 	}, [sw])
 
+	const [shouldUpdate, update] = useServiceWorkerUpdate()
+
+	if (!shouldUpdate) return <div>SW is up to date</div>
+	return (
+		<>
+			<div>SW is out of date</div>
+			<Button onClick={update}>Update SW</Button>
+		</>
+	)
+}
+
+export default function App() {
 	useSumWorker()
 
 	const state = useAuth()
@@ -172,6 +184,8 @@ export default function App() {
 	return (
 		<div>
 			<h1>Welcome to our Fullstack TypeScript Project!</h1>
+			<SwDemo />
+			<hr />
 			{state.type === "signed-in" && (
 				<LoggedIn
 					userId={state.userId}

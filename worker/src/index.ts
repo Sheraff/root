@@ -24,19 +24,18 @@ sw.addEventListener("install", (event) => {
 
 			const cache = await caches.open(CACHES.assets)
 			await cache.addAll(__CLIENT_ASSETS__)
-			await sw.skipWaiting()
 
 			console.debug("[SW] installed.")
 		})()
 	)
 })
 
+let activationType: "prod" | "hmr" = import.meta.env.DEV ? "hmr" : "prod"
 sw.addEventListener("activate", (event) => {
 	event.waitUntil(
 		(async () => {
-			console.debug("[SW] activating...")
-
 			// remove caches that aren't used anymore
+			console.debug("[SW] updating cache...")
 			const cacheNames = await caches.keys()
 			const appCaches = Object.values(CACHES)
 			await Promise.allSettled(
@@ -46,7 +45,19 @@ sw.addEventListener("activate", (event) => {
 			)
 
 			// immediately claim clients to avoid de-sync
-			await sw.clients.claim()
+			console.debug("[SW] claiming clients...")
+			if (activationType === "prod") {
+				await sw.clients.claim()
+				const tabs = await sw.clients.matchAll({
+					type: "window",
+					includeUncontrolled: false,
+				})
+				for (const tab of tabs) {
+					tab.navigate(tab.url)
+				}
+			} else {
+				await sw.clients.claim()
+			}
 
 			console.debug("[SW] activated.")
 		})()
@@ -57,5 +68,13 @@ sw.addEventListener("fetch", onFetch)
 
 sw.addEventListener("message", async (event) => {
 	const data = event.data as Message
-	console.debug("[SW] received message:", data)
+	if (data.type === "UPDATE") {
+		activationType = "prod"
+		sw.skipWaiting()
+	} else if (data.type === "HMR") {
+		activationType = "hmr"
+		sw.skipWaiting()
+	} else {
+		console.debug("[SW] received message:", data)
+	}
 })

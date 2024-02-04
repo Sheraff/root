@@ -1,7 +1,7 @@
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { type Message } from "shared/workerEvents"
 
-export const SW_CACHE_KEY = ["sw"]
+export const SW_CACHE_KEY = ["sw", "ready"]
 
 type KnownServiceWorker = Omit<ServiceWorker, "postMessage"> & {
 	postMessage(message: Message, transfer?: Transferable[]): void
@@ -15,4 +15,26 @@ export function useServiceWorker() {
 		queryFn: () =>
 			navigator.serviceWorker.ready.then((r) => r.active as KnownServiceWorker | null),
 	})
+}
+
+export const SW_UPDATE_KEY = ["sw", "update"]
+
+export function useServiceWorkerUpdate() {
+	const { data: waiting } = useQuery({
+		queryKey: SW_UPDATE_KEY,
+		staleTime: Infinity,
+		gcTime: Infinity,
+		queryFn: () =>
+			navigator.serviceWorker
+				.getRegistration()
+				.then((r) => (r?.waiting ?? null) as KnownServiceWorker | null),
+	})
+	const { mutate: update } = useMutation({
+		mutationFn: () => {
+			waiting?.postMessage({ type: "UPDATE" })
+			return new Promise(() => {})
+		},
+		mutationKey: SW_UPDATE_KEY,
+	})
+	return [Boolean(waiting), update] as [can_update: boolean, update: () => void]
 }
