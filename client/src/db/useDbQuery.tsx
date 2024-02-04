@@ -5,7 +5,8 @@ import {
 	type QueryClient,
 	type QueryCache,
 } from "@tanstack/react-query"
-import { useDB, type CtxAsync } from "@vlcn.io/react"
+import { type CtxAsync } from "@vlcn.io/react"
+import { useDb } from "client/db/DbProvider"
 import { useLayoutEffect } from "react"
 
 const UNIQUE_KEY = "__vlcn__react_query__cache_manager__"
@@ -333,12 +334,15 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
  * - know which tables are used by a query
  * - know when to invalidate queries
  */
-export function useCacheManager(dbName: string) {
+export function useCacheManager(dbName?: string) {
 	const client = useQueryClient()
-	const ctx = useDB(dbName)
+	const ctx = useDb(dbName)
 
 	// only in dev
-	useLayoutEffect(() => start(dbName, ctx, client), [dbName, ctx, client])
+	useLayoutEffect(() => {
+		if (!ctx || !dbName) return
+		start(dbName, ctx, client)
+	}, [dbName, ctx, client])
 }
 
 let queryId = 0
@@ -362,7 +366,7 @@ export function useDbQuery<
 	updateTypes?: ReadonlyArray<UpdateType>
 	enabled?: boolean
 }) {
-	const ctx = useDB(dbName)
+	const ctx = useDb(dbName)
 
 	const queryKey = [
 		UNIQUE_KEY,
@@ -379,6 +383,7 @@ export function useDbQuery<
 	]
 
 	return useQuery({
+		enabled: Boolean(ctx?.db && enabled),
 		queryKey,
 		queryFn: async ({ signal }) => {
 			console.debug("::::::queryFn")
@@ -396,7 +401,7 @@ export function useDbQuery<
 			if (signal.aborted) return Promise.reject("Request aborted")
 
 			statement.bind(bindings)
-			const [releaser, transaction] = await ctx.db.imperativeTx()
+			const [releaser, transaction] = await ctx!.db.imperativeTx()
 			if (signal.aborted) {
 				releaser()
 				return Promise.reject("Request aborted")
@@ -427,7 +432,6 @@ export function useDbQuery<
 		retryOnMount: false,
 		refetchOnMount: true, // will only refetch if query is stale
 		refetchOnWindowFocus: true, // in case browser sent the tab to sleep
-		enabled,
 		networkMode: "always",
 		staleTime: Infinity,
 	})

@@ -190,10 +190,11 @@ async function createSync(db: CtxAsync["db"], room: string) {
 	})
 }
 
-export function useSync(db: DBAsync, name: string) {
+export function useSync(db: DBAsync | undefined, name: string | undefined) {
 	const [sync, setSync] = useState<Sync | null>(null)
 
 	useEffect(() => {
+		if (!db || !name) return
 		let mounted = true
 		const sync = createSync(db, name)
 
