@@ -9,8 +9,7 @@
 		"test": {},
 		"//#root:test": {
 			"dependsOn": ["script#build"],
-			"cache": false,
-			"persistent": true
+			"cache": false
 		},
 		"tsc": {},
 		"lint": {
