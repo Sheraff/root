@@ -104,6 +104,7 @@ function proxyDevServer(status: Status) {
 	let polling: Promise<void> | null = null
 	async function healthPoll() {
 		console.log("Stalling requests, waiting for server to restart...")
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		while (true) {
 			try {
 				const res = await fetch("http://localhost:8877/health", { method: "HEAD" })

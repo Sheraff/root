@@ -105,7 +105,7 @@ export default function crsqlite(
 			},
 		},
 		onRequest(request, reply, done) {
-			if (!request.session?.user) {
+			if (!request.session.user) {
 				fastify.log.warn("/api/changes/:name ::: unauthorized")
 				void reply.status(401).send({ error: "unauthorized" })
 				return done()
@@ -120,7 +120,7 @@ export default function crsqlite(
 				const error = e as SqliteError
 				if (
 					error.code === "SQLITE_IOERR_WRITE" ||
-					error.message?.includes("readonly database")
+					error.message.includes("readonly database")
 				) {
 					void res.status(400).send({
 						message:

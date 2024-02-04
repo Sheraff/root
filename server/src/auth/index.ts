@@ -241,7 +241,7 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 		})
 
 		// check session, obtained after oauth flow
-		if (!req.session?.grant) {
+		if (!req.session.grant) {
 			void res.status(401)
 			fastify.log.warn("no session")
 			return res.send({ error: "unauthorized" })
@@ -324,7 +324,7 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 	})
 
 	fastify.addHook("onSend", (req, res, payload, done) => {
-		if (req.session?.user) {
+		if (req.session.user) {
 			void res.setCookie(PUBLIC_CONFIG.userIdCookie, req.session.user.id, {
 				path: "/",
 				sameSite: "lax",

@@ -6,7 +6,8 @@
 		"eslint:recommended",
 		"plugin:@typescript-eslint/recommended",
 		"prettier",
-		"plugin:@typescript-eslint/recommended-type-checked"
+		"plugin:@typescript-eslint/recommended-type-checked",
+		"plugin:@typescript-eslint/strict-type-checked"
 	],
 	"ignorePatterns": [
 		"node_modules/*",
@@ -29,6 +30,9 @@
 			{ "fixStyle": "inline-type-imports" }
 		],
 		"@typescript-eslint/no-explicit-any": "off",
+		"@typescript-eslint/no-non-null-assertion": "off",
+		"@typescript-eslint/no-invalid-void-type": "off",
+		"@typescript-eslint/no-confusing-void-expression": "off",
 		"no-empty": "off",
 		"react-refresh/only-export-components": ["error", { "allowConstantExport": true }],
 		"no-unused-labels": "off"

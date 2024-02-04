@@ -173,7 +173,8 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 		 */
 		if (event.type === "updated" && event.action.type === "fetch") {
 			console.log("::::::updated:fetch")
-			let q = queryStore.get(hash) as QueryEntry // force exclude `undefined` for `getUsedTables` promise chain below, because it's never going back to undefined
+			let q = queryStore.get(hash) as QueryEntry
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- force exclude `undefined` above for `getUsedTables` promise chain below, because it's never going back to undefined
 			if (!q) {
 				console.log("start listening to", hash)
 				q = {
@@ -241,7 +242,7 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 		 */
 		if (event.type === "observerAdded") {
 			console.debug("::::::obs.added")
-			const q = queryStore.get(hash)!
+			const q = queryStore.get(hash)
 			if (!q) return
 			console.log("increment active count", hash)
 			q.activeCount++
@@ -398,13 +399,14 @@ export function useDbQuery<
 				throw new Error("Query statement did not exist when trying to execute queryFn")
 			}
 			const statement = await q.statement
-			if (signal.aborted) return Promise.reject("Request aborted")
+			if (signal.aborted) return Promise.reject(new Error("Request aborted"))
 
 			statement.bind(bindings)
 			const [releaser, transaction] = await ctx!.db.imperativeTx()
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- could have changed since last check because of the `await`
 			if (signal.aborted) {
 				releaser()
-				return Promise.reject("Request aborted")
+				return Promise.reject(new Error("Request aborted"))
 			}
 			if (!(q.statement as Promise<StmtAsync> | null)) {
 				releaser()

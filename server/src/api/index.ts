@@ -8,7 +8,7 @@ export default function routes(fastify: FastifyInstance, opts: object, done: () 
 
 	fastify.get("/api/protected", {
 		onRequest(request, reply, done) {
-			if (!request.session?.user) {
+			if (!request.session.user) {
 				fastify.log.warn("/api/protected ::: unauthorized")
 				void reply.status(401).send({ error: "unauthorized" })
 				return done()

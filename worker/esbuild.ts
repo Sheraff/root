@@ -122,9 +122,9 @@ async function build() {
 		const files = f.flat()
 		options.define["__CLIENT_ASSETS__"] = JSON.stringify(files)
 		console.log(chalk.gray("SW cached assets list"))
-		files.forEach((f) =>
+		files.forEach((f) => {
 			console.log(coloredFile(join("../dist/client", f === "/" ? "index.html" : f)))
-		)
+		})
 
 		// cache versioning
 		const hash = createHash("sha256")

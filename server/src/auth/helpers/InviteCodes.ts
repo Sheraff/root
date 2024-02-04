@@ -9,6 +9,7 @@ const FREE_INVITES = 5
 
 function generateCode(existingCodes: string[]) {
 	const count = WORDS.length
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	while (true) {
 		const indices: number[] = []
 		while (indices.length < CODE_LENGTH) {

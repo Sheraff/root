@@ -160,7 +160,7 @@ async function createSync(db: CtxAsync["db"], room: string) {
 	if (!schemaVersionRow) {
 		throw new Error("[DB] The database does not have a schema applied.")
 	}
-	const schemaVersion = BigInt(schemaVersionRow?.[0] ?? -1)
+	const schemaVersion = BigInt(schemaVersionRow[0] ?? -1)
 
 	const [pullChangesetStmt, applyChangesetStmt] = await Promise.all([
 		db.prepare(sql`

@@ -79,7 +79,7 @@ export function useDb(name?: string): CtxAsync | undefined {
 		networkMode: "always",
 		refetchOnReconnect: false,
 		retry: false,
-		select: (data) => data?.db,
+		select: (data) => data.db,
 	})
 	return data
 }

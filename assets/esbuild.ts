@@ -17,7 +17,9 @@ async function buildMap(path: string) {
 		writeFile(`${path}.d.ts`, dTsTemplate(name)),
 		writeFile(`${path}.d.ts.map`, dTsMapTemplate(name)),
 	])
-	void promise.then(() => console.log("Built TS maps for:", path))
+	void promise.then(() => {
+		console.log("Built TS maps for:", path)
+	})
 	return promise
 }
 
@@ -60,5 +62,5 @@ async function build() {
 if (process.argv.includes("--build")) {
 	void build()
 } else {
-	void watch()
+	watch()
 }
