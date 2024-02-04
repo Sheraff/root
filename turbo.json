@@ -37,10 +37,10 @@
 			"inputs": ["$TURBO_DEFAULT$", "./.prettierrc.json"]
 		},
 		"spell": {
-			"inputs": ["$TURBO_DEFAULT$", "./.cspell.json"]
+			"inputs": ["$TURBO_DEFAULT$", "./.cspell.json", "./repo.dict.txt"]
 		},
 		"//#root:spell": {
-			"inputs": ["$TURBO_DEFAULT$", "./.cspell.json"]
+			"inputs": ["$TURBO_DEFAULT$", "./.cspell.json", "./repo.dict.txt"]
 		},
 		"clear": {
 			"cache": false

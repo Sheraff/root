@@ -110,4 +110,5 @@ pnpm analyze # bundle size analysis
     - this is a good opportunity to make a trpc-like fullstack type-safe query system
 - database
   - figure out migrations story
-  - better DX (sync hook, db provider, ...)
+- cleanup bento
+  - nice looking examples
