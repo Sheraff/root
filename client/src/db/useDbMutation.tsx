@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
-import { useDB, type CtxAsync } from "@vlcn.io/react"
+import { type CtxAsync } from "@vlcn.io/react"
+import { useDB } from "client/db/useDb"
 import { useEffect, useRef } from "react"
 
 type DBAsync = CtxAsync["db"]
@@ -23,9 +24,10 @@ export function useDbMutation<TBindings extends ReadonlyArray<string> = [], TDat
 	const ctx = useDB(dbName)
 	const statement = useRef<Promise<StmtAsync> | null>(null)
 	useEffect(() => {
+		if (!ctx) return
 		statement.current = ctx.db.prepare(query)
 		return () => void statement.current?.then((s) => s.finalize(null))
-	}, [query])
+	}, [ctx, query])
 	type TReturnData = TData extends null ? void : TData[]
 	return useMutation<TReturnData, unknown, TBindings>({
 		mutationFn(bindings) {

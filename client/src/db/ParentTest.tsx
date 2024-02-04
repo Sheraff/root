@@ -16,7 +16,7 @@ export function DbProvider({ name, children }: { name: string; children: ReactNo
 				name: "test-v0",
 				content: schema.replace(/[\s\n\t]+/g, " ").trim(),
 			}}
-			fallback={<div>Creating DB {name}</div>}
+			fallback={children}
 			Render={() => <ReactQueryAdapter name={name}>{children}</ReactQueryAdapter>}
 		/>
 	)
