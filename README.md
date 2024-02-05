@@ -38,6 +38,7 @@ A workspace, with
 - valibot (data validation)
 - ts-reset (better typescript defaults)
 - cspell (code spell-checking)
+- github actions (CI/CD)
 - a `script` folder for build-time shared code (node only, for CI, vite plugins, ...)
 - a `shared` folder for run-time shared code (all environments, for client, server, service worker, ...)
 
