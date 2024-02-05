@@ -17,7 +17,7 @@ export default function App() {
 				<Cell>
 					<ServiceWorkerDemo />
 				</Cell>
-				<Cell y={2}>
+				<Cell y="2">
 					<ApiDemo />
 				</Cell>
 				<Cell x={2}>
