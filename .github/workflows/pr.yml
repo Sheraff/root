@@ -14,8 +14,10 @@ jobs:
         pnpm-version: [8.x]
 
     steps:
-      - name: 𐘌 𐘅 𐘍 𐘆 𐙴 𐙊 𖦐 𖤱 𖤰 𖥤 Checkout
+      - name: 𐘌 Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: ⚙️ Node setup ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -23,17 +25,17 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: ⚙️ Pnpm setup ${{ matrix.pnpm-version }}
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v2.2.4
         with:
           version: ${{ matrix.pnpm-version }}
           run_install: false
 
-      - name: Get pnpm store directory
+      - name: 📁 Get pnpm store directory
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      - name: 𐜝 Cache .pnpm-store
+      - name: 📦 Cache .pnpm-store
         uses: actions/cache@v4
         with:
           path: ${{ env.STORE_PATH }}
