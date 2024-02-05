@@ -57,7 +57,7 @@ jobs:
 
       - name: 🔍 Add problem matchers
         run: |
-          echo "::add-matcher::tsc-problem-matcher.json"
+          echo "::add-matcher::.github/tsc-problem-matcher.json"
 
       - name: 🔮 Type checking
         run: pnpm tsc
