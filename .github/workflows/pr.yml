@@ -12,6 +12,8 @@ jobs:
     env:
       STORE_PATH: . # will be overwritten by the action
 
+    timeout-minutes: 5
+
     strategy:
       matrix:
         node-version: [20.x]
