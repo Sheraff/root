@@ -5,6 +5,7 @@
 		"esbenp.prettier-vscode",
 		"inferrinizzard.prettier-sql-vscode",
 		"frigus02.vscode-sql-tagged-template-literals-syntax-only",
-		"zixuanchen.vitest-explorer"
+		"zixuanchen.vitest-explorer",
+		"github.vscode-github-actions"
 	]
 }
