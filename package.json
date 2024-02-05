@@ -20,8 +20,8 @@
 		"root:test": "vitest",
 		"root:lint": "eslint \"*.ts\" \"types/*\"",
 		"root:lint:fix": "eslint \"*.ts\" \"types/*\" --fix",
-		"root:format": "prettier --check \"*.ts\" \"*.json\" \"types/*\" --config .prettierrc.json --log-level warn",
-		"root:format:fix": "prettier --write \"*.ts\" \"*.json\" \"types/*\" --config .prettierrc.json --log-level warn",
+		"root:format": "prettier --check \"*.ts\" \"*.json\" \"types/*\" \".github/**/*\" --config .prettierrc.json --log-level warn",
+		"root:format:fix": "prettier --write \"*.ts\" \"*.json\" \"types/*\" \".github/**/*\" --config .prettierrc.json --log-level warn",
 		"root:spell": "cspell --config .cspell.json --quiet --gitignore \"*\" \"types/*\"",
 		"root:clear": "rm -rf dist; rm -rf node_modules; rm -rf .turbo;"
 	},
