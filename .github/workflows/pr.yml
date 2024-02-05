@@ -41,8 +41,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: Install Dependencies
+      - name: 🧰 Install Dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: 🤫 Create env file
+        run: echo "${{ secrets.CI_ENV_FILE }}" > .env
 
       - name: 🔮 Type checking
         run: pnpm tsc
@@ -61,3 +64,6 @@ jobs:
 
       - name: 👻 Dead code elimination
         run: pnpm knip
+
+      - name: 🏗️ Building
+        run: pnpm build
