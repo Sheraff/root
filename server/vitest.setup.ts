@@ -8,12 +8,15 @@ import { join } from "node:path"
  *
  * This should only be done on the server tests.
  */
+try {
+	const extra = Object.fromEntries(
+		readFileSync(join(__dirname, "..", ".env"), "utf-8")
+			.split("\n")
+			.filter((l) => l.trim() && !l.startsWith("#"))
+			.map((l) => l.split("=", 2))
+	) as Record<string, string | undefined>
 
-const extra = Object.fromEntries(
-	readFileSync(join(__dirname, "..", ".env"), "utf-8")
-		.split("\n")
-		.filter((l) => l.trim() && !l.startsWith("#"))
-		.map((l) => l.split("=", 2))
-) as Record<string, string | undefined>
-
-Object.assign(process.env, extra)
+	Object.assign(process.env, extra)
+} catch (e) {
+	console.error("Failed to load .env file", e)
+}
