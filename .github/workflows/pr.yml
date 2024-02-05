@@ -9,6 +9,9 @@ jobs:
     name: 🐙 Test
     runs-on: ubuntu-latest
 
+    env:
+      STORE_PATH: . # will be overwritten by the action
+
     strategy:
       matrix:
         node-version: [20.x]
@@ -40,9 +43,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-${{ matrix.pnpm-version }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+            ${{ runner.os }}-${{ matrix.pnpm-version }}-pnpm-store-
 
       - name: 🧰 Install Dependencies
         run: pnpm install --frozen-lockfile
