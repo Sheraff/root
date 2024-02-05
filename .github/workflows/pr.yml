@@ -57,6 +57,7 @@ jobs:
 
       - name: 🔍 Add problem matchers
         run: |
+          echo "::remove-matcher owner=tsc::"
           echo "::add-matcher::.github/tsc-problem-matcher.json"
 
       - name: 🔮 Type checking
