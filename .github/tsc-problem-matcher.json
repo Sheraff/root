@@ -1,0 +1,19 @@
+{
+	"problemMatcher": [
+		{
+			"owner": "tsc",
+			"pattern": [
+				{
+					"regexp": "^[^:]*:\\s([^:]*)[^\\s]*\\s([^\\s].*)[\\(:](\\d+)[,:](\\d+)(?:\\):\\s+|\\s+-\\s+)(error|warning|info)\\s+TS(\\d+)\\s*:\\s*(.*)$",
+					"fromPath": 1,
+					"file": 2,
+					"line": 3,
+					"column": 4,
+					"severity": 5,
+					"code": 6,
+					"message": 7
+				}
+			]
+		}
+	]
+}

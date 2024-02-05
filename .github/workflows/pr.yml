@@ -55,6 +55,10 @@ jobs:
       - name: 🤫 Create env file
         run: echo "${{ secrets.CI_ENV_FILE }}" > .env
 
+      - name: 🔍 Add problem matchers
+        run: |
+          echo "::add-matcher::tsc-problem-matcher.json"
+
       - name: 🔮 Type checking
         run: pnpm tsc
 
