@@ -13,7 +13,7 @@
 		"lint:fix": "FORCE_COLOR=1 turbo lint:fix root:lint:fix --continue --log-order=grouped",
 		"format": "FORCE_COLOR=1 turbo format root:format --continue --log-order=grouped",
 		"format:fix": "FORCE_COLOR=1 turbo format:fix root:format:fix --continue --log-order=grouped",
-		"tsc": "FORCE_COLOR=1 turbo tsc --continue",
+		"tsc": "FORCE_COLOR=1 turbo tsc --continue --log-prefix=none",
 		"knip": "knip",
 		"spell": "FORCE_COLOR=1 turbo spell root:spell --continue --log-order=grouped",
 		"clear": "FORCE_COLOR=1 turbo clear root:clear --continue",
