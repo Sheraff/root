@@ -1,7 +1,7 @@
 {
 	"problemMatcher": [
 		{
-			"owner": "tsc",
+			"owner": "tsc-foo",
 			"pattern": [
 				{
 					"regexp": "(client|server|shared|worker|script|assets)[^\\s]*\\s([^\\s].*)[\\(:](\\d+)[,:](\\d+)(?:\\):\\s+|\\s+-\\s+)(error|warning|info)\\s+TS(\\d+)\\s*:\\s*(.*)$",
