@@ -11,5 +11,14 @@
 	"singleQuote": false,
 	"trailingComma": "es5",
 	"useTabs": true,
-	"tabWidth": 4
+	"tabWidth": 4,
+	"overrides": [
+		{
+			"files": "*.yml",
+			"options": {
+				"useTabs": false,
+				"tabWidth": 2
+			}
+		}
+	]
 }

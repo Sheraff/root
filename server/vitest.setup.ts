@@ -8,7 +8,6 @@ import { join } from "node:path"
  *
  * This should only be done on the server tests.
  */
-
 const extra = Object.fromEntries(
 	readFileSync(join(__dirname, "..", ".env"), "utf-8")
 		.split("\n")
