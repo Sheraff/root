@@ -10,7 +10,7 @@
 		"test": "vitest",
 		"build": "vite build",
 		"tsc:build:css": "tcm src",
-		"tsc:app": "tsc --noEmit --project tsconfig.app.json",
+		"tsc:app": "cd .. && tsc --noEmit --project client/tsconfig.app.json",
 		"tsc:tools": "tsc --noEmit --project tsconfig.tools.json",
 		"tsc": "echo \"done\"",
 		"lint": "eslint .",
