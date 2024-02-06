@@ -61,7 +61,11 @@ jobs:
           echo "::add-matcher::.github/tsc-problem-matcher.json"
 
       - name: 🔮 Type checking
-        run: pnpm tsc
+        run: |
+          pwd
+          ls -la
+          ls -la client
+          pnpm tsc --cache-dir=.turbo
 
       - name: 🎓 Spell checking
         run: pnpm spell
