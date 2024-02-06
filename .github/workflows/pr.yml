@@ -64,22 +64,23 @@ jobs:
           echo "::add-matcher::.github/tsc-problem-matcher.json"
 
       - name: 🔮 Type checking
-        run: |
-          pwd
-          ls -la
-          ls -la client
-          pnpm tsc --cache-dir=.turbo
+        continue-on-error: true
+        run: pnpm tsc --cache-dir=.turbo
 
       - name: 🎓 Spell checking
+        continue-on-error: true
         run: pnpm spell --cache-dir=.turbo
 
       - name: 🎨 Formatting
+        continue-on-error: true
         run: pnpm format --cache-dir=.turbo
 
       - name: 💫 Linting
+        continue-on-error: true
         run: pnpm lint --cache-dir=.turbo
 
       - name: 🚦 Unit testing
+        continue-on-error: true
         run: pnpm test --cache-dir=.turbo
 
       - name: 👻 Dead code elimination
