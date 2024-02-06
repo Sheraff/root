@@ -14,26 +14,21 @@ jobs:
 
     timeout-minutes: 5
 
-    strategy:
-      matrix:
-        node-version: [20.x]
-        pnpm-version: [8.x]
-
     steps:
       - name: 𐘌 Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: ⚙️ Node setup ${{ matrix.node-version }}
+      - name: ⚙️ Node setup 20.x
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 20.x
 
-      - name: ⚙️ Pnpm setup ${{ matrix.pnpm-version }}
+      - name: ⚙️ Pnpm setup 8.x
         uses: pnpm/action-setup@v2.2.4
         with:
-          version: ${{ matrix.pnpm-version }}
+          version: 8.x
           run_install: false
 
       - name: 📁 Get pnpm store directory
@@ -45,9 +40,17 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-${{ matrix.pnpm-version }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.pnpm-version }}-pnpm-store-
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 📦 Cache .turbo
+        uses: actions/cache@v3
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
 
       - name: 🧰 Install Dependencies
         run: pnpm install --frozen-lockfile
@@ -68,16 +71,16 @@ jobs:
           pnpm tsc --cache-dir=.turbo
 
       - name: 🎓 Spell checking
-        run: pnpm spell
+        run: pnpm spell --cache-dir=.turbo
 
       - name: 🎨 Formatting
-        run: pnpm format
+        run: pnpm format --cache-dir=.turbo
 
       - name: 💫 Linting
-        run: pnpm lint
+        run: pnpm lint --cache-dir=.turbo
 
       - name: 🚦 Unit testing
-        run: pnpm test
+        run: pnpm test --cache-dir=.turbo
 
       - name: 👻 Dead code elimination
         run: pnpm knip
