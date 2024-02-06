@@ -9,9 +9,9 @@ const TS_MATCHER =
 void (async function () {
 	for await (const line of readline.createInterface({ input: process.stdin })) {
 		console.log(line)
-
+		const clean = line.replace(CLEAN, "")
 		while (true) {
-			const match = TS_MATCHER.exec(line)
+			const match = TS_MATCHER.exec(clean)
 			if (!match) break
 			const [_, script, file, l, col, severity, code, message] = match
 			console.log(`::${severity} file=${file},line=${l},col=${col}::${message} (${code})`)
