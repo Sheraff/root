@@ -84,7 +84,7 @@ jobs:
 
       - name: 🚦 Unit testing
         continue-on-error: true
-        run: GITHUB_ACTIONS=1 pnpm test:ci
+        run: pnpm test:ci
 
       - name: 🏗️ Building
         run: pnpm build

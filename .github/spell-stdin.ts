@@ -16,7 +16,7 @@ void (async function () {
 		let root = script!.split(":", 1)[0] + "/"
 		if (root === "///") root = ""
 		console.log(
-			`::error file=${root}${file},line=${l},col=${col},title=${step} > ${message}::${message} (${word})`
+			`::error file=${root}${file},line=${l},col=${col},title=${step} > ${message}::${message} "${word}"`
 		)
 	}
 })()
