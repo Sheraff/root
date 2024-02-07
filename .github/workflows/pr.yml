@@ -89,7 +89,7 @@ jobs:
         run: pnpm test
 
       - name: 👻 Dead code elimination
-        run: pnpm knip
+        run: pnpm knip | node .github/knip-stdin.ts
 
       - name: 🏗️ Building
         run: pnpm build
