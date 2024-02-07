@@ -3,6 +3,7 @@ void (async function () {
 
 	const CLEAN = /(?:\x1B\[([0-9;]+)m)?/g
 	const MATCHER = /^[^\s]+\s\[([a-z]+)\]\s([^\s]*)$/i
+	const title = "Code style issues found in this file"
 	const message = "Code style issues found in this file. Run Prettier to fix."
 
 	for await (const line of readline.createInterface({ input: process.stdin })) {
@@ -12,6 +13,6 @@ void (async function () {
 		const match = clean.match(MATCHER)
 		if (!match) continue
 		const [_, severity, file] = match
-		console.log(`::error file=${file}::${message}`)
+		console.log(`::error file=${file},title=${title}::${message}`)
 	}
 })()
