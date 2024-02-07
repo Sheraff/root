@@ -55,7 +55,7 @@ jobs:
       - name: 🧰 Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: 🤫 Create env file
+      - name: 🙈 Create env file
         run: echo "${{ secrets.CI_ENV_FILE }}" > .env
 
       # - name: 🔍 Add problem matchers
