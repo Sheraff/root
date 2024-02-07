@@ -19,7 +19,7 @@ void (async function () {
 		)
 
 		console.log(
-			`::error file=${p.file},line=${p.line},col=${p.col},title=${step} > ${p.title}::${p.title}%0A${message}`
+			`::error file=${p.file},line=${p.line},col=${p.col},title=${step} > ${p.title}::${decodeURIComponent(p.title)}%0A${message}`
 		)
 	}
 })()
