@@ -81,7 +81,7 @@ jobs:
 
       - name: 🎨 Formatting
         timeout-minutes: 1
-        run: pnpm format --cache-dir=.turbo | node --import tsx .github/format-stdin.ts "🎨 Formatting"
+        run: node --import tsx .github/format-stdin.ts "🎨 Formatting" pnpm format
 
       - name: 💫 Linting
         timeout-minutes: 1
