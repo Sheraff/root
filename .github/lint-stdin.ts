@@ -23,6 +23,8 @@ void (async function () {
 			continue
 		}
 		const [_, l, col, severity, message, rule] = match
-		console.log(`::${severity} file=${file},line=${l},col=${col}::${message} (${rule})`)
+		console.log(
+			`::${severity} file=${file},line=${l},col=${col},title=${rule}::${message} (${rule})`
+		)
 	}
 })()

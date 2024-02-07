@@ -11,6 +11,8 @@ void (async function () {
 		const match = clean.match(MATCHER)
 		if (!match) continue
 		const [_, file, l, col, message, word] = match
-		console.log(`::error file=${file},line=${l},col=${col}::${message} (${word})`)
+		console.log(
+			`::error file=${file},line=${l},col=${col},title=${message}::${message} (${word})`
+		)
 	}
 })()

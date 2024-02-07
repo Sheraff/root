@@ -28,6 +28,6 @@ void (async function () {
 		let message = category
 		if (name) message += `: \`${name}\``
 		if (type) message += ` (${type})`
-		console.log(`::error file=${file},line=${l},col=${col}::${message}`)
+		console.log(`::error file=${file},line=${l},col=${col},title=${category}::${message}`)
 	}
 })()

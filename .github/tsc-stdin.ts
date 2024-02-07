@@ -12,6 +12,8 @@ void (async function () {
 		const match = clean.match(MATCHER)
 		if (!match) continue
 		const [_, script, file, l, col, severity, code, message] = match
-		console.log(`::${severity} file=${file},line=${l},col=${col}::${message} (${code})`)
+		console.log(
+			`::${severity} file=${file},line=${l},col=${col},title=${code}::${message} (${code})`
+		)
 	}
 })()
