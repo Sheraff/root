@@ -8,11 +8,10 @@ void (async function () {
 	for await (const line of readline.createInterface({ input: process.stdin })) {
 		console.log(line)
 		const clean = line.replace(CLEAN, "")
-		while (true) {
-			const match = MATCHER.exec(clean)
-			if (!match) break
-			const [_, severity, file] = match
-			console.log(`::error file=${file}::${message}`)
-		}
+
+		const match = MATCHER.exec(clean)
+		if (!match) continue
+		const [_, severity, file] = match
+		console.log(`::error file=${file}::${message}`)
 	}
 })()
