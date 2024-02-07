@@ -11,16 +11,17 @@ void (async function () {
 		console.log(line)
 		const clean = line.replace(CLEAN, "")
 
-		if (!category) {
+		{
 			const match = CATEGORY.exec(clean)
 			if (match) {
 				category = match[1]
+				continue
 			}
-			continue
+			if (!category) continue
 		}
 
 		const match = MATCHER.exec(clean)
-		if (!match) break
+		if (!match) continue
 		const [_, name, type, file, l = 0, col = 0] = match
 		let message = category
 		if (name) message += `: \`${name}\``
