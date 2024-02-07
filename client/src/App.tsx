@@ -8,15 +8,7 @@ import { DbDemo } from "client/components/DbDemo"
 
 fooBar()
 
-
-
-
-
-
-
-
 const a = "hello"
-
 
 export default function App() {
 	return (
