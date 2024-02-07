@@ -9,7 +9,6 @@
 		"test": "FORCE_COLOR=1 turbo root:test",
 		"test:ci": "FORCE_COLOR=1 turbo test",
 		"build": "FORCE_COLOR=1 turbo build",
-		"build:ci:tools": "esbuild `find .github -name '*.ts'` --outdir=.github --bundle --platform=node --format=esm --out-extension:.js=.mjs",
 		"serve": "NODE_ENV=production node --env-file=.env dist/server/app.mjs",
 		"lint": "FORCE_COLOR=1 turbo lint root:lint --continue --log-order=grouped",
 		"lint:fix": "FORCE_COLOR=1 turbo lint:fix root:lint:fix --continue --log-order=grouped",
