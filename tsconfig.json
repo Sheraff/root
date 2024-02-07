@@ -1,11 +1,14 @@
 {
 	"extends": "./tsconfig.base.json",
 	"compilerOptions": {},
-	"include": ["types/*.d.ts"],
+	"include": [],
 	"files": [],
 	"references": [
 		{
 			"path": "./tsconfig.tools.json",
+		},
+		{
+			"path": "./tsconfig.app.json",
 		},
 	],
 }

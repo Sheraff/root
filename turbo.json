@@ -13,6 +13,12 @@
 		},
 		"tsc": {},
 		"//#root:tsc": {
+			"dependsOn": ["//#root:tsc:tools", "//#root:tsc:app"]
+		},
+		"//#root:tsc:app": {
+			"inputs": ["$TURBO_DEFAULT$", "./tsconfig.app.json"]
+		},
+		"//#root:tsc:tools": {
 			"inputs": ["$TURBO_DEFAULT$", "./tsconfig.tools.json"]
 		},
 		"lint": {
