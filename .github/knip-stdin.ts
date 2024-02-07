@@ -11,21 +11,23 @@ void (async function () {
 		console.log(line)
 		const clean = line.replace(CLEAN, "")
 
-		{
-			const match = CATEGORY.exec(clean)
-			if (match) {
-				category = match[1]
-				continue
+		while (true) {
+			{
+				const match = CATEGORY.exec(clean)
+				if (match) {
+					category = match[1]
+					break
+				}
+				if (!category) break
 			}
-			if (!category) continue
-		}
 
-		const match = MATCHER.exec(clean)
-		if (!match) continue
-		const [_, name, type, file, l = 0, col = 0] = match
-		let message = category
-		if (name) message += ` ${name}`
-		if (type) message += ` (${type})`
-		console.log(`::error file=${file},line=${l},col=${col}::${message}`)
+			const match = MATCHER.exec(clean)
+			if (!match) break
+			const [_, name, type, file, l = 0, col = 0] = match
+			let message = category
+			if (name) message += ` ${name}`
+			if (type) message += ` (${type})`
+			console.log(`::error file=${file},line=${l},col=${col}::${message}`)
+		}
 	}
 })()
