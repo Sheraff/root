@@ -38,3 +38,7 @@ export default function App() {
 		</div>
 	)
 }
+
+export function Yolo() {
+	return 3
+}
