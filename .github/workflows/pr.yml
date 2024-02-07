@@ -67,11 +67,11 @@ jobs:
         continue-on-error: true
         run: |
           echo "::remove-matcher owner=tsc::"
-          pnpm tsc --cache-dir=.turbo | node .github//tee-stdin.ts
+          pnpm tsc --cache-dir=.turbo | node .github/tsc-stdin.ts
 
       - name: 🎓 Spell checking
         continue-on-error: true
-        run: pnpm spell --cache-dir=.turbo
+        run: pnpm spell --cache-dir=.turbo | node .github/spell-stdin.ts
 
       - name: 🎨 Formatting
         continue-on-error: true
