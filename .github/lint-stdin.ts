@@ -1,9 +1,9 @@
 void (async function () {
-	const readline = require("node:readline")
+	const readline = await import("node:readline")
 
 	const CLEAN = /(?:\x1B\[([0-9;]+)m)?/g
-	const START = /^[^\s]+\s(\/[^\s]+)$/gm
-	const LINE = /^[^\s]+\s+([\d]+):([\d]+)\s+([a-z]+)\s+(.*)\s\s(.*)$/gm
+	const START = /^[^\s]+\s(\/[^\s]+)$/
+	const LINE = /^[^\s]+\s+([\d]+):([\d]+)\s+([a-z]+)\s+(.*)\s\s(.*)$/i
 
 	let file = ""
 
@@ -11,13 +11,13 @@ void (async function () {
 		console.log(line)
 		const clean = line.replace(CLEAN, "")
 		if (!file) {
-			const match = START.exec(clean)
+			const match = clean.match(START)
 			if (match) {
 				file = match[1]
 			}
 			continue
 		}
-		const match = LINE.exec(clean)
+		const match = clean.match(LINE)
 		if (!match) {
 			file = ""
 			continue
