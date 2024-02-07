@@ -1,5 +1,6 @@
 import { ViteRawLoader } from "script/ViteRawLoader"
 import { defineConfig, normalizePath } from "vite"
+import VitestGHAReporter from "vitest-github-actions-reporter"
 
 export default defineConfig({
 	plugins: [ViteRawLoader()],
@@ -16,5 +17,6 @@ export default defineConfig({
 			{ find: /^(.*)\.txt$/, replacement: "$1.txt?raw" },
 			{ find: /^(.*)\.sql$/, replacement: "$1.sql?raw" },
 		],
+		reporters: process.env.GITHUB_ACTIONS ? ["default", new VitestGHAReporter()] : "default",
 	},
 })
