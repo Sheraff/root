@@ -81,7 +81,7 @@ jobs:
 
       - name: 🚦 Unit testing
         continue-on-error: true
-        run: pnpm test --cache-dir=.turbo
+        run: pnpm test
 
       - name: 👻 Dead code elimination
         run: pnpm knip
