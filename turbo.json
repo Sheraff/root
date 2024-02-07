@@ -12,6 +12,9 @@
 			"cache": false
 		},
 		"tsc": {},
+		"//#root:tsc": {
+			"inputs": ["$TURBO_DEFAULT$", "./tsconfig.tools.json"]
+		},
 		"lint": {
 			"inputs": ["$TURBO_DEFAULT$", "./.eslintrc.json"]
 		},

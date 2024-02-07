@@ -1,30 +1,27 @@
-void (async function () {
-	const readline = await import("node:readline")
+import * as readline from "node:readline"
+const CLEAN = /(?:\x1B\[([0-9;]+)m)?/g
+const START = /^[^\s]+\s(\/[^\s]+)$/
+const LINE = /^[^\s]+\s+([\d]+):([\d]+)\s+([a-z]+)\s+(.*)\s\s(.*)$/i
 
-	const CLEAN = /(?:\x1B\[([0-9;]+)m)?/g
-	const START = /^[^\s]+\s(\/[^\s]+)$/
-	const LINE = /^[^\s]+\s+([\d]+):([\d]+)\s+([a-z]+)\s+(.*)\s\s(.*)$/i
+let file = ""
 
-	let file = ""
-
-	for await (const line of readline.createInterface({ input: process.stdin })) {
-		console.log(line)
-		const clean = line.replace(CLEAN, "")
-		if (!file) {
-			const match = clean.match(START)
-			if (match) {
-				file = match[1]
-			}
-			continue
+for await (const line of readline.createInterface({ input: process.stdin })) {
+	console.log(line)
+	const clean = line.replace(CLEAN, "")
+	if (!file) {
+		const match = clean.match(START)
+		if (match) {
+			file = match[1]!
 		}
-		const match = clean.match(LINE)
-		if (!match) {
-			file = ""
-			continue
-		}
-		const [_, l, col, severity, message, rule] = match
-		console.log(
-			`::${severity} file=${file},line=${l},col=${col},title=${rule}::${message} (${rule})`
-		)
+		continue
 	}
-})()
+	const match = clean.match(LINE)
+	if (!match) {
+		file = ""
+		continue
+	}
+	const [_, l, col, severity, message, rule] = match
+	console.log(
+		`::${severity} file=${file},line=${l},col=${col},title=${rule}::${message} (${rule})`
+	)
+}

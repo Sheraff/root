@@ -58,38 +58,36 @@ jobs:
       - name: 🙈 Create env file
         run: echo "${{ secrets.CI_ENV_FILE }}" > .env
 
-      # - name: 🔍 Add problem matchers
-      #   run: |
-      #     echo "::remove-matcher owner=tsc::"
-      #     echo "::add-matcher::.github/tsc-problem-matcher.json"
+      - name: 🔧 Build CI tools
+        run: pnpm build:ci:tools
 
       - name: 🔮 Type checking
         continue-on-error: true
         run: |
           echo "::remove-matcher owner=tsc::"
-          pnpm tsc --cache-dir=.turbo | node .github/tsc-stdin.ts
+          pnpm tsc --cache-dir=.turbo | node .github/tsc-stdin.mjs
 
       - name: 🎓 Spell checking
         continue-on-error: true
-        run: pnpm spell --cache-dir=.turbo | node .github/spell-stdin.ts
+        run: pnpm spell --cache-dir=.turbo | node .github/spell-stdin.mjs
 
       - name: 🎨 Formatting
         continue-on-error: true
-        run: pnpm format --cache-dir=.turbo | node .github/format-stdin.ts
+        run: pnpm format --cache-dir=.turbo | node .github/format-stdin.mjs
 
       - name: 💫 Linting
         continue-on-error: true
         run: |
           echo "::remove-matcher owner=eslint-compact::"
           echo "::remove-matcher owner=eslint-stylish::"
-          pnpm lint --cache-dir=.turbo | node .github/lint-stdin.ts
+          pnpm lint --cache-dir=.turbo | node .github/lint-stdin.mjs
 
       - name: 🚦 Unit testing
         continue-on-error: true
         run: GITHUB_ACTIONS=1 pnpm test:ci
 
       - name: 👻 Dead code elimination
-        run: pnpm knip | node .github/knip-stdin.ts
+        run: pnpm knip | node .github/knip-stdin.mjs
 
       - name: 🏗️ Building
         run: pnpm build
