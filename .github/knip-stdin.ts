@@ -25,7 +25,7 @@ void (async function () {
 			if (!match) break
 			const [_, name, type, file, l = 0, col = 0] = match
 			let message = category
-			if (name) message += ` ${name}`
+			if (name) message += `: \`${name}\``
 			if (type) message += ` (${type})`
 			console.log(`::error file=${file},line=${l},col=${col}::${message}`)
 		}
