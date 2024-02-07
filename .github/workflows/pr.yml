@@ -84,7 +84,7 @@ jobs:
 
       - name: 🚦 Unit testing
         continue-on-error: true
-        run: pnpm test:ci
+        run: pnpm test:ci | node --import tsx .github/test-stdin.ts "🚦 Unit testing"
 
       - name: 🏗️ Building
         run: pnpm build
