@@ -79,7 +79,7 @@ jobs:
 
       - name: 💫 Linting
         continue-on-error: true
-        run: pnpm lint --cache-dir=.turbo
+        run: pnpm lint --cache-dir=.turbo | node .github/lint-stdin.ts
 
       - name: 🚦 Unit testing
         continue-on-error: true
