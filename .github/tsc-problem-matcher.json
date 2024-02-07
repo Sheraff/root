@@ -4,13 +4,13 @@
 			"owner": "tsc-foo",
 			"pattern": [
 				{
-					"regexp": "([^\\s]*)[\\(:](\\d+)[,:](\\d+)(?:\\):\\s+|\\s+-\\s+)(error|warning|info)\\s+TS(\\d+)\\s*:\\s*(.*)$",
-					"file": 1,
-					"line": 2,
-					"column": 3,
-					"severity": 4,
-					"code": 5,
-					"message": 6
+					"regexp": "([a-z:\\/]+)\\s([^\\s].*)[\\(:](\\d+)[,:](\\d+)(?:\\):\\s+|\\s+-\\s+)(error|warning|info)\\s+TS(\\d+)\\s*:\\s*(.*)$",
+					"file": 2,
+					"line": 3,
+					"column": 4,
+					"severity": 5,
+					"code": 6,
+					"message": 7
 				}
 			]
 		}
