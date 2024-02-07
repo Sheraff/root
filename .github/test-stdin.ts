@@ -15,15 +15,11 @@ void (async function () {
 		if (!match) continue
 		const [_, body, message] = match
 		const p: { title: string; file: string; line: string; col: string } = Object.fromEntries(
-			body.split(",").map((part) => {
-				const pair = part.split("=")
-				pair[1] = decodeURIComponent(pair[1])
-				return pair
-			})
+			body?.split(",").map((part) => part.split("=")) ?? []
 		)
 
 		console.log(
-			`::error file=${p.file},line=${p.line},col=${p.col},title=${step} > ${p.title}::${p.title}\n${message}`
+			`::error file=${p.file},line=${p.line},col=${p.col},title=${step} > ${p.title}::${p.title}%0A${message}`
 		)
 	}
 })()
