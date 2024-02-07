@@ -1,14 +1,22 @@
-import * as readline from "node:readline"
+import { spawn } from "node:child_process"
 
 const CLEAN = /(?:\x1B\[([0-9;]+)m)?/g
 const CATEGORY = /^([\w\s]+)\s\([\d]+\)$/
 const MATCHER = /^(?:((?:[\w@\-\/]\s?)+)\s\s)?(?:((?:\w\s?)+)\s\s)?([^\s:]+)(?::([\d]+):([\d]+))?$/i
-const step = process.argv[2]
 let category = ""
 
-void (async function () {
-	for await (const line of readline.createInterface({ input: process.stdin })) {
-		console.log(line)
+const [, , step, cmd, ...args] = process.argv
+
+if (!cmd) throw new Error("No command provided")
+
+const child = spawn(cmd, args, { stdio: ["pipe", "pipe", "pipe"], env: process.env })
+child.stdout.pipe(process.stdout)
+child.stdout.on("data", processLines)
+child.on("close", process.exit)
+
+function processLines(data: Buffer) {
+	const lines = String(data).split("\n")
+	for (const line of lines) {
 		const clean = line.replace(CLEAN, "")
 
 		{
@@ -32,4 +40,4 @@ void (async function () {
 			`::error file=${file},line=${l},col=${col},title=${step} > ${category}::${message}`
 		)
 	}
-})()
+}

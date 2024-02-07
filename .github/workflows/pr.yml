@@ -73,30 +73,30 @@ jobs:
         timeout-minutes: 1
         run: |
           echo "::remove-matcher owner=tsc::"
-          pnpm tsc --cache-dir=.turbo | node --import tsx .github/tsc-stdin.ts "🔮 Type checking"
+          node --import tsx .github/tsc-stdin.ts "🔮 Type checking" pnpm tsc --cache-dir=.turbo
 
       - name: 🎓 Spell checking
         timeout-minutes: 1
-        run: pnpm spell --cache-dir=.turbo | node --import tsx .github/spell-stdin.ts "🎓 Spell checking"
+        run: node --import tsx .github/spell-stdin.ts "🎓 Spell checking" pnpm spell --cache-dir=.turbo
 
       - name: 🎨 Formatting
         timeout-minutes: 1
-        run: node --import tsx .github/format-stdin.ts "🎨 Formatting" pnpm format
+        run: node --import tsx .github/format-stdin.ts "🎨 Formatting" pnpm format --cache-dir=.turbo
 
       - name: 💫 Linting
         timeout-minutes: 1
         run: |
           echo "::remove-matcher owner=eslint-compact::"
           echo "::remove-matcher owner=eslint-stylish::"
-          pnpm lint --cache-dir=.turbo | node --import tsx .github/lint-stdin.ts "💫 Linting"
+          node --import tsx .github/lint-stdin.ts "💫 Linting" pnpm lint --cache-dir=.turbo
 
       - name: 👻 Dead code elimination
         timeout-minutes: 1
-        run: pnpm knip | node --import tsx .github/knip-stdin.ts "👻 Dead code elimination"
+        run: node --import tsx .github/knip-stdin.ts "👻 Dead code elimination" pnpm knip
 
       - name: 🚦 Unit testing
         timeout-minutes: 1
-        run: pnpm test:ci 2>&1 | node --import tsx .github/test-stdin.ts "🚦 Unit testing"
+        run: node --import tsx .github/test-stdin.ts "🚦 Unit testing" pnpm test:ci
 
       - name: 🏗️ Building
         timeout-minutes: 1
