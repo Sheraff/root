@@ -75,7 +75,7 @@ jobs:
 
       - name: 🎨 Formatting
         continue-on-error: true
-        run: pnpm format --cache-dir=.turbo
+        run: pnpm format --cache-dir=.turbo | node .github/format-stdin.ts
 
       - name: 💫 Linting
         continue-on-error: true
