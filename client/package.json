@@ -15,8 +15,8 @@
 		"tsc": "echo \"done\"",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
-		"format": "prettier --check . --config .prettierrc.json --log-level warn",
-		"format:fix": "prettier --write . --config .prettierrc.json --log-level warn",
+		"format": "prettier --check . --config ../.prettierrc.json --log-level warn",
+		"format:fix": "prettier --write . --config ../.prettierrc.json --log-level warn",
 		"spell": "cspell --config ../.cspell.json --quiet --gitignore \"**/*\"",
 		"clear": "rm -rf node_modules; rm -rf .turbo; rm public/sw.js; rm public/sw.js.map; find src -name '*.module.css.d.ts' -type f -delete"
 	},
