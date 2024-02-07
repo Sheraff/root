@@ -18,7 +18,7 @@ jobs:
       - name: 𐘌 Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: ⚙️ Node setup 20.x
         uses: actions/setup-node@v4
@@ -62,25 +62,25 @@ jobs:
         continue-on-error: true
         run: |
           echo "::remove-matcher owner=tsc::"
-          pnpm tsc --cache-dir=.turbo | node --import tsx .github/tsc-stdin.ts
+          pnpm tsc --cache-dir=.turbo | node --import tsx .github/tsc-stdin.ts "🔮 Type checking"
 
       - name: 🎓 Spell checking
         continue-on-error: true
-        run: pnpm spell --cache-dir=.turbo | node --import tsx .github/spell-stdin.ts
+        run: pnpm spell --cache-dir=.turbo | node --import tsx .github/spell-stdin.ts "🎓 Spell checking"
 
       - name: 🎨 Formatting
         continue-on-error: true
-        run: pnpm format --cache-dir=.turbo | node --import tsx .github/format-stdin.ts
+        run: pnpm format --cache-dir=.turbo | node --import tsx .github/format-stdin.ts "🎨 Formatting"
 
       - name: 💫 Linting
         continue-on-error: true
         run: |
           echo "::remove-matcher owner=eslint-compact::"
           echo "::remove-matcher owner=eslint-stylish::"
-          pnpm lint --cache-dir=.turbo | node --import tsx .github/lint-stdin.ts
+          pnpm lint --cache-dir=.turbo | node --import tsx .github/lint-stdin.ts "💫 Linting"
 
       - name: 👻 Dead code elimination
-        run: pnpm knip | node --import tsx .github/knip-stdin.ts
+        run: pnpm knip | node --import tsx .github/knip-stdin.ts "👻 Dead code elimination"
 
       - name: 🚦 Unit testing
         continue-on-error: true

@@ -3,7 +3,7 @@ import * as readline from "node:readline"
 const CLEAN = /(?:\x1B\[([0-9;]+)m)?/g
 const CATEGORY = /^([\w\s]+)\s\([\d]+\)$/
 const MATCHER = /^(?:((?:\w\s?)+)\s\s)?(?:((?:\w\s?)+)\s\s)?([^\s:]+)(?::([\d]+):([\d]+))?$/i
-
+const step = process.argv[2]
 let category = ""
 
 void (async function () {
@@ -28,6 +28,8 @@ void (async function () {
 		let message = category
 		if (name) message += `: \`${name}\``
 		if (type) message += ` (${type})`
-		console.log(`::error file=${file},line=${l},col=${col},title=${category}::${message}`)
+		console.log(
+			`::error file=${file},line=${l},col=${col},title=${step} > ${category}::${message}`
+		)
 	}
 })()

@@ -3,6 +3,8 @@ import * as readline from "node:readline"
 const CLEAN = /(?:\x1B\[([0-9;]+)m)?/g
 const MATCHER = /^([^\s]+)\s\.\/([^:]+):([\d]+):([\d]+) - ([^(]+)\s\(([^)]+)\)$/i
 
+const step = process.argv[2]
+
 void (async function () {
 	for await (const line of readline.createInterface({ input: process.stdin })) {
 		console.log(line)
@@ -14,7 +16,7 @@ void (async function () {
 		let root = script!.split(":", 1)[0] + "/"
 		if (root === "///") root = ""
 		console.log(
-			`::error file=${root}${file},line=${l},col=${col},title=${message}::${message} (${word})`
+			`::error file=${root}${file},line=${l},col=${col},title=${step} > ${message}::${message} (${word})`
 		)
 	}
 })()
