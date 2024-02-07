@@ -7,6 +7,7 @@
 		"analyze": "turbo analyze --filter client",
 		"dev": "FORCE_COLOR=1 turbo dev",
 		"test": "FORCE_COLOR=1 turbo root:test",
+		"test:ci": "FORCE_COLOR=1 turbo test",
 		"build": "FORCE_COLOR=1 turbo build",
 		"serve": "NODE_ENV=production node --env-file=.env dist/server/app.mjs",
 		"lint": "FORCE_COLOR=1 turbo lint root:lint --continue --log-order=grouped",

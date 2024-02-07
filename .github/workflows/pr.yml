@@ -86,7 +86,7 @@ jobs:
 
       - name: 🚦 Unit testing
         continue-on-error: true
-        run: GITHUB_ACTIONS=1 pnpm test
+        run: GITHUB_ACTIONS=1 pnpm test:ci
 
       - name: 👻 Dead code elimination
         run: pnpm knip | node .github/knip-stdin.ts
