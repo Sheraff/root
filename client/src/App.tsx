@@ -8,11 +8,6 @@ import { DbDemo } from "client/components/DbDemo"
 
 fooBar()
 
-
-
-
-const a = " eolrvnlezrvjn"
-
 export default function App() {
 	return (
 		<div>
@@ -22,7 +17,7 @@ export default function App() {
 				<Cell>
 					<ServiceWorkerDemo />
 				</Cell>
-				<Cell y="2">
+				<Cell y={2}>
 					<ApiDemo />
 				</Cell>
 				<Cell x={2}>
@@ -37,8 +32,4 @@ export default function App() {
 			</Grid>
 		</div>
 	)
-}
-
-export function Yolo() {
-	return 3
 }
