@@ -4,13 +4,23 @@ on:
   workflow_dispatch:
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     name: 🐙 Test
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: true
+      matrix:
+        node-version: [20.x]
+        pnpm-version: [8.x]
+
     env:
-      STORE_PATH: . # will be overwritten by the action
+      PNPM_STORE_PATH: . # will be overwritten by the action
 
     timeout-minutes: 5
 
@@ -20,28 +30,29 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: ⚙️ Node setup 20.x
+      - name: ⚙️ Node setup ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: ${{ matrix.node-version }}
+          check-latest: true
 
-      - name: ⚙️ Pnpm setup 8.x
+      - name: ⚙️ Pnpm setup ${{ matrix.pnpm-version }}
         uses: pnpm/action-setup@v2.2.4
         with:
-          version: 8.x
+          version: ${{ matrix.pnpm-version }}
           run_install: false
 
       - name: 📁 Get pnpm store directory
         shell: bash
-        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+        run: echo "PNPM_STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
       - name: 📦 Cache .pnpm-store
         uses: actions/cache@v4
         timeout-minutes: 1
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-store-
+          path: ${{ env.PNPM_STORE_PATH }}
+          key: ${{ runner.os }}-${{ matrix.pnpm-version }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.pnpm-version }}-pnpm-store-
 
       - name: 📦 Cache .turbo
         uses: actions/cache@v4
@@ -60,24 +71,20 @@ jobs:
 
       - name: 🔮 Type checking
         timeout-minutes: 1
-        continue-on-error: true
         run: |
           echo "::remove-matcher owner=tsc::"
           pnpm tsc --cache-dir=.turbo | node --import tsx .github/tsc-stdin.ts "🔮 Type checking"
 
       - name: 🎓 Spell checking
         timeout-minutes: 1
-        continue-on-error: true
         run: pnpm spell --cache-dir=.turbo | node --import tsx .github/spell-stdin.ts "🎓 Spell checking"
 
       - name: 🎨 Formatting
         timeout-minutes: 1
-        continue-on-error: true
         run: pnpm format --cache-dir=.turbo | node --import tsx .github/format-stdin.ts "🎨 Formatting"
 
       - name: 💫 Linting
         timeout-minutes: 1
-        continue-on-error: true
         run: |
           echo "::remove-matcher owner=eslint-compact::"
           echo "::remove-matcher owner=eslint-stylish::"
@@ -88,7 +95,6 @@ jobs:
         run: pnpm knip | node --import tsx .github/knip-stdin.ts "👻 Dead code elimination"
 
       - name: 🚦 Unit testing
-        continue-on-error: true
         timeout-minutes: 1
         run: pnpm test:ci 2>&1 | node --import tsx .github/test-stdin.ts "🚦 Unit testing"
 
