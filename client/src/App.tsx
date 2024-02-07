@@ -16,7 +16,6 @@ fooBar()
 
 
 const a = "esmolrvnlmeknrvj"
-const b: number = a
 
 
 export default function App() {
