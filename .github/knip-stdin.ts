@@ -2,7 +2,7 @@ import * as readline from "node:readline"
 
 const CLEAN = /(?:\x1B\[([0-9;]+)m)?/g
 const CATEGORY = /^([\w\s]+)\s\([\d]+\)$/
-const MATCHER = /^(?:((?:\w\s?)+)\s\s)?(?:((?:\w\s?)+)\s\s)?([^\s:]+)(?::([\d]+):([\d]+))?$/i
+const MATCHER = /^(?:((?:[\w@\-\/]\s?)+)\s\s)?(?:((?:\w\s?)+)\s\s)?([^\s:]+)(?::([\d]+):([\d]+))?$/i
 const step = process.argv[2]
 let category = ""
 
