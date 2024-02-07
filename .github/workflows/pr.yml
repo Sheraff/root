@@ -44,7 +44,7 @@ jobs:
           restore-keys: ${{ runner.os }}-pnpm-store-
 
       - name: 📦 Cache .turbo
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         timeout-minutes: 1
         with:
           path: .turbo
