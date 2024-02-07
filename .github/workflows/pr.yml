@@ -67,9 +67,7 @@ jobs:
         continue-on-error: true
         run: |
           echo "::remove-matcher owner=tsc::"
-          echo "::add-matcher::.github/tsc-problem-matcher.json"
           pnpm tsc --cache-dir=.turbo | node .github//tee-stdin.ts
-          echo "::remove-matcher owner=tsc-foo::"
 
       - name: 🎓 Spell checking
         continue-on-error: true
