@@ -29,7 +29,6 @@ function processLines(data: Buffer) {
 
 		const match = clean.match(MATCHER)
 		if (!match) {
-			category = ""
 			continue
 		}
 		const [_, name, type, file, l = 0, col = 0] = match
