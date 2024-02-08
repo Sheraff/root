@@ -29,9 +29,12 @@ function processLines(data: Buffer) {
 		const p: { title: string; file: string; line: string; col: string } = Object.fromEntries(
 			body?.split(",").map((part) => part.split("=")) ?? []
 		)
+		const cleanTitle = decodeURIComponent(p.title)
+		const errorType = cleanTitle.split(":", 2)
+		const title = errorType.length > 1 ? errorType[0] : p.title
 
 		console.log(
-			`::error file=${p.file},line=${p.line},col=${p.col},title=${step} > ${p.title}::${decodeURIComponent(p.title)}%0A${message}`
+			`::error file=${p.file},line=${p.line},col=${p.col},title=${step} > ${title}::${cleanTitle}%0A${message}`
 		)
 	}
 }
