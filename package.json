@@ -27,7 +27,7 @@
 		"root:format": "prettier --check \"*.ts\" \"*.json\" \"types/*\" \".github/**/*\" --config .prettierrc.json --log-level warn",
 		"root:format:fix": "prettier --write \"*.ts\" \"*.json\" \"types/*\" \".github/**/*\" --config .prettierrc.json --log-level warn",
 		"root:spell": "cspell --config .cspell.json --quiet --gitignore \"*\" \"types/*\"",
-		"root:clear": "rm -rf dist; rm -rf node_modules; rm -rf .turbo;"
+		"root:clear": "rm -rf dist; rm -rf node_modules; rm -rf .turbo; find . -name '*.tsbuildinfo' -type f -delete;"
 	},
 	"dependencies": {
 		"@fastify/cookie": "^9.3.1",
