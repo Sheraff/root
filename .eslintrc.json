@@ -53,7 +53,7 @@
 		{
 			"files": ["types/*.d.ts"],
 			"parserOptions": {
-				"project": ["tsconfig.json"]
+				"project": ["tsconfig.app.json", "tsconfig.tools.json"]
 			}
 		},
 		{

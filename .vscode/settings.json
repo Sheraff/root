@@ -14,7 +14,9 @@
 		"**/*.module.css.d.ts": true,
 		"**/*.sql.d.ts": true,
 		"**/*.sql.d.ts.map": true,
-		"**/*.js": true
+		"**/*.js": true,
+		"**/*.mjs": true,
+		"**/*.tsbuildinfo": true
 	},
 	"eslint.workingDirectories": [
 		"./assets",
@@ -51,6 +53,7 @@
 	"explorer.fileNesting.patterns": {
 		"*package.json": "${capture}.eslint*, ${capture}.prettier*, ${capture}pnpm*, ${capture}turbo*, ${capture}tsconfig.json, ${capture}vite.config.ts, ${capture}vitest.*, ${capture}.gitignore, ${capture}esbuild.*, ${capture}knip.*, ${capture}.nvmrc, ${capture}.cspell.json, ${capture}*.dict.txt",
 		"*.js": "${capture}.js.*, ${capture}.d.ts*",
+		"*.ts": "${capture}.ts.*, ${capture}.d.ts*, ${capture}.js*, ${capture}.mjs*",
 		"*.css": "${capture}.css.*",
 		"*.wasm": "${capture}.wasm.*",
 		"*.sql": "${capture}.sql.d.ts, ${capture}.sql.d.ts.map"

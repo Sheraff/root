@@ -6,6 +6,11 @@
 		// might not be used everywhere yet
 		"assets"
 	],
-	"ignore": ["**/*.test.ts", "**/types/*.d.ts"],
+	"ignore": [
+		// avoid test files being the only import of something and that something not being marked as unused
+		"**/*.test.ts",
+		// knip doesn't grab the "sub-projects" of main tsconfig files (like tsconfig.app.json), so it never discovers .d.ts files
+		"**/types/*.d.ts"
+	],
 	"includeEntryExports": true
 }

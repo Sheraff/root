@@ -4,74 +4,100 @@ on:
   workflow_dispatch:
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     name: 🐙 Test
     runs-on: ubuntu-latest
 
-    env:
-      STORE_PATH: . # will be overwritten by the action
-
-    timeout-minutes: 5
-
     strategy:
+      fail-fast: true
       matrix:
         node-version: [20.x]
         pnpm-version: [8.x]
 
+    env:
+      PNPM_STORE_PATH: . # will be overwritten by the action
+
+    timeout-minutes: 5
+
     steps:
-      - name: 𐘌 Checkout
+      - name: 🍃 Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: ⚙️ Node setup ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          check-latest: true
 
       - name: ⚙️ Pnpm setup ${{ matrix.pnpm-version }}
-        uses: pnpm/action-setup@v2.2.4
+        uses: pnpm/action-setup@v3
         with:
           version: ${{ matrix.pnpm-version }}
           run_install: false
 
       - name: 📁 Get pnpm store directory
         shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+        run: echo "PNPM_STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
       - name: 📦 Cache .pnpm-store
         uses: actions/cache@v4
+        timeout-minutes: 1
         with:
-          path: ${{ env.STORE_PATH }}
+          path: ${{ env.PNPM_STORE_PATH }}
           key: ${{ runner.os }}-${{ matrix.pnpm-version }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.pnpm-version }}-pnpm-store-
+
+      - name: 📦 Cache .turbo
+        uses: actions/cache@v4
+        timeout-minutes: 1
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.pnpm-version }}-pnpm-store-
+            ${{ runner.os }}-turbo-
 
       - name: 🧰 Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: 🤫 Create env file
+      - name: 🙈 Create env file
         run: echo "${{ secrets.CI_ENV_FILE }}" > .env
 
       - name: 🔮 Type checking
-        run: pnpm tsc
+        timeout-minutes: 1
+        run: |
+          echo "::remove-matcher owner=tsc::"
+          node --import tsx .github/tsc-stdin.ts "🔮 Type checking" pnpm tsc --cache-dir=.turbo
 
       - name: 🎓 Spell checking
-        run: pnpm spell
+        timeout-minutes: 1
+        run: node --import tsx .github/spell-stdin.ts "🎓 Spell checking" pnpm spell --cache-dir=.turbo
 
       - name: 🎨 Formatting
-        run: pnpm format
+        timeout-minutes: 1
+        run: node --import tsx .github/format-stdin.ts "🎨 Formatting" pnpm format --cache-dir=.turbo
 
       - name: 💫 Linting
-        run: pnpm lint
-
-      - name: 🚦 Unit testing
-        run: pnpm test
+        timeout-minutes: 1
+        run: |
+          echo "::remove-matcher owner=eslint-compact::"
+          echo "::remove-matcher owner=eslint-stylish::"
+          node --import tsx .github/lint-stdin.ts "💫 Linting" pnpm lint --cache-dir=.turbo
 
       - name: 👻 Dead code elimination
-        run: pnpm knip
+        timeout-minutes: 1
+        run: node --import tsx .github/knip-stdin.ts "👻 Dead code elimination" pnpm knip
+
+      - name: 🚦 Unit testing
+        timeout-minutes: 1
+        run: node --import tsx .github/test-stdin.ts "🚦 Unit testing" pnpm test:ci
 
       - name: 🏗️ Building
+        timeout-minutes: 1
         run: pnpm build

@@ -2,10 +2,10 @@
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"composite": true,
-		"types": ["node"],
 		"lib": ["ESNext"],
+		"types": [],
 		"module": "ESNext"
 	},
-	"include": [".github/**/*.ts", ".github/*.ts"],
-	"files": ["vitest.workspace.ts"]
+	"include": ["types/*.d.ts"],
+	"files": []
 }

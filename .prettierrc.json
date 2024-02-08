@@ -14,10 +14,16 @@
 	"tabWidth": 4,
 	"overrides": [
 		{
-			"files": "*.yml",
+			"files": ["*.yml", "*.yaml"],
 			"options": {
 				"useTabs": false,
 				"tabWidth": 2
+			}
+		},
+		{
+			"files": ["*.jsonc"],
+			"options": {
+				"trailingComma": "none"
 			}
 		}
 	]

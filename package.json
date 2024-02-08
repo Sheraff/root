@@ -7,17 +7,21 @@
 		"analyze": "turbo analyze --filter client",
 		"dev": "FORCE_COLOR=1 turbo dev",
 		"test": "FORCE_COLOR=1 turbo root:test",
+		"test:ci": "FORCE_COLOR=1 turbo test",
 		"build": "FORCE_COLOR=1 turbo build",
 		"serve": "NODE_ENV=production node --env-file=.env dist/server/app.mjs",
 		"lint": "FORCE_COLOR=1 turbo lint root:lint --continue --log-order=grouped",
 		"lint:fix": "FORCE_COLOR=1 turbo lint:fix root:lint:fix --continue --log-order=grouped",
 		"format": "FORCE_COLOR=1 turbo format root:format --continue --log-order=grouped",
 		"format:fix": "FORCE_COLOR=1 turbo format:fix root:format:fix --continue --log-order=grouped",
-		"tsc": "FORCE_COLOR=1 turbo tsc --continue --log-order=grouped",
+		"tsc": "FORCE_COLOR=1 turbo tsc root:tsc --continue --log-order=grouped",
 		"knip": "knip",
 		"spell": "FORCE_COLOR=1 turbo spell root:spell --continue --log-order=grouped",
 		"clear": "FORCE_COLOR=1 turbo clear root:clear --continue",
 		"root:test": "vitest",
+		"root:tsc": "echo \"done\"",
+		"root:tsc:app": "tsc --noEmit --project tsconfig.app.json",
+		"root:tsc:tools": "tsc --noEmit --project tsconfig.tools.json",
 		"root:lint": "eslint \"*.ts\" \"types/*\"",
 		"root:lint:fix": "eslint \"*.ts\" \"types/*\" --fix",
 		"root:format": "prettier --check \"*.ts\" \"*.json\" \"types/*\" \".github/**/*\" --config .prettierrc.json --log-level warn",
@@ -71,7 +75,8 @@
 		"typescript": "^5.3.3",
 		"typescript-plugin-css-modules": "^5.0.2",
 		"vite": "^5.0.12",
-		"vitest": "^1.2.2"
+		"vitest": "^1.2.2",
+		"vitest-github-actions-reporter": "^0.11.1"
 	},
 	"engines": {
 		"node": ">=20.9.0"

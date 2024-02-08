@@ -3,4 +3,12 @@
 	"compilerOptions": {},
 	"include": ["types/*.d.ts"],
 	"files": [],
+	"references": [
+		{
+			"path": "./tsconfig.tools.json",
+		},
+		{
+			"path": "./tsconfig.app.json",
+		},
+	],
 }
