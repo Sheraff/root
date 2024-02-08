@@ -1,0 +1,19 @@
+{
+	"name": "script",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"tsc": "tsc --noEmit --project tsconfig.lib.json",
+		"build": "esbuild `find src -name '*.ts'` --outdir=src --bundle --platform=node --format=esm",
+		"clear": "rm -rf node_modules; rm -rf .turbo; rm tsconfig.lib.tsbuildinfo; find src -name '*.js' -type f -delete",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"format": "prettier --check . --config ../.prettierrc.json --log-level warn",
+		"format:fix": "prettier --write . --config ../.prettierrc.json --log-level warn",
+		"spell": "cspell --config ../.cspell.json --quiet --gitignore \"**/*\""
+	},
+	"exports": {
+		"./*": "./src/*"
+	}
+}

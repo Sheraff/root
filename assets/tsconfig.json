@@ -5,5 +5,5 @@
 		"module": "ESNext",
 	},
 	"files": ["esbuild.ts"],
-	"include": ["../scripts/src/**/*.ts"],
+	"include": ["../script/src/**/*.ts"],
 }

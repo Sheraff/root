@@ -1,11 +1,11 @@
-import { useDB, useQuery } from "@vlcn.io/react"
 import { useEffect, useState } from "react"
 import { sql } from "shared/sql"
 
 import { useSync } from "client/db/Sync"
 import { useDbQuery } from "client/db/useDbQuery"
 import { useDbMutation } from "client/db/useDbMutation"
-import { Button } from "client/Button/Button"
+import { Button } from "client/components/Button/Button"
+import { useDb } from "client/db/DbProvider"
 
 function Test({ name }: { name: string }) {
 	const other = useDbQuery<{ id: string; content: string; position: number }>({
@@ -48,8 +48,8 @@ function Test2({ name }: { name: string }) {
 }
 
 export function Content({ name }: { name: string }) {
-	const ctx = useDB(name)
-	const sync = useSync(ctx.db, name)
+	const ctx = useDb(name)
+	const sync = useSync(ctx?.db, name)
 
 	const { mutateAsync } = useDbMutation<[id: string, content: string]>({
 		dbName: name,
@@ -61,22 +61,23 @@ export function Content({ name }: { name: string }) {
 		await sync?.roundTrip()
 	}
 
-	const { mutateAsync: mutateAsync2 } = useDbMutation<
-		[id: string],
-		{ id: string; content: string }
-	>({
-		dbName: name,
-		query: sql`DELETE FROM test WHERE id = ? RETURNING id, content;`,
-		returning: true,
-	})
+	// const { mutateAsync: mutateAsync2 } = useDbMutation<
+	// 	[id: string],
+	// 	{ id: string; content: string }
+	// >({
+	// 	dbName: name,
+	// 	query: sql`DELETE FROM test WHERE id = ? RETURNING id, content;`,
+	// 	returning: true,
+	// })
 
-	const removeData = async (id: string) => {
-		const [res] = await mutateAsync2([id])
-		console.log("---- remove", res)
-		await sync?.roundTrip()
-	}
+	// const removeData = async (id: string) => {
+	// 	const [res] = await mutateAsync2([id])
+	// 	console.log("---- remove", res)
+	// 	await sync?.roundTrip()
+	// }
 
 	const dropData = async () => {
+		if (!ctx) return
 		await ctx.db.exec(sql`DELETE FROM test;`)
 		await sync?.roundTrip()
 	}
@@ -84,15 +85,12 @@ export function Content({ name }: { name: string }) {
 	useEffect(() => {
 		if (!sync) return
 		const controller = new AbortController()
-		addEventListener("online", sync.roundTrip, { signal: controller.signal })
-		if (navigator.onLine) sync.roundTrip()
+		addEventListener("online", () => void sync.roundTrip(), { signal: controller.signal })
+		if (navigator.onLine) {
+			void sync.roundTrip()
+		}
 		return () => controller.abort()
 	}, [sync])
-
-	const result = useQuery<{ id: string; content: string }>(
-		ctx,
-		sql`SELECT id, content, position FROM test ORDER BY position, id ASC`
-	)
 
 	const [toggle, setToggle] = useState(true)
 	const [toggleBis, setToggleBis] = useState(false)
@@ -111,26 +109,18 @@ export function Content({ name }: { name: string }) {
 				Toggle 2 {String(!toggle2)}
 			</Button>
 			{toggle2 && <Test2 name={name} />}
-			<ul>
-				{result.data?.map((item) => (
-					<li key={item.id}>
-						{item.content} <Button onClick={() => removeData(item.id)}>delete</Button>
-					</li>
-				))}
-			</ul>
-			<hr />
 			<hr />
 			<form
 				onSubmit={(event) => {
 					event.preventDefault()
-					const content = event.currentTarget.content.value
-					addData(content)
+					const content = (event.currentTarget.content as HTMLInputElement).value
+					void addData(content)
 					event.currentTarget.reset()
 				}}
 			>
 				<input type="text" name="content" required />
 				<div>
-					<Button type="button" onClick={dropData}>
+					<Button type="button" onClick={() => void dropData()}>
 						Clear list
 					</Button>
 					<Button>Add to list</Button>
@@ -139,7 +129,7 @@ export function Content({ name }: { name: string }) {
 			<hr />
 			{sync && (
 				<>
-					<Button onClick={() => sync.roundTrip()}>Sync</Button>
+					<Button onClick={() => void sync.roundTrip()}>Sync</Button>
 				</>
 			)}
 		</>

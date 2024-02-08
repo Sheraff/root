@@ -31,13 +31,15 @@ A typescript service worker, with
 A workspace, with
 
 - pnpm (package manager / script runner)
-- eslint (code quality)
+- eslint w/ type-aware linting (code quality)
 - prettier (code formatting)
 - knip (dead code elimination)
 - turbo (monorepo manager / script cache)
 - valibot (data validation)
 - ts-reset (better typescript defaults)
-- a `scripts` folder for build-time shared code (node only, for CI, vite plugins, ...)
+- cspell (code spell-checking)
+- github actions (CI/CD)
+- a `script` folder for build-time shared code (node only, for CI, vite plugins, ...)
 - a `shared` folder for run-time shared code (all environments, for client, server, service worker, ...)
 
 ## Getting Started
@@ -91,8 +93,10 @@ pnpm format:fix # prettier fix
 pnpm lint # eslint check
 pnpm lint:fix # eslint fix
 pnpm tsc # typescript check
-pnpm deps # check for unused code
-pnpm clear # clear cache (turbo, vite, pnpm, esbuild, pnpm)
+pnpm knip # check for unused code
+pnpm spell # check for spelling errors
+pnpm clear # clear cache (turbo, vite, pnpm, esbuild, ...)
+pnpm analyze # bundle size analysis
 ```
 
 ---
@@ -101,8 +105,11 @@ pnpm clear # clear cache (turbo, vite, pnpm, esbuild, pnpm)
 
 - finish auth
   - better utils for "protected" stuff (client & server)
+  - add endpoint for "which providers are already associated with current user"
+    - on the client side, this can be used to hide the "associate" button for these providers
+    - on the client side, this gives us the opportunity to make an "online-only" component demo
+    - this is a good opportunity to make a trpc-like fullstack type-safe query system
 - database
   - figure out migrations story
-  - better DX (sync hook, db provider, ...)
-- dev server
-  - when updating a shared .sql schema, /client Vite HMR finishes before /server esbuild watch full server restart, which leads the request to `/api/changes` (to re-sync the db from the client) to fail
+- cleanup bento
+  - nice looking examples

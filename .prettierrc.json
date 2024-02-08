@@ -1,0 +1,30 @@
+{
+	"arrowParens": "always",
+	"bracketSpacing": true,
+	"bracketSameLine": false,
+	"embeddedLanguageFormatting": "auto",
+	"jsxSingleQuote": false,
+	"printWidth": 100,
+	"quoteProps": "as-needed",
+	"semi": false,
+	"singleAttributePerLine": false,
+	"singleQuote": false,
+	"trailingComma": "es5",
+	"useTabs": true,
+	"tabWidth": 4,
+	"overrides": [
+		{
+			"files": ["*.yml", "*.yaml"],
+			"options": {
+				"useTabs": false,
+				"tabWidth": 2
+			}
+		},
+		{
+			"files": ["*.jsonc"],
+			"options": {
+				"trailingComma": "none"
+			}
+		}
+	]
+}

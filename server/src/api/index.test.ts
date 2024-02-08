@@ -2,9 +2,9 @@ import { afterAll, describe, expect, it } from "vitest"
 import api from "."
 import fastify from "fastify"
 
-describe("api", async () => {
+describe.concurrent("api", async () => {
 	const app = fastify()
-	app.register(api)
+	await app.register(api)
 	await app.ready()
 	afterAll(() => app.close())
 	it("works", async () => {

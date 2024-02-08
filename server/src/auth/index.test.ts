@@ -4,7 +4,7 @@ import fastify, { type FastifyInstance, type Session } from "fastify"
 import { sql } from "shared/sql"
 import crypto from "node:crypto"
 
-describe(
+describe.sequential(
 	"api",
 	() => {
 		let app: FastifyInstance
@@ -15,7 +15,7 @@ describe(
 		})
 		afterEach(() => app.close())
 
-		it("creates a database with the correct schema", async () => {
+		it("creates a database with the correct schema", () => {
 			const tables = app.auth.db
 				.prepare(
 					sql`SELECT name FROM sqlite_schema WHERE type ='table' AND name NOT LIKE 'sqlite_%';`

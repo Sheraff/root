@@ -23,6 +23,8 @@ const app = fastify({
 	},
 })
 
+app.get("/health", { logLevel: "silent" }, (_, res) => res.status(200).send("OK"))
+
 /**
  * Register the auth routes + session management.
  * Reserves the following routes:
@@ -33,7 +35,7 @@ const app = fastify({
  * - POST /api/oauth/invite
  * - DELETE /api/oauth/session
  */
-app.register(auth, {
+void app.register(auth, {
 	dbPath: DB_ROOT,
 })
 
@@ -43,24 +45,23 @@ app.register(auth, {
  * - GET /api/changes/:name
  * - POST /api/changes/:name
  */
-app.register(crsqlite, {
+void app.register(crsqlite, {
 	dbPath: DB_ROOT,
 })
 
 // Register the API routes
-app.register(api)
+void app.register(api)
 
 // in production mode, we serve the client built by Vite
 if (process.env.NODE_ENV === "production") {
-	app.register(frontend)
+	void app.register(frontend)
 }
 
 // Start the server
-const start = async () => {
-	const port =
-		process.env.NODE_ENV === "production" ? env.PORT : env.DEV_PROXY_SERVER_PORT ?? 8123
+const start = () => {
+	const port = process.env.NODE_ENV === "production" ? env.PORT : 8877
 	try {
-		await app.listen({
+		void app.listen({
 			port,
 			host: "localhost",
 			listenTextResolver: (address) =>
@@ -68,9 +69,10 @@ const start = async () => {
 					? `Listening on ${address}`
 					: `API server started`,
 		})
+		// eslint-disable-next-line @typescript-eslint/no-misused-promises
 		process.on("SIGINT", async () => {
 			console.log("\nSIGINT received, shutting down...")
-			await app.close()
+			await app.close().catch(console.error)
 			console.log("Server shut down, exiting.")
 			process.exit(0)
 		})

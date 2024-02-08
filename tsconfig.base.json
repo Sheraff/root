@@ -7,28 +7,14 @@
 		"target": "ESNext",
 		"skipLibCheck": true,
 		"skipDefaultLibCheck": true,
-		"lib": [
-			"ESNext"
-		],
+		"lib": ["ESNext"],
 		"paths": {
-			"assets/*": [
-				"assets/src/*"
-			],
-			"scripts/*": [
-				"scripts/src/*"
-			],
-			"shared/*": [
-				"shared/src/*"
-			],
-			"client/*": [
-				"client/src/*"
-			],
-			"server/*": [
-				"server/src/*"
-			],
-			"sw/*": [
-				"sw/src/*"
-			],
+			"assets/*": ["assets/src/*"],
+			"script/*": ["script/src/*"],
+			"shared/*": ["shared/src/*"],
+			"client/*": ["client/src/*"],
+			"server/*": ["server/src/*"],
+			"worker/*": ["worker/src/*"]
 		},
 		// strict
 		"strict": true,
@@ -40,13 +26,8 @@
 		"noImplicitThis": true,
 		"alwaysStrict": true,
 		"forceConsistentCasingInFileNames": true,
-		"noUncheckedIndexedAccess": true,
+		"noUncheckedIndexedAccess": true
 	},
-	"exclude": [
-		"node_modules",
-		"**/node_modules"
-	],
-	"include": [
-		"types/*.d.ts",
-	]
+	"exclude": ["node_modules", "**/node_modules"],
+	"include": ["types/*.d.ts"]
 }

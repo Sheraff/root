@@ -8,14 +8,15 @@
 		"tsc:lib": "tsc --noEmit --project tsconfig.lib.json",
 		"tsc:tools": "tsc --noEmit --project tsconfig.tools.json",
 		"tsc": "echo \"done\"",
-		"lint": "eslint . --config ../.eslintrc.json",
-		"lint:fix": "eslint . --config ../.eslintrc.json --fix",
-		"format": "prettier --check . --config ../.prettierrc --log-level warn",
-		"format:fix": "prettier --write . --config ../.prettierrc --log-level warn",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"format": "prettier --check . --config ../.prettierrc.json --log-level warn",
+		"format:fix": "prettier --write . --config ../.prettierrc.json --log-level warn",
+		"spell": "cspell --config ../.cspell.json --quiet --gitignore \"**/*\"",
 		"clear": "rm -rf node_modules; rm -rf .turbo;"
 	},
 	"devDependencies": {
-		"scripts": "workspace:scripts@*"
+		"script": "workspace:script@*"
 	},
 	"exports": {
 		"./*": "./src/*"

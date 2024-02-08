@@ -3,11 +3,16 @@ import react from "@vitejs/plugin-react-swc"
 
 import { visualizer } from "rollup-plugin-visualizer"
 import { config } from "dotenv"
+import VitestGHAReporter from "vitest-github-actions-reporter"
 import { readFile, rm, writeFile } from "node:fs/promises"
 import { join, resolve } from "node:path"
-import { compressBuffer } from "scripts/compressBuffer"
-import { ViteRawLoader } from "scripts/ViteRawLoader"
-import { walkFsTree } from "scripts/walkFsTree"
+import { compressBuffer } from "script/compressBuffer"
+import { ViteRawLoader } from "script/ViteRawLoader"
+import { walkFsTree } from "script/walkFsTree"
+import { coloredFile } from "script/coloredFile"
+import { readableTime } from "script/readableTime"
+import chalk from "chalk"
+import { readableSize } from "script/readableSize"
 
 config({ path: "../.env" })
 
@@ -20,14 +25,16 @@ function SwHotReload(): PluginOption {
 		configResolved({ logger }) {
 			_logger = logger
 		},
+
 		handleHotUpdate({ file, server, timestamp }) {
 			if (file.endsWith("sw.js")) {
-				_logger.info(`${timestamp} [SW] hmr update, registering new worker...`)
 				server.ws.send({
 					type: "custom",
 					event: "sw-rebuild",
 					data: { id: id++ },
 				})
+				const time = new Date(timestamp).toLocaleTimeString("en-US")
+				_logger.info(`${time} [SW] hmr update, registering new worker...`)
 			}
 		},
 	}
@@ -46,13 +53,21 @@ function RemoveSwFilesFromBuild(): PluginOption {
 		},
 		closeBundle() {
 			if (!outRoot) return
-			_logger.info('Removing "sw.js" and "sw.js.map" from build...')
-			return Promise.all([
-				rm(join(outRoot, "sw.js"), { force: true }),
-				rm(join(outRoot, "sw.js.map"), { force: true }),
-			])
+			const toRemove = [join(outRoot, "sw.js"), join(outRoot, "sw.js.map")]
+			let logged = false
+			return Promise.all(
+				toRemove.map((file) =>
+					rm(file, { force: true }).then(() => {
+						if (!logged) {
+							logged = true
+							_logger.info(chalk.green("removing SW development files from build..."))
+						}
+						_logger.info(`${chalk.gray("Removed")} ${coloredFile(file)}`)
+					})
+				)
+			)
 				.catch()
-				.then()
+				.then(() => _logger.info(chalk.green("✓ removed service worker files")))
 		},
 	}
 }
@@ -71,7 +86,8 @@ function Compress(): PluginOption {
 		},
 		async closeBundle() {
 			if (!outRoot) return
-			_logger.info("Compressing files...")
+			const start = Date.now()
+
 			const promises: Promise<unknown>[] = []
 			const stats = {
 				before: 0,
@@ -79,36 +95,95 @@ function Compress(): PluginOption {
 				count: 0,
 			}
 			const extensions = /\.(js|wasm|css)$/
+			let logged = false
 			await walkFsTree(outRoot, (node) => {
 				if (node.stats.isDirectory()) return
 				if (!extensions.test(node.path)) return
 				if (node.path.endsWith("/sw.js")) return
 				stats.count++
+				let before = 0
+				if (!logged) {
+					_logger.info(chalk.green("compressing files with brotli..."))
+					logged = true
+				}
 				promises.push(
 					readFile(node.path)
 						.then((buffer) => {
-							stats.before += buffer.byteLength
-							if (buffer.byteLength < 1501) {
-								stats.after += buffer.byteLength
+							before = buffer.byteLength
+							stats.before += before
+							if (before < 1501) {
+								stats.after += before
+								_logger.info(
+									`Skipping ${coloredFile(node.path)} ${chalk.gray(`(too small: ${readableSize(before)})`)}`
+								)
 								return
 							}
 							return compressBuffer(buffer)
 						})
 						.then((compressed) => {
 							if (!compressed) return
-							stats.after += compressed.byteLength
+							const after = compressed.byteLength
+							stats.after += after
 							const compressedPath = node.path + ".br"
-							writeFile(compressedPath, compressed)
+							writeFile(compressedPath, compressed).catch((error) =>
+								_logger.error(String(error))
+							)
+							_logger.info(
+								`Compress ${coloredFile(node.path)} ${chalk.gray("from")} ${chalk.bold(readableSize(before))} ${chalk.gray("to")} ${chalk.bold(readableSize(after))} ${chalk.gray(`| ${Math.round((after / before) * 100)}%`)}`
+							)
 						})
-						.catch((error) => _logger.error(error))
+						.catch((error) => _logger.error(String(error)))
 				)
 			})
 			await Promise.all(promises)
 			if (stats.count > 0) {
+				const delta = Date.now() - start
 				const percent = Math.round((stats.after / stats.before) * 100)
 				_logger.info(
-					`Compressed ${stats.before} bytes to ${stats.after} bytes (${percent}%) in ${stats.count} files`
+					`${chalk.gray("Summary: ")}${chalk.bold(readableSize(stats.before))} ${chalk.gray("to")} ${chalk.bold(readableSize(stats.after))} ${chalk.gray(`(${percent}% of ${stats.count} files)`)}`
 				)
+				_logger.info(chalk.green(`✓ compressed in ${readableTime(delta)}`))
+			}
+		},
+	}
+}
+
+/** @see https://github.com/vitejs/vite/issues/15012 */
+const MuteWarningsPlugin = (...warningsToIgnore: [string, string][]): PluginOption => {
+	const mutedMessages = new Set()
+	return {
+		name: "mute-warnings",
+		enforce: "pre",
+		config: (userConfig) => ({
+			build: {
+				rollupOptions: {
+					onwarn(warning, defaultHandler) {
+						if (warning.code) {
+							const muted = warningsToIgnore.find(
+								([code, message]) =>
+									code == warning.code && warning.message.includes(message)
+							)
+
+							if (muted) {
+								mutedMessages.add(muted.join())
+								return
+							}
+						}
+
+						if (userConfig.build?.rollupOptions?.onwarn) {
+							userConfig.build.rollupOptions.onwarn(warning, defaultHandler)
+						} else {
+							defaultHandler(warning)
+						}
+					},
+				},
+			},
+		}),
+		closeBundle() {
+			const diff = warningsToIgnore.filter((x) => !mutedMessages.has(x.join()))
+			if (diff.length > 0) {
+				this.warn("Some of your muted warnings never appeared during the build process:")
+				diff.forEach((m) => this.warn(`- ${m.join(": ")}`))
 			}
 		},
 	}
@@ -120,6 +195,7 @@ const plugins: PluginOption[] = [
 	SwHotReload(),
 	RemoveSwFilesFromBuild(),
 	Compress(),
+	MuteWarningsPlugin(["SOURCEMAP_ERROR", "Can't resolve original location of error"]),
 ]
 
 if (process.env.VITE_ANALYZE) {
@@ -169,6 +245,7 @@ export default defineConfig({
 		outDir: "../dist/client",
 		sourcemap: true,
 		target: "esnext",
+		reportCompressedSize: false,
 	},
 	esbuild: {
 		minifyIdentifiers: false,
@@ -190,5 +267,6 @@ export default defineConfig({
 			{ find: /^(.*)\.txt$/, replacement: "$1.txt?raw" },
 			{ find: /^(.*)\.sql$/, replacement: "$1.sql?raw" },
 		],
+		reporters: process.env.GITHUB_ACTIONS ? ["default", new VitestGHAReporter()] : "default",
 	},
 })

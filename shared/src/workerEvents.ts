@@ -5,4 +5,14 @@ type FooEvent = {
 	}
 }
 
-export type Message = FooEvent
+type UpdateEvent = {
+	type: "UPDATE"
+	payload?: never
+}
+
+type HMREvent = {
+	type: "HMR"
+	payload?: never
+}
+
+export type Message = FooEvent | UpdateEvent | HMREvent

@@ -1,0 +1,19 @@
+{
+	"$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+	"version": "0.2",
+	"language": "en",
+	"ignorePaths": ["pnpm-lock.yaml", "**/*.txt"],
+	"dictionaries": [
+		"en_US",
+		"softwareTerms",
+		"misc",
+		"typescript",
+		"node",
+		"html",
+		"css",
+		"npm",
+		"fonts",
+		"repo"
+	],
+	"dictionaryDefinitions": [{ "name": "repo", "path": "./repo.dict.txt" }]
+}

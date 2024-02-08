@@ -7,20 +7,20 @@ type States =
 			type: "unauthenticated"
 			submitInviteCode: (inviteCode: string) => Promise<Response>
 			signIn: (provider: string) => void
-			providers: Array<Provider>
+			providers: Provider[]
 	  }
 	| {
 			type: "creating-account"
 			createAccount: (provider: string) => void
 			cancelCreateAccount: () => void
-			providers: Array<Provider>
+			providers: Provider[]
 	  }
 	| {
 			type: "signed-in"
 			userId: string
 			signOut: () => Promise<Response>
-			linkAccount: (provider: string) => void
-			providers: Array<Provider>
+			linkAccount: (provider: string) => Promise<void>
+			providers: Provider[]
 	  }
 
 let cookieCache: Map<string, string | undefined> | null = null
@@ -38,8 +38,9 @@ function clearCookieCache() {
 	cookieCache = null
 }
 
-//eslint-disable-next-line @typescript-eslint/no-explicit-any -- cookieStore is not in lib.dom.d.ts because it's only supported in Chrome
-const cookieStore = (globalThis as any).cookieStore as EventTarget
+declare global {
+	const cookieStore: EventTarget
+}
 
 /**
  * Should transition state from "unauthenticated" to "creating-account"
@@ -92,6 +93,10 @@ function linkAccount(provider: string) {
 
 const filteredProviders = providers.filter((p) => __AUTH_PROVIDERS__.includes(p.key))
 
+/**
+ * Hook to manage authentication state. This hook should probably be called only once,
+ * and the state should be passed down to the rest of the app using a context.
+ */
 export function useAuth(): States {
 	const [userId, setUserId] = useState<string | undefined>(() =>
 		getCookie(PUBLIC_CONFIG.userIdCookie)

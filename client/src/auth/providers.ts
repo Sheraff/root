@@ -5,7 +5,7 @@ export type Provider = {
 	color: string
 }
 
-export const providers: Array<Provider> = [
+export const providers: Provider[] = [
 	{
 		key: "google",
 		name: "Google",

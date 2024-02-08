@@ -6,7 +6,7 @@
 			"inputs": [
 				"vitest.config.ts",
 				"../types/*.d.ts",
-				"../scripts/src/**/*.ts",
+				"../script/src/**/*.ts",
 				"tsconfig.json",
 				"tsconfig.tools.json"
 			]
@@ -25,7 +25,7 @@
 			"dependsOn": ["shared#tsc:tools", "shared#tsc:lib"]
 		},
 		"test": {
-			"dependsOn": ["scripts#build"]
+			"dependsOn": ["script#build"]
 		}
 	}
 }

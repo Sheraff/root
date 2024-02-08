@@ -1,0 +1,11 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"composite": true,
+		"lib": ["ESNext"],
+		"types": [],
+		"module": "ESNext"
+	},
+	"include": ["types/*.d.ts"],
+	"files": []
+}

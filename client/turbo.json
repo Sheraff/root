@@ -14,7 +14,7 @@
 				"../assets/src/**"
 			],
 			"outputs": ["../dist/client/**"],
-			"dependsOn": ["scripts#build"]
+			"dependsOn": ["script#build"]
 		},
 		"tsc:tools": {
 			"inputs": [
@@ -22,7 +22,7 @@
 				"vitest.config.ts",
 				"types/*.d.ts",
 				"../types/*.d.ts",
-				"../scripts/src/**/*.ts",
+				"../script/src/**/*.ts",
 				"tsconfig.json",
 				"tsconfig.tools.json"
 			]
@@ -49,12 +49,12 @@
 			"dependsOn": ["client#tsc:tools", "client#tsc:app"]
 		},
 		"test": {
-			"dependsOn": ["scripts#build"]
+			"dependsOn": ["script#build"]
 		},
 		"dev": {
 			"cache": false,
 			"persistent": true,
-			"dependsOn": ["scripts#build"]
+			"dependsOn": ["script#build"]
 		}
 	}
 }

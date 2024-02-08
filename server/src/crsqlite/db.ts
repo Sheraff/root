@@ -40,7 +40,7 @@ function wrapDatabase(db: Database.Database): CrsqliteDatabase {
 			return getIdStatement.get() as Uint8Array
 		},
 		applyChanges(msg: Changes) {
-			db.transaction((msg) => {
+			db.transaction((msg: Changes) => {
 				for (const c of msg.changes) {
 					applyChangesStatement.run(
 						c[0],
@@ -63,7 +63,10 @@ function wrapDatabase(db: Database.Database): CrsqliteDatabase {
 	})
 }
 
-export async function makeCrsqliteDb(
+/**
+ * @throws {Database.SqliteError}
+ */
+export function makeCrsqliteDb(
 	fastify: FastifyInstance,
 	options: {
 		name?: string

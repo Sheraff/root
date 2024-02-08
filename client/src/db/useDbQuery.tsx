@@ -5,7 +5,8 @@ import {
 	type QueryClient,
 	type QueryCache,
 } from "@tanstack/react-query"
-import { useDB, type CtxAsync } from "@vlcn.io/react"
+import { type CtxAsync } from "@vlcn.io/react"
+import { useDb } from "client/db/DbProvider"
 import { useLayoutEffect } from "react"
 
 const UNIQUE_KEY = "__vlcn__react_query__cache_manager__"
@@ -105,7 +106,7 @@ function cleanupQuery({
 
 	console.log("finalizing statement", hash)
 	queryStore.delete(hash)
-	q.statement?.then((s) => s.finalize(null))
+	q.statement?.then((s) => s.finalize(null), console.error)
 	q.statement = null
 
 	// stop listening to table changes
@@ -145,11 +146,9 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 
 	const cacheManager = client.getQueryCache()
 	const unsubscribe = cacheManager.subscribe((event) => {
-		if (event.query.queryKey[0] !== UNIQUE_KEY) return
-		const queryKey = [event.query.queryKey[1], event.query.queryKey[2]] as [
-			dbName: string,
-			sql: string,
-		]
+		const eventQueryKey = event.query.queryKey as readonly unknown[]
+		if (eventQueryKey[0] !== UNIQUE_KEY) return
+		const queryKey = [eventQueryKey[1], eventQueryKey[2]] as [dbName: string, sql: string]
 		const hash = hashKey(queryKey)
 
 		/**
@@ -174,7 +173,8 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 		 */
 		if (event.type === "updated" && event.action.type === "fetch") {
 			console.log("::::::updated:fetch")
-			let q = queryStore.get(hash) as QueryEntry // force exclude `undefined` for `getUsedTables` promise chain below, because it's never going back to undefined
+			let q = queryStore.get(hash)!
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- force exclude `undefined` above for `getUsedTables` promise chain below, because it's never going back to undefined
 			if (!q) {
 				console.log("start listening to", hash)
 				q = {
@@ -188,7 +188,7 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 				queryStore.set(hash, q)
 			}
 			if (!q.statement) {
-				q.statement = ctx.db.prepare(event.query.queryKey[2])
+				q.statement = ctx.db.prepare(eventQueryKey[2] as string)
 			}
 			if (q.activeCount !== 1) return
 			if (q.listening) return
@@ -214,10 +214,12 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 									...queryKey,
 									{ [update]: true },
 								] as const
-								client.invalidateQueries({
-									exact: false,
-									queryKey: filterKey,
-								})
+								client
+									.invalidateQueries({
+										exact: false,
+										queryKey: filterKey,
+									})
+									.catch(console.error)
 							}
 						}
 					})
@@ -230,7 +232,7 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 						},
 					})
 				}
-			})
+			}, console.error)
 			return
 		}
 
@@ -240,7 +242,7 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 		 */
 		if (event.type === "observerAdded") {
 			console.debug("::::::obs.added")
-			const q = queryStore.get(hash)!
+			const q = queryStore.get(hash)
 			if (!q) return
 			console.log("increment active count", hash)
 			q.activeCount++
@@ -317,7 +319,7 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 		})
 		queryStore.forEach((q) => {
 			if (q.dbName === dbName) {
-				q.statement?.then((s) => s.finalize(null))
+				q.statement?.then((s) => s.finalize(null), console.error)
 				queryStore.delete(q.dbName)
 			}
 		})
@@ -333,12 +335,15 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
  * - know which tables are used by a query
  * - know when to invalidate queries
  */
-export function useCacheManager(dbName: string) {
+export function useCacheManager(dbName?: string) {
 	const client = useQueryClient()
-	const ctx = useDB(dbName)
+	const ctx = useDb(dbName)
 
 	// only in dev
-	useLayoutEffect(() => start(dbName, ctx, client), [dbName, ctx, client])
+	useLayoutEffect(() => {
+		if (!ctx || !dbName) return
+		start(dbName, ctx, client)
+	}, [dbName, ctx, client])
 }
 
 let queryId = 0
@@ -358,11 +363,11 @@ export function useDbQuery<
 	dbName: string
 	query: string
 	select?: (data: TQueryFnData[]) => TData
-	bindings?: ReadonlyArray<string>
-	updateTypes?: ReadonlyArray<UpdateType>
+	bindings?: readonly string[]
+	updateTypes?: readonly UpdateType[]
 	enabled?: boolean
 }) {
-	const ctx = useDB(dbName)
+	const ctx = useDb(dbName)
 
 	const queryKey = [
 		UNIQUE_KEY,
@@ -375,10 +380,11 @@ export function useDbQuery<
 		dbName: string,
 		sql: string,
 		updateTypes: Record<UpdateType, boolean>,
-		bindings: ReadonlyArray<string>,
+		bindings: readonly string[],
 	]
 
 	return useQuery({
+		enabled: Boolean(ctx?.db && enabled),
 		queryKey,
 		queryFn: async ({ signal }) => {
 			console.debug("::::::queryFn")
@@ -393,20 +399,23 @@ export function useDbQuery<
 				throw new Error("Query statement did not exist when trying to execute queryFn")
 			}
 			const statement = await q.statement
-			if (signal.aborted) return Promise.reject("Request aborted")
+			if (signal.aborted) return Promise.reject(new Error("Request aborted"))
 
 			statement.bind(bindings)
-			const [releaser, transaction] = await ctx.db.imperativeTx()
+			const [releaser, transaction] = await ctx!.db.imperativeTx()
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- could have changed since last check because of the `await`
 			if (signal.aborted) {
 				releaser()
-				return Promise.reject("Request aborted")
+				return Promise.reject(new Error("Request aborted"))
 			}
-			if (!q.statement) {
+			if (!(q.statement as Promise<StmtAsync> | null)) {
 				releaser()
 				throw new Error("Query statement was finalized before being executed")
 			}
 			const transactionId = queryId++
-			transaction.exec(/*sql*/ `SAVEPOINT use_query_${transactionId};`)
+			transaction.exec(/*sql*/ `SAVEPOINT use_query_${transactionId};`).catch((e) => {
+				throw new Error("useQuery transaction failed before SAVEPOINT", { cause: e })
+			})
 			statement.raw(false)
 			try {
 				const data = (await statement.all(transaction)) as TQueryFnData[]
@@ -427,7 +436,6 @@ export function useDbQuery<
 		retryOnMount: false,
 		refetchOnMount: true, // will only refetch if query is stale
 		refetchOnWindowFocus: true, // in case browser sent the tab to sleep
-		enabled,
 		networkMode: "always",
 		staleTime: Infinity,
 	})
@@ -440,7 +448,7 @@ async function getUsedTables(db: DBAsync, query: string): Promise<string[]> {
 	const cached = usedTableCache.get(cacheKey)
 	if (cached) return cached
 	const sanitized = query.replaceAll("'", "''")
-	const rows = await db.tablesUsedStmt.all(null, sanitized)
+	const rows = (await db.tablesUsedStmt.all(null, sanitized)) as [string][]
 	const result = Array.from(new Set(rows.map((r) => r[0])))
 	usedTableCache.set(cacheKey, result)
 	return result

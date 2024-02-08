@@ -1,0 +1,19 @@
+.grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	grid-gap: 20px;
+	grid-auto-flow: dense;
+	max-width: 750px;
+	margin: auto;
+}
+
+.cell {
+	--x: 1;
+	--y: 1;
+	grid-column: span var(--x);
+	grid-row: span var(--y);
+	border-radius: 10px;
+	overflow: hidden;
+	border: 1px solid #ad0489;
+	padding: 10px;
+}

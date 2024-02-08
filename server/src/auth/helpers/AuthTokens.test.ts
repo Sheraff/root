@@ -2,7 +2,7 @@ import { object, string } from "valibot"
 import { describe, expect, it } from "vitest"
 import { decrypt, encrypt } from "./AuthTokens"
 
-describe("AuthTokens", () => {
+describe.concurrent("AuthTokens", () => {
 	const schema = object({ foo: string() })
 	it("decrypts what it encrypts", () => {
 		const input = { foo: "bar" }

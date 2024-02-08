@@ -5,5 +5,5 @@
 		"module": "ESNext"
 	},
 	"files": ["vitest.config.ts"],
-	"include": ["../types/*.d.ts", "../scripts/src/**/*.ts", "../node_modules/**/*"]
+	"include": ["../types/*.d.ts", "../script/src/**/*.ts", "../node_modules/**/*"]
 }

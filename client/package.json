@@ -13,17 +13,18 @@
 		"tsc:app": "tsc --noEmit --project tsconfig.app.json",
 		"tsc:tools": "tsc --noEmit --project tsconfig.tools.json",
 		"tsc": "echo \"done\"",
-		"lint": "eslint . --config ../.eslintrc.json",
-		"lint:fix": "eslint . --config ../.eslintrc.json --fix",
-		"format": "prettier --check . --config ../.prettierrc --log-level warn",
-		"format:fix": "prettier --write . --config ../.prettierrc --log-level warn",
-		"clear": "rm -rf node_modules; rm -rf .turbo; rm public/sw.js; rm public/sw.js.map; find src -name '*.module.css.d.ts' -type f -delete"
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"format": "prettier --check . --config ../.prettierrc.json --log-level warn",
+		"format:fix": "prettier --write . --config ../.prettierrc.json --log-level warn",
+		"spell": "cspell --config ../.cspell.json --quiet --gitignore \"**/*\"",
+		"clear": "rm -rf node_modules; rm -rf .turbo; rm public/sw.js; rm public/sw.js.map; rm stats.html; find src -name '*.module.css.d.ts' -type f -delete"
 	},
 	"dependencies": {
 		"assets": "workspace:assets@*",
 		"shared": "workspace:shared@*"
 	},
 	"devDependencies": {
-		"scripts": "workspace:scripts@*"
+		"script": "workspace:script@*"
 	}
 }

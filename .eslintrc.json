@@ -2,15 +2,65 @@
 	"root": true,
 	"parser": "@typescript-eslint/parser",
 	"plugins": ["@typescript-eslint", "react-refresh"],
-	"extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
-	"ignorePatterns": ["node_modules/*", "dist/*", "client/public/sw*"],
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/recommended",
+		"prettier",
+		"plugin:@typescript-eslint/recommended-type-checked",
+		"plugin:@typescript-eslint/strict-type-checked",
+		"plugin:@typescript-eslint/stylistic-type-checked"
+	],
+	"ignorePatterns": [
+		"node_modules/*",
+		"**/node_modules/*",
+		"**/.turbo/*",
+		"dist/*",
+		"client/public/sw*",
+		"**/*.js",
+		"**/*.map",
+		"**/vitest.config.ts.*",
+		"**/*.module.css.d.ts",
+		"**/*.sql.d.ts"
+	],
 	"rules": {
 		"no-fallthrough": "off",
 		"no-constant-condition": "off",
 		"no-mixed-spaces-and-tabs": "off",
-		"@typescript-eslint/consistent-type-imports": ["error", { "fixStyle": "inline-type-imports" }],
+		"@typescript-eslint/consistent-type-imports": [
+			"error",
+			{ "fixStyle": "inline-type-imports" }
+		],
 		"@typescript-eslint/no-explicit-any": "off",
+		"@typescript-eslint/no-non-null-assertion": "off",
+		"@typescript-eslint/no-invalid-void-type": "off",
+		"@typescript-eslint/no-confusing-void-expression": "off",
+		"@typescript-eslint/consistent-type-definitions": "off",
+		"@typescript-eslint/no-empty-function": "off",
 		"no-empty": "off",
-		"react-refresh/only-export-components": ["error", { "allowConstantExport": true }]
-	}
+		"react-refresh/only-export-components": ["error", { "allowConstantExport": true }],
+		"no-unused-labels": "off"
+	},
+	"parserOptions": {
+		"project": ["tsconfig.tools.json"]
+	},
+	"overrides": [
+		{
+			"files": ["vitest.workspace.ts"],
+			"parserOptions": {
+				"project": ["tsconfig.tools.json"]
+			}
+		},
+		{
+			"files": ["types/*.d.ts"],
+			"parserOptions": {
+				"project": ["tsconfig.app.json", "tsconfig.tools.json"]
+			}
+		},
+		{
+			"files": ["**/*.test.ts"],
+			"rules": {
+				"@typescript-eslint/no-unsafe-assignment": "off"
+			}
+		}
+	]
 }

@@ -1,29 +1,4 @@
 {
-	"cSpell.words": [
-		"automigrate",
-		"brotli",
-		"clsx",
-		"crdt",
-		"crsql",
-		"crsqlite",
-		"cryb",
-		"datetime",
-		"fastify",
-		"fract",
-		"knip",
-		"outdir",
-		"outfile",
-		"pino",
-		"pnpm",
-		"SAVEPOINT",
-		"siteid",
-		"spotify",
-		"sqlite",
-		"tanstack",
-		"tsbuildinfo",
-		"valibot",
-		"vlcn"
-	],
 	"search.exclude": {
 		"node_modules": true,
 		"pnpm-lock.yaml": true
@@ -39,8 +14,19 @@
 		"**/*.module.css.d.ts": true,
 		"**/*.sql.d.ts": true,
 		"**/*.sql.d.ts.map": true,
-		"**/*.js": true
+		"**/*.js": true,
+		"**/*.mjs": true,
+		"**/*.tsbuildinfo": true
 	},
+	"eslint.workingDirectories": [
+		"./assets",
+		"./client",
+		"./script",
+		"./server",
+		"./shared",
+		"./worker",
+		"."
+	],
 	"npm.packageManager": "pnpm",
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"editor.formatOnSave": true,
@@ -65,10 +51,13 @@
 	},
 	"prettier.enable": true,
 	"explorer.fileNesting.patterns": {
-		"*package.json": "${capture}.eslint*, ${capture}.prettier*, ${capture}pnpm*, ${capture}turbo*, ${capture}tsconfig.json, ${capture}vite.config.ts, ${capture}vitest.*, ${capture}.gitignore, ${capture}esbuild.*, ${capture}knip.*, ${capture}.nvmrc",
+		"*package.json": "${capture}.eslint*, ${capture}.prettier*, ${capture}pnpm*, ${capture}turbo*, ${capture}tsconfig.json, ${capture}vite.config.ts, ${capture}vitest.*, ${capture}.gitignore, ${capture}esbuild.*, ${capture}knip.*, ${capture}.nvmrc, ${capture}.cspell.json, ${capture}*.dict.txt",
 		"*.js": "${capture}.js.*, ${capture}.d.ts*",
+		"*.ts": "${capture}.ts.*, ${capture}.d.ts*, ${capture}.js*, ${capture}.mjs*",
 		"*.css": "${capture}.css.*",
 		"*.wasm": "${capture}.wasm.*",
 		"*.sql": "${capture}.sql.d.ts, ${capture}.sql.d.ts.map"
-	}
+	},
+	"github-actions.workflows.pinned.workflows": [".github/workflows/pr.yml"],
+	"github-actions.workflows.pinned.refresh.enabled": true
 }

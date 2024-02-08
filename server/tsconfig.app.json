@@ -11,6 +11,6 @@
 		"types/*.d.ts",
 		"../types/*.d.ts",
 		"../shared/src/**/*.ts",
-		"../scripts/src/**/*.ts"
+		"../script/src/**/*.ts"
 	]
 }

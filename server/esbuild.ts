@@ -3,6 +3,9 @@
 import * as esbuild from "esbuild"
 import { type ChildProcess, spawn } from "node:child_process"
 import { join } from "node:path"
+import fastify from "fastify"
+import proxy from "@fastify/http-proxy"
+import { env } from "server/env"
 
 const options: esbuild.BuildOptions = {
 	entryPoints: ["src/app.ts"],
@@ -22,9 +25,9 @@ const options: esbuild.BuildOptions = {
 	},
 	// alias: {
 	// 	"shared": "../shared/src",
-	// 	"scripts": "../scripts/src",
+	// 	"script": "../script/src",
 	// 	"assets": "../assets/src",
-	// 	"sw": "../sw/src",
+	// 	"worker": "../worker/src",
 	// },
 }
 
@@ -38,7 +41,14 @@ async function build() {
 	await esbuild.build(options)
 }
 
+type Status = {
+	flag: boolean
+}
+
 async function makeEsbuildWatcher() {
+	const status: Status = {
+		flag: true,
+	}
 	options.outdir = "node_modules/.cache/server"
 	options.plugins = [
 		{
@@ -46,6 +56,7 @@ async function makeEsbuildWatcher() {
 			setup(build) {
 				let childProcess: ChildProcess | null = null
 				build.onStart(() => {
+					status.flag = false
 					if (childProcess) {
 						const running = childProcess
 						running.kill("SIGINT")
@@ -55,7 +66,7 @@ async function makeEsbuildWatcher() {
 						})
 					}
 				})
-				build.onEnd(async () => {
+				build.onEnd(() => {
 					process.env.ROOT = join(process.cwd(), "..")
 					const run = () =>
 						spawn(
@@ -77,21 +88,72 @@ async function makeEsbuildWatcher() {
 		},
 	]
 	const context = await esbuild.context(options)
-	return context
+	return { context, status }
 }
 
 async function watch() {
-	const context = await makeEsbuildWatcher()
+	const { context, status } = await makeEsbuildWatcher()
 	await context.watch()
-	process.on("SIGINT", async () => {
-		console.log("Stopping server esbuild...")
-		context.dispose()
-		process.exit(0)
+	const kill = () => context.dispose()
+	return { status, kill }
+}
+
+function proxyDevServer(status: Status) {
+	const server = fastify()
+
+	let polling: Promise<void> | null = null
+	async function healthPoll() {
+		console.log("Stalling requests, waiting for server to restart...")
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+		while (true) {
+			try {
+				const res = await fetch("http://localhost:8877/health", { method: "HEAD" })
+				if (res.status === 200) {
+					status.flag = true
+					polling = null
+					console.log("Server restarted, resuming requests.")
+					return
+				}
+			} catch {}
+			if (polling === null) return
+			await new Promise((resolve) => setTimeout(resolve, 10))
+		}
+	}
+
+	void server.register(proxy, {
+		upstream: "http://localhost:8877",
+		logLevel: "silent",
+		preHandler: async (req) => {
+			if (status.flag) {
+				return
+			}
+			if (!polling) polling = healthPoll()
+			console.log(`Stalled request: ${req.url}`)
+			await polling.catch(console.error)
+			console.log(`Resume request: ${req.url}`)
+		},
 	})
+
+	void server.listen({ port: env.DEV_PROXY_SERVER_PORT ?? 8123 })
+
+	const kill = () => {
+		polling = null
+		return server.close()
+	}
+
+	return { kill }
 }
 
 if (process.argv.includes("--build")) {
-	build()
+	await build()
 } else {
-	watch()
+	const { status, kill: killWatcher } = await watch()
+	const { kill: killProxy } = proxyDevServer(status)
+
+	// eslint-disable-next-line @typescript-eslint/no-misused-promises
+	process.on("SIGINT", async () => {
+		console.log("Stopping server esbuild...")
+		await Promise.all([killWatcher(), killProxy()]).catch(console.error)
+		process.exit(0)
+	})
 }

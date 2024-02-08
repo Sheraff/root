@@ -1,0 +1,11 @@
+{
+	"recommendations": [
+		"streetsidesoftware.code-spell-checker",
+		"dbaeumer.vscode-eslint",
+		"esbenp.prettier-vscode",
+		"inferrinizzard.prettier-sql-vscode",
+		"frigus02.vscode-sql-tagged-template-literals-syntax-only",
+		"zixuanchen.vitest-explorer",
+		"github.vscode-github-actions"
+	]
+}

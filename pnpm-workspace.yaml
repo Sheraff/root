@@ -2,6 +2,6 @@ packages:
   - "client"
   - "server"
   - "shared"
-  - "sw"
-  - "scripts"
+  - "worker"
+  - "script"
   - "assets"

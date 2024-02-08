@@ -11,3 +11,6 @@ vitest.config.ts.*
 *.module.css.d.ts
 *.sql.d.ts
 *.sql.d.ts.map
+*.js
+*.mjs
+*.tsbuildinfo
