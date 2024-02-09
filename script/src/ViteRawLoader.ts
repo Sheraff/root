@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs"
+import { readFile } from "node:fs/promises"
 import { extname } from "node:path"
 import { type Plugin } from "vite"
 
@@ -8,8 +8,7 @@ export function ViteRawLoader(): Plugin {
 		load(url) {
 			const extension = extname(url)
 			if (extension === ".sql" || extension === ".txt") {
-				const input = readFileSync(url, "utf8")
-				return `export default \`${input}\``
+				return readFile(url, "utf8").then((source) => `export default \`${source}\``)
 			}
 		},
 		// handleHotUpdate({ file, server }) {
