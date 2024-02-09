@@ -1,4 +1,9 @@
-import { type PluginOption, defineConfig, normalizePath, type Logger } from "vite"
+import {
+	type PluginOption,
+	defineConfig,
+	normalizePath,
+	// type Logger
+} from "vite"
 import react from "@vitejs/plugin-react-swc"
 
 import { visualizer } from "rollup-plugin-visualizer"
@@ -16,29 +21,29 @@ import { ViteRawLoader } from "script/ViteRawLoader"
 
 config({ path: "../.env" })
 
-function SwHotReload(): PluginOption {
-	let id = 0
-	let _logger: Logger
-	return {
-		name: "sw-hot-reload",
-		apply: "serve",
-		configResolved({ logger }) {
-			_logger = logger
-		},
+// function SwHotReload(): PluginOption {
+// 	let id = 0
+// 	let _logger: Logger
+// 	return {
+// 		name: "sw-hot-reload",
+// 		apply: "serve",
+// 		configResolved({ logger }) {
+// 			_logger = logger
+// 		},
 
-		handleHotUpdate({ file, server, timestamp }) {
-			if (file.endsWith("sw.js")) {
-				server.ws.send({
-					type: "custom",
-					event: "sw-rebuild",
-					data: { id: id++ },
-				})
-				const time = new Date(timestamp).toLocaleTimeString("en-US")
-				_logger.info(`${time} [SW] hmr update, registering new worker...`)
-			}
-		},
-	}
-}
+// 		handleHotUpdate({ file, server, timestamp }) {
+// 			if (file.endsWith("sw.js")) {
+// 				server.ws.send({
+// 					type: "custom",
+// 					event: "sw-rebuild",
+// 					data: { id: id++ },
+// 				})
+// 				const time = new Date(timestamp).toLocaleTimeString("en-US")
+// 				_logger.info(`${time} [SW] hmr update, registering new worker...`)
+// 			}
+// 		},
+// 	}
+// }
 
 // function RemoveSwFilesFromBuild(): PluginOption {
 // 	let _logger: Logger
