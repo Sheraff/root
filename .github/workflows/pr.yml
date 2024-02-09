@@ -114,5 +114,5 @@ jobs:
           version=`node -pe "require('./package.json').version"`
           echo "Version: v$version"
           tar -cJf bundle.tar.xz ./dist ./package.json
-          gh release create v$version -F bundle.tar.xz
+          gh release create "v$version" bundle.tar.xz
           echo "Release created!"
