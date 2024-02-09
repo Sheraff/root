@@ -3,6 +3,9 @@ name: Pull Request Workflow
 on:
   workflow_dispatch:
   pull_request:
+  push:
+    branches: ["main"]
+    tags: ["v*"]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -101,3 +104,14 @@ jobs:
       - name: 🏗️ Building
         timeout-minutes: 1
         run: pnpm build
+
+      - name: toto
+        run: echo "${{ github.ref }}"
+
+      - name: Create Release
+        # if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          echo "Creating a release..."
+          tar -cJf bundle.tar.xz ./dist ./package.json
+          gh release create ${{ github.ref }} -F bundle.tar.xz
+          echo "Release created!"
