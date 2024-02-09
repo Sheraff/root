@@ -29,7 +29,9 @@ jobs:
 
     steps:
       - name: toto
-        run: echo "${{ github.ref }}"
+        run: |
+          echo "${{ github.ref }}"
+          echo "coucou"
 
       - name: 🍃 Checkout
         uses: actions/checkout@v4
