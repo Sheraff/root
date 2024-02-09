@@ -46,7 +46,7 @@
 		"pino-pretty": "10.3.1",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"valibot": "0.28.1"
+		"valibot": "0.27.1"
 	},
 	"devDependencies": {
 		"@fastify/http-proxy": "^9.4.0",
