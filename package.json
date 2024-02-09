@@ -46,13 +46,13 @@
 		"pino-pretty": "10.3.1",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"valibot": "0.27.1"
+		"valibot": "0.28.1"
 	},
 	"devDependencies": {
 		"@fastify/http-proxy": "^9.4.0",
 		"@total-typescript/ts-reset": "0.5.1",
 		"@types/better-sqlite3": "^7.6.9",
-		"@types/node": "20.11.16",
+		"@types/node": "20.11.17",
 		"@types/react": "18.2.55",
 		"@types/react-dom": "18.2.19",
 		"@typescript-eslint/eslint-plugin": "^6.21.0",
