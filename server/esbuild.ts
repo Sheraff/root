@@ -35,7 +35,6 @@ async function build() {
 	options.outdir = "../dist/server"
 	options.minifySyntax = true
 	options.define = {
-		"process.env.ROOT": `"${join(process.cwd(), "..")}"`,
 		"import.meta.vitest": "undefined",
 	}
 	await esbuild.build(options)
@@ -67,16 +66,23 @@ async function makeEsbuildWatcher() {
 					}
 				})
 				build.onEnd(() => {
-					process.env.ROOT = join(process.cwd(), "..")
 					const run = () =>
 						spawn(
 							"node",
 							[
 								"--env-file=../.env",
 								"--enable-source-maps",
-								"node_modules/.cache/server/app.mjs",
+								"server/node_modules/.cache/server/app.mjs",
 							],
-							{ stdio: "inherit", env: process.env }
+							{
+								stdio: "inherit",
+								env: process.env,
+								/**
+								 * `serve` will be launched from `.`, this is launched from `./server`.
+								 * For consistency, we set the cwd to the root folder.
+								 */
+								cwd: join(process.cwd(), ".."),
+							}
 						)
 					if (childProcess) {
 						childProcess.on("exit", () => (childProcess = run()))

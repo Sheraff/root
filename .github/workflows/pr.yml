@@ -5,7 +5,6 @@ on:
   pull_request:
   push:
     branches: ["main"]
-    tags: ["v*"]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -32,13 +31,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: toto
-        run: |
-          echo "${{ github.ref }}"
-          echo "coucou"
-          git describe --tags
-          echo "coucou"
 
       - name: ⚙️ Node setup ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -113,10 +105,15 @@ jobs:
         timeout-minutes: 1
         run: pnpm build
 
-      - name: Create Release
-        if: startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push' && steps.build.outcome == 'success'
+      - name: 🚀 Releasing
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.build.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           echo "Creating a release..."
-          tar -cJf bundle.tar.xz ./dist ./package.json
-          gh release create ${{ github.ref }} -F bundle.tar.xz
+          version=`node -pe "require('./package.json').version"`
+          echo "Version: v$version"
+          gh release delete "v$version" --yes && echo "Deleting existing release..." || true
+          tar -cJf bundle.tar.xz ./dist ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml .nvmrc .env.example
+          gh release create "v$version" bundle.tar.xz
           echo "Release created!"
