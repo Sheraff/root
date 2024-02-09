@@ -113,6 +113,6 @@ jobs:
           echo "Creating a release..."
           version=`node -pe "require('./package.json').version"`
           echo "Version: v$version"
-          tar -cJf bundle.tar.xz ./dist ./package.json
+          tar -cJf bundle.tar.xz ./dist ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml .nvmrc .env.example
           gh release create "v$version" bundle.tar.xz
           echo "Release created!"
