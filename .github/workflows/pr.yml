@@ -30,7 +30,7 @@ jobs:
       - name: 🍃 Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: ⚙️ Node setup ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -117,3 +117,12 @@ jobs:
           tar -cJf bundle.tar.xz ./dist ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml .nvmrc .env.example
           gh release create "v$version" bundle.tar.xz
           echo "Release created!"
+
+      - name: 🏷️ Versioning
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "Checking version..."
+          git fetch origin main:main --force --depth=1
+          git show main:package.json > .main-package.json
+          node --import tsx script/src/versioning.ts "🏷️ Versioning" .main-package.json package.json
+          rm .main-package.json
