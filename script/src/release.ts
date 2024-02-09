@@ -55,6 +55,7 @@ const a = exec(
 	git tag v${newVersion};
 	git commit -m "Release v${newVersion}";
 	git push origin --tags;
+	git push origin main;
 `
 )
 
