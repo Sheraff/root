@@ -32,6 +32,8 @@ jobs:
         run: |
           echo "${{ github.ref }}"
           echo "coucou"
+          git describe --tags
+          echo "coucou"
 
       - name: 🍃 Checkout
         uses: actions/checkout@v4
