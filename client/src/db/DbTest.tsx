@@ -6,6 +6,7 @@ import { useDbQuery } from "client/db/useDbQuery"
 import { useDbMutation } from "client/db/useDbMutation"
 import { Button } from "client/components/Button/Button"
 import { useDb } from "client/db/DbProvider"
+import { Divider } from "client/components/Divider/Divider"
 
 function Test({ name }: { name: string }) {
 	const other = useDbQuery<{ id: string; content: string; position: number }>({
@@ -109,7 +110,7 @@ export function Content({ name }: { name: string }) {
 				Toggle 2 {String(!toggle2)}
 			</Button>
 			{toggle2 && <Test2 name={name} />}
-			<hr />
+			<Divider />
 			<form
 				onSubmit={(event) => {
 					event.preventDefault()
@@ -126,7 +127,7 @@ export function Content({ name }: { name: string }) {
 					<Button>Add to list</Button>
 				</div>
 			</form>
-			<hr />
+			<Divider />
 			{sync && (
 				<>
 					<Button onClick={() => void sync.roundTrip()}>Sync</Button>

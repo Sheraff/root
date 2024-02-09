@@ -1,6 +1,7 @@
 import type { Provider } from "client/auth/providers"
 import { useAuthContext } from "client/auth/useAuthContext"
 import { Button } from "client/components/Button/Button"
+import { Divider } from "client/components/Divider/Divider"
 
 export function UserAccountDemo() {
 	const auth = useAuthContext()
@@ -58,7 +59,7 @@ function CreateAccount({
 					{provider.name}
 				</Button>
 			))}
-			<hr />
+			<Divider />
 			<Button onClick={cancelCreateAccount}>Cancel</Button>
 		</>
 	)
@@ -76,7 +77,7 @@ function NotLoggedIn({
 	return (
 		<>
 			<div>Not logged in</div>
-			<hr />
+			<Divider />
 			<div>Sign up with invite code</div>
 			<form
 				onSubmit={(event) => {
@@ -88,7 +89,7 @@ function NotLoggedIn({
 				<input type="text" name="code" required minLength={17} maxLength={17} />
 				<Button type="submit">Submit</Button>
 			</form>
-			<hr />
+			<Divider />
 			<div>Sign in</div>
 			{providers.map((provider) => (
 				<Button
@@ -118,9 +119,9 @@ function LoggedIn({
 	return (
 		<>
 			<div>Logged in as {userId}</div>
-			<hr />
+			<Divider />
 			<Button onClick={() => void signOut()}>Logout</Button>
-			<hr />
+			<Divider />
 			<div>
 				<p>Link accounts</p>
 				{providers.map((provider) => (
