@@ -115,6 +115,8 @@ jobs:
 
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push' && steps.build.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           echo "Creating a release..."
           tar -cJf bundle.tar.xz ./dist ./package.json
