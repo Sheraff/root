@@ -58,6 +58,5 @@
 		"*.wasm": "${capture}.wasm.*",
 		"*.sql": "${capture}.sql.d.ts, ${capture}.sql.d.ts.map"
 	},
-	"github-actions.workflows.pinned.workflows": [".github/workflows/pr.yml"],
 	"github-actions.workflows.pinned.refresh.enabled": true
 }
