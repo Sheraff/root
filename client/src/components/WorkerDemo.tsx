@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import type { Incoming, Outgoing } from "client/worker/sum.worker"
 import Worker from "client/worker/sum.worker?worker"
+import { Divider } from "client/components/Divider/Divider"
 
 export function WorkerDemo() {
 	const [a, setA] = useState(0)
@@ -58,7 +59,7 @@ export function WorkerDemo() {
 				pattern="[0-9]*"
 				step="1"
 			/>
-			<hr />
+			<Divider />
 			<output>{result}</output>
 		</>
 	)

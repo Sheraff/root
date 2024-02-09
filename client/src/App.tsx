@@ -5,6 +5,7 @@ import { ApiDemo } from "client/components/ApiDemo"
 import { UserAccountDemo } from "client/components/UserAccountDemo"
 import { WorkerDemo } from "client/components/WorkerDemo"
 import { DbDemo } from "client/components/DbDemo"
+import { Divider } from "client/components/Divider/Divider"
 
 fooBar()
 
@@ -12,7 +13,7 @@ export default function App() {
 	return (
 		<div>
 			<h1>Welcome to our Fullstack TypeScript Project!</h1>
-			<hr />
+			<Divider />
 			<Grid>
 				<Cell>
 					<ServiceWorkerDemo />
@@ -26,7 +27,7 @@ export default function App() {
 				<Cell>
 					<WorkerDemo />
 				</Cell>
-				<Cell y={2} x={2}>
+				<Cell row>
 					<DbDemo />
 				</Cell>
 			</Grid>

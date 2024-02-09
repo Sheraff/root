@@ -6,13 +6,69 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="manifest" href="/site.webmanifest" />
 		<meta name="theme-color" content="#300a38" />
-		<title>Vite + React + TS</title>
+		<title>Vite + React + TS + Vlcn</title>
 	</head>
 	<style>
-		:root {
-			color: rgb(212, 205, 205);
-			background-color: rgb(2, 24, 13);
+		/* CSS reset */
+
+		*,
+		*::before,
+		*::after {
+			box-sizing: border-box;
 		}
+
+		* {
+			margin: 0;
+			min-width: 0;
+		}
+
+		img,
+		picture,
+		video,
+		canvas,
+		svg {
+			display: block;
+			max-width: 100%;
+		}
+
+		p,
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6 {
+			overflow-wrap: break-word;
+		}
+
+		pre {
+			white-space: pre-wrap;
+		}
+
+		input,
+		button,
+		textarea,
+		select {
+			font: inherit;
+		}
+
+		:any-link,
+		button {
+			cursor: pointer;
+		}
+
+		:root {
+			-webkit-tap-highlight-color: transparent;
+			-webkit-font-smoothing: antialiased;
+		}
+
+		#root {
+			isolation: isolate;
+			font-family: system-ui, sans-serif;
+		}
+
+		/* offline fallback */
+
 		#root:not(:empty) + #offline {
 			display: none;
 		}
@@ -23,6 +79,13 @@
 			from {
 				opacity: 0;
 			}
+		}
+
+		/* global styles */
+
+		body {
+			color: rgb(212, 205, 205);
+			background-color: rgb(2, 24, 13);
 		}
 	</style>
 	<body>

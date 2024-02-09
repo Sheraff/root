@@ -1,8 +1,9 @@
 .grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
 	grid-gap: 20px;
 	grid-auto-flow: dense;
+	min-width: 50dvw;
 	max-width: 750px;
 	margin: auto;
 }
@@ -16,4 +17,11 @@
 	overflow: hidden;
 	border: 1px solid #ad0489;
 	padding: 10px;
+	& > * {
+		max-width: 100%;
+	}
+}
+
+.row {
+	grid-column: 1 / -1;
 }
