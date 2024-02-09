@@ -5,7 +5,6 @@ on:
   pull_request:
   push:
     branches: ["main"]
-    tags: ["v*"]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -114,11 +113,12 @@ jobs:
         run: pnpm build
 
       - name: Create Release
-        if: startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push' && steps.build.outcome == 'success'
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.build.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           echo "Creating a release..."
           tar -cJf bundle.tar.xz ./dist ./package.json
-          gh release create ${{ github.ref }} -F bundle.tar.xz
+          version=`node -pe "require('./package.json').version"`
+          gh release create $version -F bundle.tar.xz
           echo "Release created!"
