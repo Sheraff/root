@@ -105,7 +105,7 @@ jobs:
         timeout-minutes: 1
         run: pnpm build
 
-      - name: Create Release
+      - name: 🚀 Releasing
         if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.build.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
