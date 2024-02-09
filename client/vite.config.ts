@@ -192,7 +192,7 @@ function SwHotReload(): PluginOption {
 const plugins: PluginOption[] = [
 	react(),
 	ViteRawLoader(),
-	SwHotReload(),
+	// SwHotReload(),
 	// RemoveSwFilesFromBuild(),
 	// Compress(),
 	// MuteWarningsPlugin(["SOURCEMAP_ERROR", "Can't resolve original location of error"]),
