@@ -47,7 +47,7 @@ if (major) {
 
 const newVersion = serializeVersion(current)
 packageJson.version = newVersion
-writeFileSync("package.json", JSON.stringify(packageJson, null, "\t"))
+writeFileSync("package.json", JSON.stringify(packageJson, null, "\t") + "\n")
 
 const a = exec(
 	`
