@@ -66,7 +66,7 @@ function compareVersions(a: Version, b: Version): number {
 		if (a.tag.name !== b.tag.name) return a.tag.name.localeCompare(b.tag.name)
 		return a.tag.number - b.tag.number
 	}
-	if (a.tag) return 1
-	if (b.tag) return -1
+	if (a.tag) return -1
+	if (b.tag) return 1
 	return 0
 }
