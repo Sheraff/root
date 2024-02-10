@@ -1,25 +1,12 @@
-import { type FastifyInstance } from "fastify"
+import { routerToRoutes, type ApiRouterFromRouter } from "server/api/helpers"
+import * as simpleOpen from "server/api/simpleOpen"
+import * as simpleProtected from "server/api/simpleProtected"
 
-export default function routes(fastify: FastifyInstance, opts: object, done: () => void) {
-	fastify.get("/api/hello", () => {
-		fastify.log.info("hello world")
-		return { hello: "world" }
-	})
-
-	fastify.get("/api/protected", {
-		onRequest(request, reply, done) {
-			if (!request.session?.user) {
-				fastify.log.warn("/api/protected ::: unauthorized")
-				void reply.status(401).send({ error: "unauthorized" })
-				return done()
-			}
-			done()
-		},
-		handler() {
-			fastify.log.info("hello protected world")
-			return { hello: "protected world" }
-		},
-	})
-
-	done()
+const router = {
+	"/api/hello": simpleOpen,
+	"/api/protected": simpleProtected,
 }
+
+const ApiPlugin = routerToRoutes(router)
+export type ApiRouter = ApiRouterFromRouter<typeof router>
+export default ApiPlugin
