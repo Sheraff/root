@@ -58,5 +58,6 @@
 		"*.wasm": "${capture}.wasm.*",
 		"*.sql": "${capture}.sql.d.ts, ${capture}.sql.d.ts.map"
 	},
-	"github-actions.workflows.pinned.refresh.enabled": true
+	"github-actions.workflows.pinned.refresh.enabled": true,
+	"cSpell.spellCheckOnlyWorkspaceFiles": true
 }
