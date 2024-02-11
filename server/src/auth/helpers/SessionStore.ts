@@ -74,7 +74,7 @@ export function makeStore(db: BetterSqlite3.Database): SessionStore & {
 		try {
 			const ids = clearStatement.all({
 				now: new Date().toISOString(),
-			}) as { id: string }[]
+			}) as Array<{ id: string }>
 			for (const { id } of ids) getCache.delete(id)
 		} catch (err) {
 			console.error(err)
