@@ -25,6 +25,7 @@
 		"shared": "workspace:shared@*"
 	},
 	"devDependencies": {
-		"script": "workspace:script@*"
+		"script": "workspace:script@*",
+		"server": "workspace:server@*"
 	}
 }

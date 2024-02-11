@@ -1,6 +1,7 @@
 import { procedure } from "server/api/helpers"
 import { onRequestAuthProtected } from "server/auth/helpers/onRequestAuthProtected"
 
+/** @public api */
 export const get = procedure({
 	onRequest: onRequestAuthProtected,
 	handler(request) {

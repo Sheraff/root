@@ -1,5 +1,6 @@
 import { procedure } from "server/api/helpers"
 
+/** @public api */
 export const get = procedure({
 	handler(request) {
 		request.log.info("hello world")
