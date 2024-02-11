@@ -48,7 +48,7 @@ function watch() {
 
 async function build() {
 	const current = dirname(new URL(import.meta.url).pathname)
-	const promises: Promise<any>[] = []
+	const promises: Array<Promise<any>> = []
 	await walkFsTree(join(current, "src"), ({ path, stats }) => {
 		if (!path.endsWith(".sql")) return
 		if (stats.isFile()) {

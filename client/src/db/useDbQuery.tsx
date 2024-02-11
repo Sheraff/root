@@ -448,7 +448,7 @@ async function getUsedTables(db: DBAsync, query: string): Promise<string[]> {
 	const cached = usedTableCache.get(cacheKey)
 	if (cached) return cached
 	const sanitized = query.replaceAll("'", "''")
-	const rows = (await db.tablesUsedStmt.all(null, sanitized)) as [string][]
+	const rows = (await db.tablesUsedStmt.all(null, sanitized)) as Array<[string]>
 	const result = Array.from(new Set(rows.map((r) => r[0])))
 	usedTableCache.set(cacheKey, result)
 	return result
