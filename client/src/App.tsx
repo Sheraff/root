@@ -6,32 +6,14 @@ import { UserAccountDemo } from "client/components/UserAccountDemo"
 import { WorkerDemo } from "client/components/WorkerDemo"
 import { DbDemo } from "client/components/DbDemo"
 import { Divider } from "client/components/Divider/Divider"
-import type { ApiRouter } from "server/api"
-import { useQuery } from "@tanstack/react-query"
+import { api } from "client/api/router"
 
 fooBar()
 
-type GetApiRoute = {
-	[Key in keyof ApiRouter]: ApiRouter[Key] extends { get: any } ? Key : never
-}[keyof ApiRouter]
-
-function useApiQuery<T extends GetApiRoute>(route: T) {
-	return useQuery({
-		queryKey: [route],
-		queryFn: async () => {
-			const res = await fetch(route)
-			if (!res.ok) {
-				throw new Error("Network response was not ok")
-			}
-			const data = await res.json()
-			return data as ApiRouter[T]["get"] extends { response: infer R } ? R : unknown
-		},
-	})
-}
-
 export default function App() {
-	const { data } = useApiQuery("/api/hello")
+	const { data } = api.nested.foo.get.query()
 	console.log(data)
+	// console.log(api.hello.get.query)
 	return (
 		<div>
 			<h1>Welcome to our Fullstack TypeScript Project!</h1>

@@ -1,6 +1,6 @@
-import { makeMethod } from "server/api/helpers"
+import { procedure } from "server/api/helpers"
 
-export const get = makeMethod({
+export const get = procedure({
 	handler(request) {
 		request.log.info("hello world")
 		return { hello: "world" }
@@ -15,14 +15,6 @@ export const get = makeMethod({
 				required: ["hello"],
 				additionalProperties: false,
 			},
-		},
-		querystring: {
-			type: "object",
-			properties: {
-				name: { type: "string" },
-			},
-			required: ["name"],
-			additionalProperties: false,
 		},
 	},
 })

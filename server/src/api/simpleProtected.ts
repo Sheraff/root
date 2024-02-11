@@ -1,7 +1,7 @@
-import { makeMethod } from "server/api/helpers"
+import { procedure } from "server/api/helpers"
 import { onRequestAuthProtected } from "server/auth/helpers/onRequestAuthProtected"
 
-export const get = makeMethod({
+export const get = procedure({
 	onRequest: onRequestAuthProtected,
 	handler(request) {
 		request.log.info("hello protected world")
