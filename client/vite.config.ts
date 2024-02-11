@@ -88,7 +88,7 @@ function Compress(): PluginOption {
 			if (!outRoot) return
 			const start = Date.now()
 
-			const promises: Promise<unknown>[] = []
+			const promises: Array<Promise<unknown>> = []
 			const stats = {
 				before: 0,
 				after: 0,
@@ -149,7 +149,7 @@ function Compress(): PluginOption {
 }
 
 /** @see https://github.com/vitejs/vite/issues/15012 */
-const MuteWarningsPlugin = (...warningsToIgnore: [string, string][]): PluginOption => {
+const MuteWarningsPlugin = (...warningsToIgnore: Array<[string, string]>): PluginOption => {
 	const mutedMessages = new Set()
 	return {
 		name: "mute-warnings",

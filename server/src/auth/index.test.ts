@@ -20,7 +20,7 @@ describe.sequential(
 				.prepare(
 					sql`SELECT name FROM sqlite_schema WHERE type ='table' AND name NOT LIKE 'sqlite_%';`
 				)
-				.all() as { name: string }[]
+				.all() as Array<{ name: string }>
 			expect(tables.map((t) => t.name)).toEqual(["users", "sessions", "accounts", "invites"])
 		})
 

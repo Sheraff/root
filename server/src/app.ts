@@ -18,6 +18,7 @@ const app = fastify({
 			options: {
 				translateTime: "HH:MM:ss Z",
 				ignore: "pid,hostname",
+				sync: process.env.NODE_ENV !== "production",
 			},
 		},
 	},
