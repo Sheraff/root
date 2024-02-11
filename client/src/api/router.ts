@@ -28,13 +28,17 @@ const handler: ProxyHandler<{
 	path?: string[]
 }> = {
 	get(target, prop) {
-		if (typeof prop !== "string") throw new TypeError("prop must be a string")
+		if (typeof prop !== "string")
+			throw new TypeError(`Attributes of type ${typeof prop} do not exist on the proxy.`)
 		const path = target.path ? [...target.path, prop] : [PREFIX, prop]
 		return new Proxy(makeTarget(path), handler)
 	},
 	apply(target, thisArg, argArray) {
-		if (!target.path) throw new TypeError("path must be defined")
-		if (target.path.length < 3) throw new TypeError("path must be at least 3 segments")
+		if (!target.path) throw new TypeError("The proxy itself is not callable.")
+		if (target.path.length < 3)
+			throw new TypeError(
+				"Only fully defined routes are callable: `proxy.[path].[method].[query|mutate]()`."
+			)
 
 		const path = target.path.slice(0, -2)
 		const type = target.path.at(-1)!
@@ -69,7 +73,9 @@ const handler: ProxyHandler<{
 				},
 			})
 		}
-		throw new TypeError("type must be query or mutate")
+		throw new TypeError(
+			"Only fully defined routes are callable: `proxy.[path].[method].[query|mutate]()`."
+		)
 	},
 }
 
