@@ -38,7 +38,8 @@
 		"@typescript-eslint/no-empty-function": "off",
 		"no-empty": "off",
 		"react-refresh/only-export-components": ["error", { "allowConstantExport": true }],
-		"no-unused-labels": "off"
+		"no-unused-labels": "off",
+		"@typescript-eslint/array-type": ["error", { "default": "array-simple" }]
 	},
 	"parserOptions": {
 		"project": ["tsconfig.tools.json"]
