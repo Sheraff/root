@@ -5,7 +5,7 @@ import {
 } from "server/api/next/helpers"
 
 const definition = {
-	url: "/api/coucou",
+	url: "/api/hello",
 	method: "get",
 	schema: {
 		response: {
