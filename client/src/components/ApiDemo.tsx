@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { api } from "client/api/router"
-import type { BaseDefinition, DefinitionToClientType } from "server/api/next/helpers"
+import type { ClientDefinition } from "server/api/next/helpers"
 import { definition } from "server/api/next/open"
 import { replaceParams } from "shared/replaceParams"
 
@@ -15,17 +15,15 @@ function makeHeaders(data?: Record<string, unknown>) {
 	return headers
 }
 
-function useApiQuery<Def extends BaseDefinition>(
+function useApiQuery<Def extends ClientDefinition>(
 	def: Def,
-	data: keyof DefinitionToClientType<Def>["schema"] & GetData extends never
+	data: keyof Def["schema"] & GetData extends never
 		? null
 		: {
-				[Key in keyof DefinitionToClientType<Def>["schema"] &
-					GetData]: DefinitionToClientType<Def>["schema"][Key]
+				[Key in keyof Def["schema"] & GetData]: Def["schema"][Key]
 			}
 ) {
 	const { url, method } = def
-	type Types = DefinitionToClientType<Def>
 	return useQuery({
 		queryKey: [url.split("/"), method, data],
 		queryFn: async () => {
@@ -41,7 +39,7 @@ function useApiQuery<Def extends BaseDefinition>(
 			if (!response.ok) throw new Error("Network response was not ok")
 			const result = response.json()
 			if (response.status !== 200) throw new Error("Network response was not ok")
-			return result as Types["schema"]["Reply"] extends { [200]: infer T } ? T : never
+			return result as Def["schema"]["Reply"] extends { [200]: infer T } ? T : never
 		},
 	})
 }

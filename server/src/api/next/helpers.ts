@@ -23,6 +23,20 @@ export type BaseDefinition<Schema extends BaseSchema = BaseSchema> = {
 	schema: Schema
 }
 
+export type ClientDefinition = {
+	method: HTTPMethods
+	url: string
+	schema: {
+		Body?: any
+		Querystring?: any
+		Params?: any
+		Headers?: any
+		Reply?: {
+			[Code in HttpKeys]?: any
+		}
+	}
+}
+
 type SchemaKeyMap = {
 	body: "Body"
 	querystring: "Querystring"
@@ -63,6 +77,7 @@ export function procedure<const Schema extends BaseSchema = object>(
 }
 
 export type DefinitionToClientType<Def extends BaseDefinition> = Omit<Def, "schema"> & {
+	/** This key only exists at the type level, because it's never needed at runtime on the client */
 	schema: SchemaToRouteGeneric<Def["schema"]>
 }
 
@@ -74,4 +89,13 @@ export function pluginFromRoutes(routes: RouteOptions[]): Plugin {
 		}
 		done()
 	}
+}
+
+export function makeClientDefinition<Def extends BaseDefinition>(
+	definition: Def
+): DefinitionToClientType<Def> {
+	return {
+		method: definition.method,
+		url: definition.url,
+	} as DefinitionToClientType<Def>
 }

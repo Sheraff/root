@@ -1,6 +1,6 @@
-import { procedure, type BaseDefinition } from "server/api/next/helpers"
+import { procedure, type BaseDefinition, makeClientDefinition } from "server/api/next/helpers"
 
-export const definition = {
+const def = {
 	url: "/api/hello",
 	method: "get",
 	schema: {
@@ -41,7 +41,7 @@ export const definition = {
 	},
 } as const satisfies BaseDefinition
 
-export default /* @__PURE__ */ procedure(definition, {
+export default /* @__PURE__ */ procedure(def, {
 	handler(request, reply) {
 		request.log.info("hello world", request.query.id, request.headers["x-id"])
 		if (request.query.id === "42") {
@@ -52,3 +52,5 @@ export default /* @__PURE__ */ procedure(definition, {
 		}
 	},
 })
+
+export const definition = makeClientDefinition(def)
