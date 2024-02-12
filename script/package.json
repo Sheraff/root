@@ -11,7 +11,7 @@
 		"lint:fix": "eslint . --fix",
 		"format": "prettier --check . --config ../.prettierrc.json --log-level warn",
 		"format:fix": "prettier --write . --config ../.prettierrc.json --log-level warn",
-		"spell": "cspell --config ../.cspell.json --quiet --gitignore \"**/*\""
+		"spell": "cspell --config ../.cspell.json --quiet --gitignore '**/*'"
 	},
 	"exports": {
 		"./*": "./src/*"

@@ -6,6 +6,6 @@
 		"lib": ["ESNext"],
 		"module": "ESNext"
 	},
-	"include": [".github/**/*.ts", ".github/*.ts"],
+	"include": [],
 	"files": ["vitest.workspace.ts"]
 }
