@@ -1,4 +1,4 @@
-import { procedure, type BaseDefinition } from "./helpers"
+import { procedure, type BaseDefinition } from "server/api/next/helpers"
 
 export const definition = {
 	url: "/api/hello",

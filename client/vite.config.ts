@@ -217,6 +217,8 @@ export default defineConfig({
 		alias: {
 			// use alias to avoid having "client" as a package dependency of "client"
 			"client/": `${normalizePath(__dirname)}/src/`,
+			// allow imports from "server" to resolve to the server folder, despite tsconfig aliases
+			"server/": `${normalizePath(__dirname)}/../server/src/`,
 		},
 	},
 	server: {
