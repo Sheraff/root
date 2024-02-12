@@ -1,17 +1,16 @@
 import { spawn } from "node:child_process"
-import * as readline from "node:readline"
 
 const LINE = /^::error/
 const BODY = /^::error\s(.*)::(.*)$/
-
-const [, , step, cmd, ...args] = process.argv
+const step = process.env.STEP_NAME ?? "test"
+const [, , cmd, ...args] = process.argv
 
 if (!cmd) throw new Error("No command provided")
 
 const child = spawn(cmd, args, { stdio: ["pipe", "pipe", "pipe"], env: process.env })
 child.stdout.on("data", processLines)
 child.stderr.on("data", processLines)
-child.on("close", process.exit)
+child.on("close", (code) => process.exit(code ?? 0))
 
 function processLines(data: Buffer) {
 	const lines = String(data).split("\n")
@@ -26,9 +25,12 @@ function processLines(data: Buffer) {
 		const match = line.match(BODY)
 		if (!match) continue
 		const [_, body, message] = match
-		const p: { title: string; file: string; line: string; col: string } = Object.fromEntries(
-			body?.split(",").map((part) => part.split("=")) ?? []
-		)
+		const p = Object.fromEntries(body?.split(",").map((part) => part.split("=")) ?? []) as {
+			title: string
+			file: string
+			line: string
+			col: string
+		}
 		const cleanTitle = decodeURIComponent(p.title)
 		const errorType = cleanTitle.split(":", 2)
 		const title = errorType.length > 1 ? errorType[0] : p.title

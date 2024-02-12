@@ -36,10 +36,12 @@
 		"@typescript-eslint/no-confusing-void-expression": "off",
 		"@typescript-eslint/consistent-type-definitions": "off",
 		"@typescript-eslint/no-empty-function": "off",
+		"@typescript-eslint/no-unused-vars": ["error", { "varsIgnorePattern": "^_" }],
 		"no-empty": "off",
 		"react-refresh/only-export-components": ["error", { "allowConstantExport": true }],
 		"no-unused-labels": "off",
-		"@typescript-eslint/array-type": ["error", { "default": "array-simple" }]
+		"@typescript-eslint/array-type": ["error", { "default": "array-simple" }],
+		"no-control-regex": "off"
 	},
 	"parserOptions": {
 		"project": ["tsconfig.tools.json"]
@@ -54,7 +56,7 @@
 		{
 			"files": ["types/*.d.ts"],
 			"parserOptions": {
-				"project": ["tsconfig.app.json", "tsconfig.tools.json"]
+				"project": ["tsconfig.app.json"]
 			}
 		},
 		{

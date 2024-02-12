@@ -3,6 +3,10 @@
 	"version": "0.0.0-alpha.6",
 	"license": "MIT",
 	"private": true,
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Sheraff/root.git"
+	},
 	"scripts": {
 		"analyze": "turbo analyze --filter client",
 		"dev": "FORCE_COLOR=1 turbo dev",
@@ -19,14 +23,14 @@
 		"spell": "FORCE_COLOR=1 turbo spell root:spell --continue --log-order=grouped",
 		"clear": "FORCE_COLOR=1 turbo clear root:clear --continue",
 		"root:test": "vitest",
-		"root:tsc": "echo \"done\"",
+		"root:tsc": "echo 'done'",
 		"root:tsc:app": "tsc --noEmit --project tsconfig.app.json",
 		"root:tsc:tools": "tsc --noEmit --project tsconfig.tools.json",
-		"root:lint": "eslint \"*.ts\" \"types/*\"",
-		"root:lint:fix": "eslint \"*.ts\" \"types/*\" --fix",
-		"root:format": "prettier --check \"*.ts\" \"*.json\" \"types/*\" \".github/**/*\" --config .prettierrc.json --log-level warn",
-		"root:format:fix": "prettier --write \"*.ts\" \"*.json\" \"types/*\" \".github/**/*\" --config .prettierrc.json --log-level warn",
-		"root:spell": "cspell --config .cspell.json --quiet --gitignore \"*\" \"types/*\" \".github/**/*\"",
+		"root:lint": "eslint '*.ts' 'types/*'",
+		"root:lint:fix": "eslint '*.ts' 'types/*' --fix",
+		"root:format": "prettier --check '*.ts' '*.json' 'types/*' '.github/**/*' --config .prettierrc.json --log-level warn",
+		"root:format:fix": "prettier --write '*.ts' '*.json' 'types/*' '.github/**/*' --config .prettierrc.json --log-level warn",
+		"root:spell": "cspell --config .cspell.json --quiet --gitignore '*' 'types/*' '.github/**/*'",
 		"root:clear": "rm -rf dist; rm -rf node_modules; rm -rf .turbo; find . -name '*.tsbuildinfo' -type f -delete;"
 	},
 	"dependencies": {

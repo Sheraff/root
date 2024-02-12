@@ -4,15 +4,15 @@ const CLEAN = /(?:\x1B\[([0-9;]+)m)?/g
 const START = /^[^\s]+\s(\/[^\s]+)$/
 const LINE = /^[^\s]+\s+([\d]+):([\d]+)\s+([a-z]+)\s+(.*)\s\s(.*)$/i
 let file = ""
-
-const [, , step, cmd, ...args] = process.argv
+const step = process.env.STEP_NAME ?? "lint"
+const [, , cmd, ...args] = process.argv
 
 if (!cmd) throw new Error("No command provided")
 
 const child = spawn(cmd, args, { stdio: ["pipe", "pipe", "pipe"], env: process.env })
 child.stdout.pipe(process.stdout)
 child.stdout.on("data", processLines)
-child.on("close", process.exit)
+child.on("close", (code) => process.exit(code ?? 0))
 
 function processLines(data: Buffer) {
 	const lines = String(data).split("\n")
