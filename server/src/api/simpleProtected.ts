@@ -6,7 +6,7 @@ export const get = procedure({
 	onRequest: onRequestAuthProtected,
 	handler(request) {
 		request.log.info("hello protected world")
-		return { secret: "🙈 secret" }
+		return { secret: "🙈" }
 	},
 	schema: {
 		response: {

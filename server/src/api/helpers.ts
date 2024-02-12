@@ -49,7 +49,7 @@ type BaseSchema = {
 	response?: Record<number, JSONSchema7>
 }
 type SchemaToType<S extends BaseSchema> = {
-	[Key in SchemaKey]?: Key extends "response"
+	[Key in SchemaKey & keyof S]?: Key extends "response"
 		? S[Key] extends { 200: infer R extends JSONSchema7 }
 			? FromSchema<R>
 			: never

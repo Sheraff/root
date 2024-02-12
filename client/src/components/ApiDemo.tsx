@@ -1,8 +1,8 @@
 import { api } from "client/api/router"
 
 export function ApiDemo() {
-	const { data: open } = api.hello.get.query()
-	const { data: secret } = api.protected.get.query()
+	const { data: open } = api.hello.get.query({ id: "yoo" }, { headers: { "x-id": "123" } })
+	const { data: secret } = api.protected.get.query(null)
 
 	return (
 		<>
