@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
-import { api } from "client/api/router"
-import type { ClientDefinition } from "server/api/next/helpers"
-import { definition } from "server/api/next/open"
+import type { ClientDefinition } from "server/api/helpers"
+import { definition as openDefinition } from "server/api/open"
+import { definition as protectedDefinition } from "server/api/protected"
 import { replaceParams } from "shared/replaceParams"
 
 type GetData = "Querystring" | "Params" | "Headers"
@@ -45,13 +45,11 @@ function useApiQuery<Def extends ClientDefinition>(
 }
 
 export function ApiDemo() {
-	const { data: open } = api.hello.get.query({ id: "yoo" }, { headers: { "x-id": "123" } })
-	const { data: secret } = api.protected.get.query(null)
-
-	const { data: next } = useApiQuery(definition, {
+	const { data: open } = useApiQuery(openDefinition, {
 		Headers: { "x-id": "123" },
-		Querystring: { id: "yoo" },
+		Querystring: { id: "42" },
 	})
+	const { data: secret } = useApiQuery(protectedDefinition, null)
 
 	return (
 		<>
@@ -59,8 +57,6 @@ export function ApiDemo() {
 			<pre>{open ? JSON.stringify(open, null, 2) : " \n  loading\n "}</pre>
 			<h2>Protected</h2>
 			<pre>{secret ? JSON.stringify(secret, null, 2) : " \n  loading\n "}</pre>
-			<h2>Next</h2>
-			<pre>{next ? JSON.stringify(next, null, 2) : " \n  loading\n "}</pre>
 		</>
 	)
 }

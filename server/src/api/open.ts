@@ -1,4 +1,4 @@
-import { procedure, type BaseDefinition, makeClientDefinition } from "server/api/next/helpers"
+import { procedure, type BaseDefinition, makeClientDefinition } from "server/api/helpers"
 
 const def = {
 	url: "/api/hello",
@@ -46,11 +46,11 @@ export default /* @__PURE__ */ procedure(def, {
 		request.log.info("hello world", request.query.id, request.headers["x-id"])
 		if (request.query.id === "42") {
 			void reply.code(200).send({ hello: "world" })
-			void reply.status(200).send({ hello: "world" })
+			// void reply.status(200).send({ hello: "world" })
 		} else {
 			void reply.code(404).send({ error: "no" })
 		}
 	},
 })
 
-export const definition = makeClientDefinition(def)
+export const definition = /* @__PURE__ */ makeClientDefinition(def)

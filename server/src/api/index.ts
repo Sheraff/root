@@ -1,17 +1,7 @@
-import { routerToRoutes, type ApiRouterFromRouter, type marker } from "server/api/helpers"
-import * as simpleOpen from "server/api/simpleOpen"
-import * as simpleProtected from "server/api/simpleProtected"
+import { pluginFromRoutes } from "server/api/helpers"
+import simpleOpen from "server/api/open"
+import simpleProtected from "server/api/protected"
 
-const router = {
-	hello: simpleOpen,
-	protected: simpleProtected,
-	nested: {
-		foo: simpleOpen,
-		bar: simpleProtected,
-	},
-}
+const ApiPlugin = pluginFromRoutes([simpleOpen, simpleProtected])
 
-const ApiPlugin = routerToRoutes(router, "/api")
-export type ApiRouter = ApiRouterFromRouter<typeof router>
-export { marker }
 export default ApiPlugin

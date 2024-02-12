@@ -1,103 +1,101 @@
-import {
-	type ContextConfigDefault,
-	type FastifyInstance,
-	type FastifySchema,
-	type RawReplyDefaultExpression,
-	type RawRequestDefaultExpression,
-	type RawServerDefault,
-	type RouteGenericInterface,
-	type RouteOptions,
-} from "fastify"
-import { type FromSchema } from "json-schema-to-ts"
+import type { FastifyInstance, HTTPMethods, RawServerDefault, RouteOptions } from "fastify"
+import type {
+	HttpKeys,
+	RawReplyDefaultExpression,
+	RawRequestDefaultExpression,
+} from "fastify/types/utils"
+import type { FromSchema } from "json-schema-to-ts"
 import type { JSONSchema7 } from "json-schema-to-ts/lib/types/definitions"
 
-type MethodDefinition<
-	SchemaCompiler extends FastifySchema = FastifySchema,
-	RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-	ContextConfig = ContextConfigDefault,
-> = Omit<
-	RouteOptions<
-		RawServerDefault,
-		RawRequestDefaultExpression,
-		RawReplyDefaultExpression,
-		RouteGeneric,
-		ContextConfig,
-		SchemaCompiler
-	>,
-	"method" | "url"
->
-
-export const marker = Symbol("procedure")
-
-export function procedure<
-	const SchemaCompiler extends FastifySchema = FastifySchema,
-	RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-	D extends MethodDefinition<SchemaCompiler, RouteGeneric> = MethodDefinition<
-		SchemaCompiler,
-		RouteGeneric
-	>,
->(definition: D): D & { [marker]: true } {
-	return Object.assign(definition, { [marker]: true } as const)
-}
-
-type SchemaKey = "body" | "querystring" | "params" | "headers" | "response"
 type BaseSchema = {
 	body?: JSONSchema7
 	querystring?: JSONSchema7
-	params?: never // this is not compatible with our proxy
+	params?: JSONSchema7
 	headers?: JSONSchema7
-	response?: Record<number, JSONSchema7>
+	response?: {
+		[key in HttpKeys]?: JSONSchema7
+	}
 }
-type SchemaToType<S extends BaseSchema> = {
-	[Key in SchemaKey & keyof S]: Key extends "response"
-		? S[Key] extends { 200: infer R extends JSONSchema7 }
-			? FromSchema<R>
-			: never
-		: S[Key] extends JSONSchema7
-			? FromSchema<S[Key]>
-			: never
+
+export type BaseDefinition<Schema extends BaseSchema = BaseSchema> = {
+	method: HTTPMethods // | HTTPMethods[]
+	url: string
+	schema: Schema
 }
-export type ApiRouterFromRouter<R extends object> = {
-	[Route in keyof R]: R[Route] extends { [marker]: true }
-		? R[Route] extends { schema?: infer Schema extends BaseSchema }
-			? SchemaToType<Schema> & { [marker]: true }
+
+export type ClientDefinition = {
+	method: HTTPMethods
+	url: string
+	schema: {
+		Body?: any
+		Querystring?: any
+		Params?: any
+		Headers?: any
+		Reply?: {
+			[Code in HttpKeys]?: any
+		}
+	}
+}
+
+type SchemaKeyMap = {
+	body: "Body"
+	querystring: "Querystring"
+	params: "Params"
+	headers: "Headers"
+	response: "Reply"
+}
+
+type SchemaToRouteGeneric<Schema extends BaseSchema> = {
+	[Key in keyof Schema & keyof SchemaKeyMap as SchemaKeyMap[Key]]: Key extends "response"
+		? Schema[Key] extends object
+			? {
+					[Code in keyof Schema[Key] & HttpKeys]: Schema[Key][Code] extends object
+						? FromSchema<Schema[Key][Code]>
+						: never
+				}
 			: never
-		: R[Route] extends object
-			? ApiRouterFromRouter<R[Route]>
+		: Schema[Key] extends JSONSchema7
+			? FromSchema<Schema[Key]>
 			: never
 }
 
+type NoInfer<T> = [T][T extends any ? 0 : never]
+
+export function procedure<const Schema extends BaseSchema = object>(
+	definition: BaseDefinition<Schema>,
+	handlers: Omit<
+		RouteOptions<
+			RawServerDefault,
+			RawRequestDefaultExpression,
+			RawReplyDefaultExpression,
+			NoInfer<SchemaToRouteGeneric<Schema>>
+		>,
+		"method" | "url" | "schema"
+	>
+): RouteOptions {
+	return { ...definition, ...handlers } as RouteOptions
+}
+
+type DefinitionToClientType<Def extends BaseDefinition> = Omit<Def, "schema"> & {
+	/** This key only exists at the type level, because it's never needed at runtime on the client */
+	schema: SchemaToRouteGeneric<Def["schema"]>
+}
+
 type Plugin = (fastify: FastifyInstance, opts: object, done: () => void) => void
-type RouteDefinition = {
-	get?: MethodDefinition & { [marker]: true }
-	head?: MethodDefinition & { [marker]: true }
-	post?: MethodDefinition & { [marker]: true }
-	put?: MethodDefinition & { [marker]: true }
-	delete?: MethodDefinition & { [marker]: true }
-	options?: MethodDefinition & { [marker]: true }
-	patch?: MethodDefinition & { [marker]: true }
-}
-type Method = "get" | "post" | "put" | "delete" | "patch" | "head" | "options"
-interface Router {
-	[part: string]: RouteDefinition | Router
-}
-export function routerToRoutes(router: Router, prefix = "/"): Plugin {
-	return function routes(fastify, opts, done) {
-		function define(r: Router | RouteDefinition, url = prefix) {
-			const entries = Object.entries(r) as Array<
-				[Method, MethodDefinition] | [string, Router]
-			>
-			for (const entry of entries) {
-				if (marker in entry[1]) {
-					const [method, methodDefinition] = entry as [Method, MethodDefinition]
-					fastify[method](url, methodDefinition)
-				} else {
-					const [part, router] = entry as [string, Router]
-					define(router, url + "/" + part)
-				}
-			}
+export function pluginFromRoutes(routes: RouteOptions[]): Plugin {
+	return function routesPlugin(fastify, opts, done) {
+		for (const route of routes) {
+			fastify.route(route)
 		}
-		define(router)
 		done()
 	}
+}
+
+export function makeClientDefinition<Def extends BaseDefinition>(
+	definition: Def
+): DefinitionToClientType<Def> {
+	return {
+		method: definition.method,
+		url: definition.url,
+	} as DefinitionToClientType<Def>
 }
