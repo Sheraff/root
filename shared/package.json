@@ -7,12 +7,12 @@
 		"test": "vitest",
 		"tsc:lib": "tsc --noEmit --project tsconfig.lib.json",
 		"tsc:tools": "tsc --noEmit --project tsconfig.tools.json",
-		"tsc": "echo \"done\"",
+		"tsc": "echo 'done'",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"format": "prettier --check . --config ../.prettierrc.json --log-level warn",
 		"format:fix": "prettier --write . --config ../.prettierrc.json --log-level warn",
-		"spell": "cspell --config ../.cspell.json --quiet --gitignore \"**/*\"",
+		"spell": "cspell --config ../.cspell.json --quiet --gitignore '**/*'",
 		"clear": "rm -rf node_modules; rm -rf .turbo;"
 	},
 	"devDependencies": {

@@ -13,25 +13,31 @@
 		},
 		"tsc": {},
 		"//#root:tsc": {
-			"dependsOn": ["//#root:tsc:tools", "//#root:tsc:app"]
+			"dependsOn": ["//#root:tsc:tools", "//#root:tsc:app"],
+			"inputs": ["package.json"]
 		},
 		"//#root:tsc:app": {
-			"inputs": ["$TURBO_DEFAULT$", "./tsconfig.app.json"]
+			"inputs": ["./tsconfig.app.json", "pnpm-lock.yaml", "package.json", "types/*.d.ts"]
 		},
 		"//#root:tsc:tools": {
-			"inputs": ["$TURBO_DEFAULT$", "./tsconfig.tools.json"]
+			"inputs": [
+				"./tsconfig.tools.json",
+				"pnpm-lock.yaml",
+				"package.json",
+				"vitest.workspace.ts"
+			]
 		},
 		"lint": {
 			"inputs": ["$TURBO_DEFAULT$", "./.eslintrc.json"]
 		},
 		"//#root:lint": {
-			"inputs": ["$TURBO_DEFAULT$", "./.eslintrc.json"]
+			"inputs": ["./.eslintrc.json", "pnpm-lock.yaml", "package.json", "*.ts", "types/*.ts"]
 		},
 		"lint:fix": {
 			"inputs": ["$TURBO_DEFAULT$", "./.eslintrc.json"]
 		},
 		"//#root:lint:fix": {
-			"inputs": ["$TURBO_DEFAULT$", "./.eslintrc.json"]
+			"inputs": ["./.eslintrc.json", "pnpm-lock.yaml", "package.json", "*.ts", "types/*.ts"]
 		},
 		"format": {
 			"inputs": ["$TURBO_DEFAULT$", "./.prettierrc.json"]

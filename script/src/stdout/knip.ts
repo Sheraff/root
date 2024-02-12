@@ -2,17 +2,17 @@ import { spawn } from "node:child_process"
 
 const CLEAN = /(?:\x1B\[([0-9;]+)m)?/g
 const CATEGORY = /^([\w\s]+)\s\([\d]+\)$/
-const MATCHER = /^(?:((?:[\w@\-\/]\s?)+)\s\s)?(?:((?:\w\s?)+)\s\s)?([^\s:]+)(?::([\d]+):([\d]+))?$/i
+const MATCHER = /^(?:((?:[\w@\-/]\s?)+)\s\s)?(?:((?:\w\s?)+)\s\s)?([^\s:]+)(?::([\d]+):([\d]+))?$/i
 let category = ""
-
-const [, , step, cmd, ...args] = process.argv
+const step = process.env.STEP_NAME ?? "knip"
+const [, , cmd, ...args] = process.argv
 
 if (!cmd) throw new Error("No command provided")
 
 const child = spawn(cmd, args, { stdio: ["pipe", "pipe", "pipe"], env: process.env })
 child.stdout.pipe(process.stdout)
 child.stdout.on("data", processLines)
-child.on("close", process.exit)
+child.on("close", (code) => process.exit(code ?? 0))
 
 function processLines(data: Buffer) {
 	const lines = String(data).split("\n")
