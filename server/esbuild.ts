@@ -59,7 +59,7 @@ async function makeEsbuildWatcher() {
 					if (childProcess) {
 						const running = childProcess
 						running.kill("SIGINT")
-						running.on("exit", () => {
+						running.once("exit", () => {
 							console.log("Previous server process exited.")
 							if (childProcess === running) childProcess = null
 						})
@@ -85,7 +85,7 @@ async function makeEsbuildWatcher() {
 							}
 						)
 					if (childProcess) {
-						childProcess.on("exit", () => (childProcess = run()))
+						childProcess.once("exit", () => (childProcess = run()))
 					} else {
 						childProcess = run()
 					}
