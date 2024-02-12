@@ -1,10 +1,6 @@
-import {
-	procedure,
-	type DefinitionToClientType,
-	type BaseDefinition,
-} from "server/api/next/helpers"
+import { procedure, type BaseDefinition } from "./helpers"
 
-const definition = {
+export const definition = {
 	url: "/api/hello",
 	method: "get",
 	schema: {
@@ -56,5 +52,3 @@ export default /* @__PURE__ */ procedure(definition, {
 		}
 	},
 })
-
-export type Definition = DefinitionToClientType<typeof definition>

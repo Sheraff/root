@@ -159,6 +159,9 @@ importers:
       assets:
         specifier: workspace:assets@*
         version: link:../assets
+      server:
+        specifier: workspace:server@*
+        version: link:../server
       shared:
         specifier: workspace:shared@*
         version: link:../shared
@@ -166,9 +169,6 @@ importers:
       script:
         specifier: workspace:script@*
         version: link:../script
-      server:
-        specifier: workspace:server@*
-        version: link:../server
 
   script: {}
 
