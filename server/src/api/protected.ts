@@ -1,5 +1,5 @@
 import { procedure, type BaseDefinition, makeClientDefinition } from "server/api/helpers"
-import { onRequestAuthProtected } from "server/auth/helpers/onRequestAuthProtected"
+import { onRequestAuthProtected, authErrorSchema } from "server/auth/helpers/onRequestAuthProtected"
 
 const def = {
 	url: "/api/protected",
@@ -14,6 +14,7 @@ const def = {
 				required: ["secret"],
 				additionalProperties: false,
 			},
+			...authErrorSchema,
 		},
 	},
 } as const satisfies BaseDefinition

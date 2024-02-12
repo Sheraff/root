@@ -6,14 +6,15 @@ import type {
 } from "fastify/types/utils"
 import type { FromSchema } from "json-schema-to-ts"
 import type { JSONSchema7 } from "json-schema-to-ts/lib/types/definitions"
+import type { NoInfer, Prettify } from "shared/typeHelpers"
 
 type BaseSchema = {
-	body?: JSONSchema7
-	querystring?: JSONSchema7
-	params?: JSONSchema7
-	headers?: JSONSchema7
+	body?: JSONSchema7 & { type: "object" }
+	querystring?: JSONSchema7 & { type: "object" }
+	params?: JSONSchema7 & { type: "object" }
+	headers?: JSONSchema7 & { type: "object" }
 	response?: {
-		[key in HttpKeys]?: JSONSchema7
+		[key in HttpKeys]?: JSONSchema7 & { type: "object" }
 	}
 }
 
@@ -27,12 +28,12 @@ export type ClientDefinition = {
 	method: HTTPMethods
 	url: string
 	schema: {
-		Body?: any
-		Querystring?: any
-		Params?: any
-		Headers?: any
+		Body?: Record<string, any>
+		Querystring?: Record<string, any>
+		Params?: Record<string, any>
+		Headers?: Record<string, any>
 		Reply?: {
-			[Code in HttpKeys]?: any
+			[Code in HttpKeys]?: Record<string, any>
 		}
 	}
 }
@@ -59,8 +60,6 @@ type SchemaToRouteGeneric<Schema extends BaseSchema> = {
 			: never
 }
 
-type NoInfer<T> = [T][T extends any ? 0 : never]
-
 export function procedure<const Schema extends BaseSchema = object>(
 	definition: BaseDefinition<Schema>,
 	handlers: Omit<
@@ -78,7 +77,7 @@ export function procedure<const Schema extends BaseSchema = object>(
 
 type DefinitionToClientType<Def extends BaseDefinition> = Omit<Def, "schema"> & {
 	/** This key only exists at the type level, because it's never needed at runtime on the client */
-	schema: SchemaToRouteGeneric<Def["schema"]>
+	readonly schema: Prettify<SchemaToRouteGeneric<Def["schema"]>>
 }
 
 type Plugin = (fastify: FastifyInstance, opts: object, done: () => void) => void
@@ -93,7 +92,7 @@ export function pluginFromRoutes(routes: RouteOptions[]): Plugin {
 
 export function makeClientDefinition<Def extends BaseDefinition>(
 	definition: Def
-): DefinitionToClientType<Def> {
+): Prettify<DefinitionToClientType<Def>> {
 	return {
 		method: definition.method,
 		url: definition.url,

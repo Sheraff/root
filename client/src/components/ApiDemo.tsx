@@ -1,62 +1,81 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, type UseQueryOptions } from "@tanstack/react-query"
 import type { ClientDefinition } from "server/api/helpers"
 import { definition as openDefinition } from "server/api/open"
 import { definition as protectedDefinition } from "server/api/protected"
 import { replaceParams } from "shared/replaceParams"
+import type { Prettify, StringAsNumber } from "shared/typeHelpers"
 
 type GetData = "Querystring" | "Params" | "Headers"
 
 function makeHeaders(data?: Record<string, unknown>) {
 	if (!data) return undefined
-	const headers = new Headers()
-	for (const key in data) {
-		headers.set(key, String(data[key]))
-	}
+	// TS doesn't like Headers being constructed with arbitrary data, but `Headers` will stringify every value.
+	const headers = new Headers(data as Record<string, string>)
 	return headers
 }
 
-function useApiQuery<Def extends ClientDefinition>(
-	def: Def,
-	data: keyof Def["schema"] & GetData extends never
+type Digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+type Fail = 1 | 3 | 4 | 5
+
+type SuccessCodes = StringAsNumber<`2${Digit}${Digit}`> | "2xx"
+type FailCodes = StringAsNumber<`${Fail}${Digit}${Digit}`> | `${Fail}xx`
+
+type DefResponse<Def extends ClientDefinition> = Def["schema"]["Reply"][SuccessCodes &
+	keyof Def["schema"]["Reply"]]
+type DefError<Def extends ClientDefinition> = Def["schema"]["Reply"][FailCodes &
+	keyof Def["schema"]["Reply"]]
+
+function useApiQuery<Def extends ClientDefinition, T = Prettify<DefResponse<Def>>>(
+	{ url, method }: Def,
+	data: object extends Pick<Def["schema"], GetData & keyof Def["schema"]>
 		? null
-		: {
-				[Key in keyof Def["schema"] & GetData]: Def["schema"][Key]
-			}
+		: Prettify<Pick<Def["schema"], GetData & keyof Def["schema"]>>,
+	options?: Omit<
+		UseQueryOptions<Prettify<DefResponse<Def>>, Prettify<DefError<Def>>, T>,
+		"queryKey" | "queryFn"
+	>
 ) {
-	const { url, method } = def
-	return useQuery({
+	return useQuery<Prettify<DefResponse<Def>>, Prettify<DefError<Def>>, T>({
+		...options,
 		queryKey: [url.split("/"), method, data],
 		queryFn: async () => {
 			// Params are placed in the pathname
 			const replaced = replaceParams(url, data?.Params ?? {})
-			// Querystring is places in the search params
+			// Querystring is placed in the search params
 			const withBody = data?.Querystring
 				? `${replaced}?${new URLSearchParams(data.Querystring).toString()}`
 				: replaced
 			// Headers are placed in the headers
 			const headers = makeHeaders(data?.Headers as Record<string, unknown>)
 			const response = await fetch(withBody, { method, headers })
-			if (!response.ok) throw new Error("Network response was not ok")
-			const result = response.json()
-			if (response.status !== 200) throw new Error("Network response was not ok")
-			return result as Def["schema"]["Reply"] extends { [200]: infer T } ? T : never
+			const result = await response.json()
+			if (response.status < 200 || response.status >= 300) throw result
+			return result as Prettify<DefResponse<Def>>
 		},
 	})
 }
 
 export function ApiDemo() {
-	const { data: open } = useApiQuery(openDefinition, {
+	const open = useApiQuery(openDefinition, {
 		Headers: { "x-id": "123" },
 		Querystring: { id: "42" },
 	})
-	const { data: secret } = useApiQuery(protectedDefinition, null)
+	const secret = useApiQuery(protectedDefinition, null, {
+		retry: false,
+	})
 
 	return (
 		<>
 			<h2>Open</h2>
-			<pre>{open ? JSON.stringify(open, null, 2) : " \n  loading\n "}</pre>
+			<pre>{open.data ? JSON.stringify(open.data, null, 2) : " \n  loading\n "}</pre>
 			<h2>Protected</h2>
-			<pre>{secret ? JSON.stringify(secret, null, 2) : " \n  loading\n "}</pre>
+			<pre>
+				{secret.error
+					? JSON.stringify(secret.error, null, 2)
+					: secret.data
+						? JSON.stringify(secret.data, null, 2)
+						: " \n  loading\n "}
+			</pre>
 		</>
 	)
 }
