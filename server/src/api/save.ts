@@ -27,7 +27,7 @@ export const definition = define<typeof schema>({
 	method: "post",
 })
 
-export const handler = /* @__PURE__ */ procedure(schema, definition, {
+export const handler = procedure(schema, definition, {
 	async handler(request, reply) {
 		request.log.info(`Received: ${JSON.stringify(request.body)}`)
 		setTimeout(() => {

@@ -8,6 +8,7 @@ crsqlite
 cryb
 datetime
 dbname
+deoptimization
 fastify
 fract
 knip
@@ -21,6 +22,7 @@ spotify
 sqlite
 SQLITE_IOERR_WRITE
 tanstack
+treeshake
 tsbuildinfo
 valibot
 vlcn
