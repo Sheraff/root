@@ -15,24 +15,24 @@ import { decrypt, encrypt } from "server/auth/helpers/AuthTokens"
 import type BetterSqlite3 from "better-sqlite3"
 
 declare module "fastify" {
+	interface User {
+		email: string
+		id: string
+	}
+
 	interface Session {
 		/** Only temporarily added between /api/oauth/connect/:provider/callback and /api/oauth/finalize. */
 		grant?: RawGrant
-		user?: {
-			email: string
-			id: string
-		}
+		user?: User
 		provider?: string
 		provider_user_id?: string
 		provider_email?: string
 	}
 
-	interface FastifyInstance {
-		auth: {
-			db: BetterSqlite3.Database
-			sessionStore: SessionStore
-			invitesStore: ReturnType<typeof makeInviteCodes>
-		}
+	interface Auth {
+		db: BetterSqlite3.Database
+		sessionStore: SessionStore
+		invitesStore: ReturnType<typeof makeInviteCodes>
 	}
 }
 
