@@ -7,19 +7,23 @@ import type BetterSqlite3 from "better-sqlite3"
  * the accessed properties should be declared here.
  */
 declare module "fastify" {
+	interface User {
+		id: string
+	}
+
 	interface Session {
-		user?: {
-			id: string
-		}
+		user?: User
 	}
 
 	interface FastifyRequest {
 		session: Session
 	}
 
+	interface Auth {
+		db: BetterSqlite3.Database
+	}
+
 	interface FastifyInstance {
-		auth: {
-			db: BetterSqlite3.Database
-		}
+		auth: Auth
 	}
 }
