@@ -8,9 +8,8 @@ const baseOnRequestAuthProtected: onRequestHookHandler = (request, reply, done) 
 	return done()
 }
 
-export const onRequestAuthProtected = baseOnRequestAuthProtected as never
-
-export const authErrorSchema = {
+export const authProtected = {
+	onRequest: baseOnRequestAuthProtected as never,
 	401: {
 		type: "object",
 		properties: {
@@ -18,5 +17,5 @@ export const authErrorSchema = {
 		},
 		required: ["error"],
 		additionalProperties: false,
-	},
-} as const
+	} as const,
+}
