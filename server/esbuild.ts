@@ -70,7 +70,7 @@ async function makeEsbuildWatcher() {
 						spawn(
 							"node",
 							[
-								"--env-file=../.env",
+								"--env-file=.env",
 								"--enable-source-maps",
 								"server/node_modules/.cache/server/app.mjs",
 							],
