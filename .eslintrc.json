@@ -41,7 +41,8 @@
 		"react-refresh/only-export-components": ["error", { "allowConstantExport": true }],
 		"no-unused-labels": "off",
 		"@typescript-eslint/array-type": ["error", { "default": "array-simple" }],
-		"no-control-regex": "off"
+		"no-control-regex": "off",
+		"@typescript-eslint/no-dynamic-delete": "off"
 	},
 	"parserOptions": {
 		"project": ["tsconfig.tools.json"]

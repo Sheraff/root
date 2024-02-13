@@ -40,6 +40,7 @@
 				"types/*.d.ts",
 				"../types/*.d.ts",
 				"../shared/src/**/*.ts",
+				"../server/src/api/**/*.ts",
 				"tsconfig.json",
 				"tsconfig.app.json"
 			],

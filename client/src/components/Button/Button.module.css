@@ -16,6 +16,11 @@
 	touch-action: manipulation;
 	white-space: nowrap;
 	margin-right: 10px;
+
+	&[disabled] {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
 }
 
 .dark {

@@ -1,34 +1,46 @@
-import { useEffect, useState } from "react"
+import { useApiMutation } from "client/api/useApiMutation"
+import { useApiQuery } from "client/api/useApiQuery"
+import { Button } from "client/components/Button/Button"
+import { definition as openDefinition } from "server/api/open"
+import { definition as protectedDefinition } from "server/api/protected"
+import { definition as saveDefinition } from "server/api/save"
 
 export function ApiDemo() {
-	const [protectedRes, setProtectedRes] = useState<unknown>()
-	useEffect(() => {
-		fetch("/api/protected")
-			.then((res) => res.json())
-			.then(setProtectedRes)
-			.catch((e) => {
-				console.error(e)
-				setProtectedRes({ error: String(e) })
-			})
-	}, [])
+	const open = useApiQuery(openDefinition, {
+		Headers: { "x-id": "123" },
+		Querystring: { id: "42" },
+	})
 
-	const [openRes, setOpenRes] = useState<unknown>()
-	useEffect(() => {
-		fetch("/api/hello")
-			.then((res) => res.json())
-			.then(setOpenRes)
-			.catch((e) => {
-				console.error(e)
-				setOpenRes({ error: String(e) })
-			})
-	}, [])
+	const secret = useApiQuery(protectedDefinition, null, {
+		retry: false,
+	})
+
+	const save = useApiMutation(saveDefinition, null, {
+		onSuccess(data, variables, context) {
+			console.log("Saved", data, variables, context)
+			setTimeout(() => save.reset(), 1000)
+		},
+	})
 
 	return (
 		<>
 			<h2>Open</h2>
-			<pre>{openRes ? JSON.stringify(openRes, null, 2) : " \n  loading\n "}</pre>
+			<pre>{open.data ? JSON.stringify(open.data, null, 2) : " \n  loading\n "}</pre>
 			<h2>Protected</h2>
-			<pre>{protectedRes ? JSON.stringify(protectedRes, null, 2) : " \n  loading\n "}</pre>
+			<pre>
+				{secret.error
+					? JSON.stringify(secret.error, null, 2)
+					: secret.data
+						? JSON.stringify(secret.data, null, 2)
+						: " \n  loading\n "}
+			</pre>
+			<h2>Mutation</h2>
+			<Button
+				disabled={save.isPending || save.isSuccess}
+				onClick={() => save.mutate({ Body: { hello: "world", moo: 42 } })}
+			>
+				{save.isPending ? "mutating..." : save.isSuccess ? "ok" : "Save"}
+			</Button>
 		</>
 	)
 }

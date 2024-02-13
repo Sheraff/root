@@ -1,7 +1,9 @@
+import { useApiQuery } from "client/api/useApiQuery"
 import type { Provider } from "client/auth/providers"
 import { useAuthContext } from "client/auth/useAuthContext"
 import { Button } from "client/components/Button/Button"
 import { Divider } from "client/components/Divider/Divider"
+import { definition as accountsDefinition } from "server/api/accounts"
 
 export function UserAccountDemo() {
 	const auth = useAuthContext()
@@ -116,6 +118,7 @@ function LoggedIn({
 	linkAccount: (provider: string) => Promise<void>
 	providers: Provider[]
 }) {
+	const accounts = useApiQuery(accountsDefinition, null)
 	return (
 		<>
 			<div>Logged in as {userId}</div>
@@ -130,6 +133,7 @@ function LoggedIn({
 						onClick={() => void linkAccount(provider.key)}
 						dark
 						style={{ backgroundColor: provider.color }}
+						disabled={accounts.data?.accounts.includes(provider.key)}
 					>
 						{provider.name}
 					</Button>

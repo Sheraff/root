@@ -1,6 +1,6 @@
 {
 	"name": "repo",
-	"version": "0.0.0-alpha.6",
+	"version": "0.0.0-alpha.7",
 	"license": "MIT",
 	"private": true,
 	"repository": {
@@ -73,6 +73,7 @@
 		"knip": "^5.0.1",
 		"prettier": "^3.2.5",
 		"rollup-plugin-visualizer": "5.12.0",
+		"json-schema-to-ts": "3.0.0",
 		"tsx": "4.7.1",
 		"turbo": "1.12.3",
 		"typed-css-modules": "^0.9.1",
