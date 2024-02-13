@@ -54,6 +54,7 @@ type SchemaToRouteGeneric<Schema extends BaseSchema> = {
 			: never
 }
 
+/* @__NO_SIDE_EFFECTS__ */
 export function define<const Schema extends BaseSchema>(definition: {
 	method: HTTPMethods // | HTTPMethods[]
 	url: string
@@ -70,6 +71,7 @@ export function define<const Schema extends BaseSchema>(definition: {
 	} as any
 }
 
+/* @__NO_SIDE_EFFECTS__ */
 export function procedure<const Schema extends BaseSchema = object>(
 	schema: Schema,
 	definition: {
@@ -90,6 +92,7 @@ export function procedure<const Schema extends BaseSchema = object>(
 }
 
 type Plugin = (fastify: FastifyInstance, opts: object, done: () => void) => void
+/* @__NO_SIDE_EFFECTS__ */
 export function pluginFromRoutes(routes: RouteOptions[]): Plugin {
 	return function routesPlugin(fastify, opts, done) {
 		for (const route of routes) {

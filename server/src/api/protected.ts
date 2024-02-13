@@ -26,7 +26,7 @@ export const definition = define<typeof schema>({
 	method: "get",
 })
 
-export const handler = /* @__PURE__ */ procedure(schema, definition, {
+export const handler = procedure(schema, definition, {
 	onRequest: authProtected.onRequest,
 	handler(request, reply) {
 		void reply.status(200).send({ secret: "🙈" })

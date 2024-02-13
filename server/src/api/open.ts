@@ -49,7 +49,7 @@ export const definition = define<typeof schema>({
 	method: "get",
 })
 
-export const handler = /* @__PURE__ */ procedure(schema, definition, {
+export const handler = procedure(schema, definition, {
 	handler(request, reply) {
 		request.log.info("hello world", request.query.id, request.headers["x-id"])
 		if (request.query.id === "42") {

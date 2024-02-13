@@ -248,6 +248,15 @@ export default defineConfig({
 		sourcemap: true,
 		target: "esnext",
 		reportCompressedSize: false,
+		modulePreload: { polyfill: false },
+		rollupOptions: {
+			treeshake: {
+				moduleSideEffects: [`${normalizePath(__dirname)}/main.tsx`],
+				propertyReadSideEffects: false,
+				tryCatchDeoptimization: false,
+				unknownGlobalSideEffects: false,
+			},
+		},
 	},
 	esbuild: {
 		minifyIdentifiers: false,
