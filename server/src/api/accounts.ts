@@ -1,31 +1,32 @@
-import { procedure, type BaseDefinition, makeClientDefinition } from "server/api/helpers"
+import { procedure, define, type BaseSchema } from "server/api/helpers"
 import { onRequestAuthProtected, authErrorSchema } from "server/auth/helpers/onRequestAuthProtected"
 import { sql } from "shared/sql"
 
-const def = {
-	url: "/api/accounts",
-	method: "get",
-	schema: {
-		response: {
-			200: {
-				type: "object",
-				properties: {
-					accounts: {
-						type: "array",
-						items: {
-							type: "string",
-						},
+const schema = {
+	response: {
+		200: {
+			type: "object",
+			properties: {
+				accounts: {
+					type: "array",
+					items: {
+						type: "string",
 					},
 				},
-				required: ["accounts"],
-				additionalProperties: false,
 			},
-			...authErrorSchema,
+			required: ["accounts"],
+			additionalProperties: false,
 		},
+		...authErrorSchema,
 	},
-} as const satisfies BaseDefinition
+} as const satisfies BaseSchema
 
-export const handler = /* @__PURE__ */ procedure(def, {
+export const definition = define<typeof schema>({
+	url: "/api/accounts",
+	method: "get",
+})
+
+export const handler = /* @__PURE__ */ procedure(schema, definition, {
 	onRequest: onRequestAuthProtected,
 	handler(request, reply) {
 		const user = request.session.user!
@@ -36,5 +37,3 @@ export const handler = /* @__PURE__ */ procedure(def, {
 		void reply.status(200).send({ accounts: providers.map((p) => p.provider) })
 	},
 })
-
-export const definition = /* @__PURE__ */ makeClientDefinition(def)

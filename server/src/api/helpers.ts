@@ -8,7 +8,7 @@ import type { FromSchema } from "json-schema-to-ts"
 import type { JSONSchema7 } from "json-schema-to-ts/lib/types/definitions"
 import type { NoInfer, Prettify } from "shared/typeHelpers"
 
-type BaseSchema = {
+export type BaseSchema = {
 	body?: JSONSchema7 & { type: "object" }
 	querystring?: JSONSchema7 & { type: "object" }
 	params?: JSONSchema7 & { type: "object" }
@@ -16,12 +16,6 @@ type BaseSchema = {
 	response?: {
 		[key in HttpKeys]?: JSONSchema7 & { type: "object" }
 	}
-}
-
-export type BaseDefinition<Schema extends BaseSchema = BaseSchema> = {
-	method: HTTPMethods // | HTTPMethods[]
-	url: string
-	schema: Schema
 }
 
 export type ClientDefinition = {
@@ -60,8 +54,28 @@ type SchemaToRouteGeneric<Schema extends BaseSchema> = {
 			: never
 }
 
+export function define<const Schema extends BaseSchema>(definition: {
+	method: HTTPMethods // | HTTPMethods[]
+	url: string
+}): {
+	readonly method: typeof definition.method
+	readonly url: typeof definition.url
+	/** This key only exists at the type level, because it's never needed at runtime on the client */
+	readonly schema: Prettify<SchemaToRouteGeneric<Schema>>
+} {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- return is explicitly typed above
+	return {
+		method: definition.method,
+		url: definition.url,
+	} as any
+}
+
 export function procedure<const Schema extends BaseSchema = object>(
-	definition: BaseDefinition<Schema>,
+	schema: Schema,
+	definition: {
+		method: HTTPMethods // | HTTPMethods[]
+		url: string
+	},
 	handlers: Omit<
 		RouteOptions<
 			RawServerDefault,
@@ -72,12 +86,7 @@ export function procedure<const Schema extends BaseSchema = object>(
 		"method" | "url" | "schema"
 	>
 ): RouteOptions {
-	return { ...definition, ...handlers } as RouteOptions
-}
-
-type DefinitionToClientType<Def extends BaseDefinition> = Omit<Def, "schema"> & {
-	/** This key only exists at the type level, because it's never needed at runtime on the client */
-	readonly schema: Prettify<SchemaToRouteGeneric<Def["schema"]>>
+	return { schema, ...definition, ...handlers } as RouteOptions
 }
 
 type Plugin = (fastify: FastifyInstance, opts: object, done: () => void) => void
@@ -88,13 +97,4 @@ export function pluginFromRoutes(routes: RouteOptions[]): Plugin {
 		}
 		done()
 	}
-}
-
-export function makeClientDefinition<Def extends BaseDefinition>(
-	definition: Def
-): Prettify<DefinitionToClientType<Def>> {
-	return {
-		method: definition.method,
-		url: definition.url,
-	} as DefinitionToClientType<Def>
 }

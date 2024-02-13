@@ -1,32 +1,33 @@
-import { procedure, type BaseDefinition, makeClientDefinition } from "server/api/helpers"
+import { procedure, define, type BaseSchema } from "server/api/helpers"
 
-const def = {
-	url: "/api/save",
-	method: "post",
-	schema: {
-		body: {
+const schema = {
+	body: {
+		type: "object",
+		properties: {
+			hello: { type: "string" },
+			moo: { type: "number" },
+		},
+		required: ["hello"],
+		additionalProperties: false,
+	},
+	response: {
+		200: {
 			type: "object",
 			properties: {
-				hello: { type: "string" },
-				moo: { type: "number" },
+				ok: { type: "boolean" },
 			},
-			required: ["hello"],
+			required: ["ok"],
 			additionalProperties: false,
 		},
-		response: {
-			200: {
-				type: "object",
-				properties: {
-					ok: { type: "boolean" },
-				},
-				required: ["ok"],
-				additionalProperties: false,
-			},
-		},
 	},
-} as const satisfies BaseDefinition
+} as const satisfies BaseSchema
 
-export const handler = /* @__PURE__ */ procedure(def, {
+export const definition = define<typeof schema>({
+	url: "/api/save",
+	method: "post",
+})
+
+export const handler = /* @__PURE__ */ procedure(schema, definition, {
 	async handler(request, reply) {
 		request.log.info(`Received: ${JSON.stringify(request.body)}`)
 		setTimeout(() => {
@@ -35,5 +36,3 @@ export const handler = /* @__PURE__ */ procedure(def, {
 		await reply
 	},
 })
-
-export const definition = /* @__PURE__ */ makeClientDefinition(def)
