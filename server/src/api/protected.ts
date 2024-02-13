@@ -15,11 +15,17 @@ const def = {
 				additionalProperties: false,
 			},
 			...authErrorSchema,
+			404: {
+				type: "object",
+				properties: {
+					what: { type: "string" },
+				},
+			},
 		},
 	},
 } as const satisfies BaseDefinition
 
-export default /* @__PURE__ */ procedure(def, {
+export const handler = /* @__PURE__ */ procedure(def, {
 	onRequest: onRequestAuthProtected,
 	handler(request, reply) {
 		void reply.status(200).send({ secret: "🙈" })

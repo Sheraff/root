@@ -13,6 +13,13 @@ const def = {
 				required: ["hello"],
 				additionalProperties: false,
 			},
+			201: {
+				type: "object",
+				properties: {
+					michel: { type: "number" },
+				},
+				required: ["michel"],
+			},
 			404: {
 				type: "object",
 				properties: {
@@ -41,7 +48,7 @@ const def = {
 	},
 } as const satisfies BaseDefinition
 
-export default /* @__PURE__ */ procedure(def, {
+export const handler = /* @__PURE__ */ procedure(def, {
 	handler(request, reply) {
 		request.log.info("hello world", request.query.id, request.headers["x-id"])
 		if (request.query.id === "42") {
