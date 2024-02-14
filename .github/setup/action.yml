@@ -11,10 +11,6 @@ inputs:
     description: "secrets.CI_ENV_FILE"
     required: true
 
-defaults:
-  run:
-    shell: bash
-
 runs:
   using: "composite"
   steps:
@@ -31,6 +27,7 @@ runs:
         run_install: false
 
     - name: 📁 Get pnpm store directory
+      shell: bash
       run: echo "PNPM_STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
     - name: 📦 Cache .pnpm-store
@@ -49,7 +46,9 @@ runs:
           ${{ runner.os }}-turbo-
 
     - name: 🧰 Install Dependencies
+      shell: bash
       run: pnpm install --frozen-lockfile
 
     - name: 🙈 Create env file
+      shell: bash
       run: echo "${{ inputs.CI_ENV_FILE }}" > .env
