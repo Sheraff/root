@@ -1,9 +1,11 @@
 {
-	"extends": "./tsconfig.json",
+	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
 		"lib": ["ESNext"],
 		"outDir": "../dist/server",
-		"types": ["node", "vitest/importMeta"]
+		"types": ["node", "vitest/importMeta"],
+		"verbatimModuleSyntax": true,
+		"skipLibCheck": true
 	},
 	"include": [
 		"src/**/*.ts",
@@ -13,4 +15,5 @@
 		"../shared/src/**/*.ts",
 		"../script/src/**/*.ts"
 	]
+	// "exclude": ["src/api/*.ts"]
 }

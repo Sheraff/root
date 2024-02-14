@@ -1,5 +1,9 @@
-import { procedure, define, type BaseSchema } from "server/api/helpers"
-import { authProtected } from "server/auth/helpers/onRequestAuthProtected"
+import {
+	// procedure,
+	define,
+	type BaseSchema,
+} from "server/api/helpers"
+// import { authProtected } from "server/auth/helpers/onRequestAuthProtected"
 
 const schema = {
 	response: {
@@ -11,7 +15,7 @@ const schema = {
 			required: ["secret"],
 			additionalProperties: false,
 		},
-		401: authProtected[401],
+		// 401: authProtected[401],
 		404: {
 			type: "object",
 			properties: {
@@ -26,9 +30,9 @@ export const definition = define<typeof schema>({
 	method: "get",
 })
 
-export const handler = procedure(schema, definition, {
-	onRequest: authProtected.onRequest,
-	handler(request, reply) {
-		void reply.status(200).send({ secret: "🙈" })
-	},
-})
+// export const handler = procedure(schema, definition, {
+// 	onRequest: authProtected.onRequest,
+// 	handler(request, reply) {
+// 		void reply.status(200).send({ secret: "🙈" })
+// 	},
+// })

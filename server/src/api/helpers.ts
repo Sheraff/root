@@ -6,7 +6,7 @@ import type {
 } from "fastify/types/utils"
 import type { FromSchema } from "json-schema-to-ts"
 import type { JSONSchema7 } from "json-schema-to-ts/lib/types/definitions"
-import type { NoInfer, Prettify } from "shared/typeHelpers"
+// import type { NoInfer, Prettify } from "shared/typeHelpers"
 
 export type BaseSchema = {
 	body?: JSONSchema7 & { type: "object" }
@@ -62,7 +62,7 @@ export function define<const Schema extends BaseSchema>(definition: {
 	readonly method: typeof definition.method
 	readonly url: typeof definition.url
 	/** This key only exists at the type level, because it's never needed at runtime on the client */
-	readonly schema: Prettify<SchemaToRouteGeneric<Schema>>
+	readonly schema: SchemaToRouteGeneric<Schema>
 } {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- return is explicitly typed above
 	return {
@@ -83,7 +83,7 @@ export function procedure<const Schema extends BaseSchema = object>(
 			RawServerDefault,
 			RawRequestDefaultExpression,
 			RawReplyDefaultExpression,
-			NoInfer<SchemaToRouteGeneric<Schema>>
+			SchemaToRouteGeneric<Schema>
 		>,
 		"method" | "url" | "schema"
 	>

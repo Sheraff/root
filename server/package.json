@@ -19,7 +19,6 @@
 		"clear": "rm -rf node_modules; rm -rf .turbo;"
 	},
 	"dependencies": {
-		"shared": "workspace:shared@*",
 		"assets": "workspace:assets@*"
 	},
 	"devDependencies": {

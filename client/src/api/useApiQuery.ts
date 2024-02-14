@@ -1,22 +1,8 @@
-import { useQuery, type UseQueryOptions } from "@tanstack/react-query"
-import { makeHeaders, type DefError, type DefResponse, getKey } from "client/api/helpers"
-import type { ClientDefinition } from "server/api/helpers"
-import { replaceParams } from "shared/replaceParams"
-import type { Prettify } from "shared/typeHelpers"
+import { useQuery } from "@tanstack/react-query"
+import { makeHeaders, getKey, replaceParams } from "client/api/helpers"
 
-type GetData = "Querystring" | "Params" | "Headers"
-
-export function useApiQuery<Def extends ClientDefinition, T = Prettify<DefResponse<Def>>>(
-	{ url, method }: Def,
-	data: object extends Pick<Def["schema"], GetData & keyof Def["schema"]>
-		? null
-		: Prettify<Pick<Def["schema"], GetData & keyof Def["schema"]>>,
-	options?: Omit<
-		UseQueryOptions<Prettify<DefResponse<Def>>, Prettify<DefError<Def>>, T>,
-		"queryKey" | "queryFn"
-	>
-) {
-	return useQuery<Prettify<DefResponse<Def>>, Prettify<DefError<Def>>, T>({
+export function useApiQuery({ url, method }, data, options) {
+	return useQuery({
 		...options,
 		queryKey: getKey(url, method, data),
 		async queryFn() {
@@ -27,11 +13,11 @@ export function useApiQuery<Def extends ClientDefinition, T = Prettify<DefRespon
 				? `${replaced}?${new URLSearchParams(data.Querystring).toString()}`
 				: replaced
 			// Headers are placed in the headers
-			const headers = makeHeaders(data?.Headers as Record<string, unknown>)
+			const headers = makeHeaders(data?.Headers)
 			const response = await fetch(withBody, { method, headers })
 			const result = await response.json().catch(() => {})
 			if (response.status < 200 || response.status >= 300) throw result
-			return result as Prettify<DefResponse<Def>>
+			return result
 		},
 	})
 }

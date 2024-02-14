@@ -1,17 +1,3 @@
-import type { ClientDefinition } from "server/api/helpers"
-import type { StringAsNumber } from "shared/typeHelpers"
-
-type Digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-type Fail = 1 | 3 | 4 | 5
-
-type SuccessCodes = StringAsNumber<`2${Digit}${Digit}`> | "2xx"
-type FailCodes = StringAsNumber<`${Fail}${Digit}${Digit}`> | `${Fail}xx`
-
-export type DefResponse<Def extends ClientDefinition> = Def["schema"]["Reply"][SuccessCodes &
-	keyof Def["schema"]["Reply"]]
-export type DefError<Def extends ClientDefinition> = Def["schema"]["Reply"][FailCodes &
-	keyof Def["schema"]["Reply"]]
-
 export function makeHeaders(data?: Record<string, unknown>) {
 	if (!data) return undefined
 	// TS doesn't like Headers being constructed with arbitrary data, but `Headers` will stringify every value.
@@ -21,4 +7,54 @@ export function makeHeaders(data?: Record<string, unknown>) {
 
 export function getKey(url: string, method: string, data?: object | null) {
 	return [url.split("/"), method, data ?? {}]
+}
+
+/**
+ * @example
+ * ```ts
+ * replaceParams("/api/hello/:id", { id: "yoo" }) // "/api/hello/yoo"
+ * ```
+ * @example
+ * ```ts
+ * replaceParams("/example/near/:lat-:lng/radius/:r", { lat: "15°N", lng: "30°E", r: "20" }) // "/example/near/15°N-30°E/radius/20"
+ * ```
+ */
+export function replaceParams(url: string, data: Record<string, unknown>) {
+	const parts = url.split("/")
+	for (let i = 0; i < parts.length; i++) {
+		let part = parts[i]!
+		if (part === "") continue
+		const re = /:(\w+)/g
+		const matches = part.matchAll(re)
+		let offset = 0
+		for (const match of matches) {
+			if (match.index === undefined) continue // type-safety
+			const index = match.index + offset
+			if (index > 0 && part[index - 1] === ":") continue // ignore double colon
+			const found = match[0]
+			const key = match[1]!
+			if (!(key in data)) {
+				if (
+					i === parts.length - 1 &&
+					part[index + found.length] === "?" &&
+					index + found.length === part.length - 1
+				) {
+					part = part.substring(0, index) // remove optional param
+					continue // allow optional param
+				} else {
+					throw new Error(`No value for key ${key}`)
+				}
+			}
+			const value = data[key]
+			const str = String(value)
+			part = part.substring(0, index) + str + part.substring(index + found.length)
+			offset += str.length - found.length
+		}
+		parts[i] = part
+	}
+	for (let i = parts.length - 1; i >= 0; i--) {
+		if (parts[i] === "") parts.pop()
+		else break
+	}
+	return parts.join("/")
 }

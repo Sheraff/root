@@ -22,8 +22,7 @@
 	},
 	"dependencies": {
 		"assets": "workspace:assets@*",
-		"server": "workspace:server@*",
-		"shared": "workspace:shared@*"
+		"server": "workspace:server@*"
 	},
 	"devDependencies": {
 		"script": "workspace:script@*"
