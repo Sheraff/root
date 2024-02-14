@@ -51,4 +51,4 @@ runs:
 
     - name: 🙈 Create env file
       shell: bash
-      run: echo "${{ inputs.CI_ENV_FILE }}" > .env
+      run: echo "${{ inputs.env }}" > .env
