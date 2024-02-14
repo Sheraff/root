@@ -13,8 +13,6 @@ inputs:
 
 runs:
   using: "composite"
-  env:
-    PNPM_STORE_PATH: . # will be overwritten by the action
   steps:
     - name: ⚙️ Node setup ${{ inputs.node-version }}
       uses: actions/setup-node@v4
