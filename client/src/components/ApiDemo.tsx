@@ -1,9 +1,9 @@
 import { useApiMutation } from "client/api/useApiMutation"
 import { useApiQuery } from "client/api/useApiQuery"
 import { Button } from "client/components/Button/Button"
-import { definition as openDefinition } from "server/api/open"
-import { definition as protectedDefinition } from "server/api/protected"
-import { definition as saveDefinition } from "server/api/save"
+import { definition as openDefinition } from "server/api/routes/open"
+import { definition as protectedDefinition } from "server/api/routes/protected"
+import { definition as saveDefinition } from "server/api/routes/save"
 
 export function ApiDemo() {
 	const open = useApiQuery(openDefinition, {

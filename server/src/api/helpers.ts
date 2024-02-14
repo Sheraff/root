@@ -54,11 +54,15 @@ type SchemaToRouteGeneric<Schema extends BaseSchema> = {
 			: never
 }
 
-/* @__NO_SIDE_EFFECTS__ */
-export function define<const Schema extends BaseSchema>(definition: {
+type RouteDefinition = {
 	method: HTTPMethods // | HTTPMethods[]
 	url: string
-}): {
+}
+
+/* @__NO_SIDE_EFFECTS__ */
+export function define<const Schema extends BaseSchema>(
+	definition: RouteDefinition
+): {
 	readonly method: typeof definition.method
 	readonly url: typeof definition.url
 	/** This key only exists at the type level, because it's never needed at runtime on the client */
@@ -74,10 +78,7 @@ export function define<const Schema extends BaseSchema>(definition: {
 /* @__NO_SIDE_EFFECTS__ */
 export function procedure<const Schema extends BaseSchema = object>(
 	schema: Schema,
-	definition: {
-		method: HTTPMethods // | HTTPMethods[]
-		url: string
-	},
+	definition: RouteDefinition,
 	handlers: Omit<
 		RouteOptions<
 			RawServerDefault,

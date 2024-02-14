@@ -3,7 +3,7 @@ import type { Provider } from "client/auth/providers"
 import { useAuthContext } from "client/auth/useAuthContext"
 import { Button } from "client/components/Button/Button"
 import { Divider } from "client/components/Divider/Divider"
-import { definition as accountsDefinition } from "server/api/accounts"
+import { definition as accountsDefinition } from "server/api/routes/accounts"
 
 export function UserAccountDemo() {
 	const auth = useAuthContext()
