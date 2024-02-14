@@ -1,13 +1,16 @@
 {
 	"compilerOptions": {
+		"lib": ["ESNext"],
+		// graph
 		"rootDir": ".",
 		"baseUrl": ".",
-		"moduleResolution": "Bundler",
-		"module": "ESNext",
-		"target": "ESNext",
 		"skipLibCheck": true,
 		"skipDefaultLibCheck": true,
-		"lib": ["ESNext"],
+		// build
+		"target": "ESNext",
+		// imports
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
 		"paths": {
 			"assets/*": ["assets/src/*"],
 			"script/*": ["script/src/*"],
