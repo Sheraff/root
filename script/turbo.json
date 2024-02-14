@@ -6,8 +6,6 @@
 			"outputs": ["src/**/*.js"],
 			"inputs": ["src/**/*.ts"]
 		},
-		"tsc": {
-			"inputs": ["src/**/*.ts"]
-		}
+		"tsc": {}
 	}
 }
