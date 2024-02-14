@@ -1,0 +1,56 @@
+name: install
+description: install node & pnpm, setup pnpm store & turbo cache, install dependencies, create env file
+inputs:
+  node-version:
+    description: "matrix.node-version"
+    required: true
+  pnpm-version:
+    description: "matrix.pnpm-version"
+    required: true
+  env:
+    description: "secrets.CI_ENV_FILE"
+    required: true
+
+runs:
+  using: "composite"
+  env:
+    PNPM_STORE_PATH: . # will be overwritten by the action
+  steps:
+    - name: ⚙️ Node setup ${{ inputs.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        check-latest: true
+
+    - name: ⚙️ Pnpm setup ${{ inputs.pnpm-version }}
+      uses: pnpm/action-setup@v3
+      with:
+        version: ${{ inputs.pnpm-version }}
+        run_install: false
+
+    - name: 📁 Get pnpm store directory
+      shell: bash
+      run: echo "PNPM_STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+    - name: 📦 Cache .pnpm-store
+      uses: actions/cache@v4
+      timeout-minutes: 1
+      with:
+        path: ${{ env.PNPM_STORE_PATH }}
+        key: ${{ runner.os }}-${{ inputs.pnpm-version }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: ${{ runner.os }}-${{ inputs.pnpm-version }}-pnpm-store-
+
+    - name: 📦 Cache .turbo
+      uses: actions/cache@v4
+      timeout-minutes: 1
+      with:
+        path: .turbo
+        key: ${{ runner.os }}-turbo-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-turbo-
+
+    - name: 🧰 Install Dependencies
+      run: pnpm install --frozen-lockfile
+
+    - name: 🙈 Create env file
+      run: echo "${{ inputs.CI_ENV_FILE }}" > .env

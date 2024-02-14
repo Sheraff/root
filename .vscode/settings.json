@@ -59,5 +59,8 @@
 		"*.sql": "${capture}.sql.d.ts, ${capture}.sql.d.ts.map"
 	},
 	"github-actions.workflows.pinned.refresh.enabled": true,
-	"cSpell.spellCheckOnlyWorkspaceFiles": true
+	"cSpell.spellCheckOnlyWorkspaceFiles": true,
+	"files.associations": {
+		"**/.github/**/*.yml": "github-actions-workflow"
+	}
 }
