@@ -125,7 +125,7 @@ jobs:
           echo "Version: v$version"
           gh release delete "v$version" --yes && echo "Deleting existing release..." || true
           tar -cJf bundle.tar.xz ./dist ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml .nvmrc .env.example
-          gh release create "v$version" bundle.tar.xz
+          gh release create "v$version" bundle.tar.xz --generate-notes
           echo "Release created!"
 
       - name: 🏷️ Versioning
