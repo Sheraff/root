@@ -24,5 +24,6 @@ SQLITE_IOERR_WRITE
 tanstack
 treeshake
 tsbuildinfo
+turborepo
 valibot
 vlcn

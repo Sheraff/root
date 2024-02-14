@@ -34,8 +34,6 @@ export function UserAccountDemo() {
 					providers={auth.providers}
 				/>
 			)
-		default:
-			return null
 	}
 }
 
@@ -50,6 +48,7 @@ function CreateAccount({
 }) {
 	return (
 		<>
+			<h2>Authentication</h2>
 			<div>Create Account</div>
 			{providers.map((provider) => (
 				<Button
@@ -78,6 +77,7 @@ function NotLoggedIn({
 }) {
 	return (
 		<>
+			<h2>Authentication</h2>
 			<div>Not logged in</div>
 			<Divider />
 			<div>Sign up with invite code</div>
@@ -121,6 +121,7 @@ function LoggedIn({
 	const accounts = useApiQuery(accountsDefinition, null)
 	return (
 		<>
+			<h2>Authentication</h2>
 			<div>Logged in as {userId}</div>
 			<Divider />
 			<Button onClick={() => void signOut()}>Logout</Button>

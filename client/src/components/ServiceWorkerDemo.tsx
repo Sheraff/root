@@ -16,11 +16,16 @@ export function ServiceWorkerDemo() {
 
 	const [shouldUpdate, update] = useServiceWorkerUpdate()
 
-	if (!shouldUpdate) return <div>SW is up to date</div>
 	return (
 		<>
-			<div>SW is out of date</div>
-			<Button onClick={update}>Update SW</Button>
+			<h2>Service Worker</h2>
+			{shouldUpdate && (
+				<>
+					<div>SW is out of date</div>
+					<Button onClick={update}>Update SW</Button>
+				</>
+			)}
+			{!shouldUpdate && <div>SW is up to date</div>}
 		</>
 	)
 }

@@ -24,9 +24,10 @@ export function ApiDemo() {
 
 	return (
 		<>
-			<h2>Open</h2>
+			<h2>API</h2>
+			<h3>Open</h3>
 			<pre>{open.data ? JSON.stringify(open.data, null, 2) : " \n  loading\n "}</pre>
-			<h2>Protected</h2>
+			<h3>Protected</h3>
 			<pre>
 				{secret.error
 					? JSON.stringify(secret.error, null, 2)
@@ -34,7 +35,7 @@ export function ApiDemo() {
 						? JSON.stringify(secret.data, null, 2)
 						: " \n  loading\n "}
 			</pre>
-			<h2>Mutation</h2>
+			<h3>Mutation</h3>
 			<Button
 				disabled={save.isPending || save.isSuccess}
 				onClick={() => save.mutate({ Body: { hello: "world", moo: 42 } })}

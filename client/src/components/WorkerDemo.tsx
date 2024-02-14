@@ -36,6 +36,7 @@ export function WorkerDemo() {
 
 	return (
 		<>
+			<h2>Web Worker</h2>
 			<input
 				type="number"
 				value={a}
