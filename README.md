@@ -47,7 +47,7 @@ A workspace, with
 
 ## Getting Started
 
-To get started with this project, clone the repository and install the dependencies with pnpm:
+To get started with this project, click on <kbd>Use this template</kbd> on GitHub (or clone the repository, but you will be missing the github config) and install the dependencies with pnpm:
 
 ```shell
 pnpm install
