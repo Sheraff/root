@@ -1,4 +1,8 @@
-# Fullstack TypeScript Offline-First PWA Template
+# 🌳 Root
+A fullstack typescript offline-first PWA template repo, ready to use
+> [!TIP]
+> **Quick start**: 
+> Just click the <kbd>Use this template</kbd> button to create a new repository with this template.
 
 ## Client Package
 
@@ -6,14 +10,13 @@ A typescript React application, with
 
 - Vitest
 - Vite
-- SQLite (vlcn.io CRDTs)
-- Tanstack Query + useQuery hook for SQLite
+- SQLite (vlcn.io CRDTs) + useQuery hook for reactive queries
+- Tanstack Query + useQuery hook for server<->client type-safety
 
 ## Server Package
 
 A typescript Fastify server, with
 
-- sqlite database
 - SQLite (vlcn.io CRDTs)
 - esbuild
 - Vitest
@@ -38,7 +41,7 @@ A workspace, with
 - valibot (data validation)
 - ts-reset (better typescript defaults)
 - cspell (code spell-checking)
-- github actions (CI/CD)
+- github actions (CI/CD) with auto-releases
 - a `script` folder for build-time shared code (node only, for CI, vite plugins, ...)
 - a `shared` folder for run-time shared code (all environments, for client, server, service worker, ...)
 
@@ -57,6 +60,12 @@ pnpm dev
 ```
 
 In dev mode, all requests go through Vite's dev server, and all `/api` requests are forwarded to the Fastify server.
+
+To test the project, run:
+
+```shell
+pnpm test
+```
 
 To serve the production build, run:
 
@@ -78,13 +87,19 @@ The assets necessary for running the project after it has been built are:
 - `/node_modules` (because not all imports are bundled)
 - `/db` (though it will be generated if it doesn't exist)
 
-The `bundle.tar.xz` release artifact uploaded to GitHub contains the `/dist` folder, the `package.json` file and the `pnpm-lock.yaml` file. It only requires adding a `.env` file and installing the dependencies (`pnpm install --frozen-lockfile --prod`) to run the production build.
-
-To test the project, run:
-
-```shell
-pnpm test
-```
+> [!TIP]
+> **Easy depolyment**: 
+> The `bundle.tar.xz` release artifact uploaded to GitHub contains
+> - the `/dist` folder,
+> - the `package.json` file,
+> - and the `pnpm-lock.yaml` file.
+> 
+> After unpacking,
+> 1. provide your `.env` file,
+> 2. install the runtime dependencies (`pnpm install --frozen-lockfile --prod`)
+>
+> And the app is ready to run.
+> This allows you to use the GitHub webhooks to call your server and easily re-deploy on every version change.
 
 ---
 
@@ -106,7 +121,6 @@ pnpm analyze # bundle size analysis
 
 ## TODO
 
-- database
-  - figure out migrations story
-- cleanup bento
-  - nice looking examples
+- [ ] database: figure out migrations story, maybe through drizzle?
+- [ ] cleanup bento: make the default page nicer looking
+- [ ] docs: look into [mintlify](https://mintlify.com/) or [fumadocs](https://fumadocs.vercel.app/) to provide better documentation than this readme
