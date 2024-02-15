@@ -78,6 +78,8 @@ The assets necessary for running the project after it has been built are:
 - `/node_modules` (because not all imports are bundled)
 - `/db` (though it will be generated if it doesn't exist)
 
+The `bundle.tar.xz` release artifact uploaded to GitHub contains the `/dist` folder, the `package.json` file and the `pnpm-lock.yaml` file. It only requires adding a `.env` file and installing the dependencies (`pnpm install --frozen-lockfile --prod`) to run the production build.
+
 To test the project, run:
 
 ```shell
