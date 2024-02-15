@@ -11,7 +11,9 @@ dbname
 deoptimization
 fastify
 fract
+fumadocs
 knip
+mintlify
 outdir
 outfile
 pino

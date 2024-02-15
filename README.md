@@ -88,7 +88,7 @@ The assets necessary for running the project after it has been built are:
 - `/db` (though it will be generated if it doesn't exist)
 
 > [!TIP]
-> **Easy depolyment**: 
+> **Easy deployment**: 
 > The `bundle.tar.xz` release artifact uploaded to GitHub contains
 > - the `/dist` folder,
 > - the `package.json` file,
