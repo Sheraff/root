@@ -43,5 +43,7 @@ export function useDbMutation<TBindings extends readonly string[] = [], TData = 
 				) as Promise<TReturnData>
 			}
 		},
+		networkMode: "always",
+		retry: false,
 	})
 }
