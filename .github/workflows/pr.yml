@@ -64,17 +64,17 @@ jobs:
           STEP_NAME="💫 Linting"
           node --import tsx script/src/stdout/lint.ts pnpm lint --cache-dir=.turbo
 
-      # - name: 👻 Dead code elimination
-      #   timeout-minutes: 1
-      #   run: |
-      #     STEP_NAME="👻 Dead code elimination"
-      #     node --import tsx script/src/stdout/knip.ts pnpm knip
+      - name: 👻 Dead code elimination
+        timeout-minutes: 1
+        run: |
+          STEP_NAME="👻 Dead code elimination"
+          node --import tsx script/src/stdout/knip.ts pnpm knip
 
       - name: 🚦 Unit testing
         timeout-minutes: 1
         run: |
           STEP_NAME="🚦 Unit testing"
-          pnpm test:ci
+          node --import tsx script/src/stdout/test.ts pnpm test:ci
 
       - name: 🏷️ Versioning
         if: github.ref != 'refs/heads/main'
