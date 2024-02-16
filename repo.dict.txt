@@ -13,7 +13,6 @@ fastify
 fract
 fumadocs
 knip
-mintlify
 outdir
 outfile
 pino
