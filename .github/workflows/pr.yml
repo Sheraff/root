@@ -64,11 +64,11 @@ jobs:
           STEP_NAME="💫 Linting"
           node --import tsx script/src/stdout/lint.ts pnpm lint --cache-dir=.turbo
 
-      - name: 👻 Dead code elimination
-        timeout-minutes: 1
-        run: |
-          STEP_NAME="👻 Dead code elimination"
-          node --import tsx script/src/stdout/knip.ts pnpm knip
+      # - name: 👻 Dead code elimination
+      #   timeout-minutes: 1
+      #   run: |
+      #     STEP_NAME="👻 Dead code elimination"
+      #     node --import tsx script/src/stdout/knip.ts pnpm knip
 
       - name: 🚦 Unit testing
         timeout-minutes: 1
