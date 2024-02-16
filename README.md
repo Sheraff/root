@@ -123,4 +123,4 @@ pnpm analyze # bundle size analysis
 
 - [ ] database: figure out migrations story, maybe through drizzle?
 - [ ] cleanup bento: make the default page nicer looking
-- [ ] docs: look into [mintlify](https://mintlify.com/) or [fumadocs](https://fumadocs.vercel.app/) to provide better documentation than this readme
+- [ ] docs: write docs w/ [fumadocs](https://fumadocs.vercel.app/) on [root-docs repo](https://github.com/Sheraff/root-docs)
