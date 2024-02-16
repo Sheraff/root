@@ -278,6 +278,6 @@ export default defineConfig({
 			{ find: /^(.*)\.txt$/, replacement: "$1.txt?raw" },
 			{ find: /^(.*)\.sql$/, replacement: "$1.sql?raw" },
 		],
-		reporters: process.env.GITHUB_ACTIONS ? ["default", new VitestGHAReporter()] : "default",
+		// reporters: process.env.GITHUB_ACTIONS ? ["default", new VitestGHAReporter()] : "default",
 	},
 })

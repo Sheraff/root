@@ -74,7 +74,7 @@ jobs:
         timeout-minutes: 1
         run: |
           STEP_NAME="🚦 Unit testing"
-          node --import tsx script/src/stdout/test.ts pnpm test:ci
+          pnpm test:ci
 
       - name: 🏷️ Versioning
         if: github.ref != 'refs/heads/main'
