@@ -6,7 +6,8 @@ import fastifyStatic from "@fastify/static"
 const csp = {
 	"default-src": ["'self'"],
 	"script-src": ["'self'", "'wasm-unsafe-eval'"],
-	"style-src": ["'self'", "'unsafe-inline'"],
+	"style-src": ["'self'"],
+	"style-src-elem": ["'self'", "'unsafe-inline'"],
 	"img-src": ["'self'", "data:"],
 	"font-src": ["'self'"],
 	"connect-src": ["'self'"],
