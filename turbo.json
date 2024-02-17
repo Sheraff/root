@@ -65,7 +65,8 @@
 		},
 		"analyze": {
 			"cache": false
-		}
+		},
+		"tsc:watch:css": {}
 	},
 	"globalDotEnv": [".env"],
 	"globalDependencies": [
