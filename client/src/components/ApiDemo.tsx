@@ -1,6 +1,7 @@
 import { useApiMutation } from "client/api/useApiMutation"
 import { useApiQuery } from "client/api/useApiQuery"
 import { Button } from "client/components/Button/Button"
+import { Divider } from "client/components/Divider/Divider"
 import { definition as openDefinition } from "server/api/routes/open"
 import { definition as protectedDefinition } from "server/api/routes/protected"
 import { definition as saveDefinition } from "server/api/routes/save"
@@ -25,6 +26,7 @@ export function ApiDemo() {
 	return (
 		<>
 			<h2>API</h2>
+			<Divider full />
 			<h3>Open</h3>
 			<pre>{open.data ? JSON.stringify(open.data, null, 2) : " \n  loading\n "}</pre>
 			<h3>Protected</h3>

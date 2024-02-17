@@ -1,6 +1,16 @@
 .divider {
 	border: none;
 	height: 1px;
-	background-color: currentColor;
+	background-color: hsl(from var(--foreground) h s l / 0.1);
 	margin: 1em 0;
+}
+
+.accent {
+	background-color: hsl(from var(--accent) h s l / 0.4);
+}
+
+.full {
+	margin-left: calc(-1 * var(--s));
+	margin-right: calc(-1 * var(--s));
+	max-width: none;
 }

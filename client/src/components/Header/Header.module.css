@@ -1,0 +1,23 @@
+.header {
+	backdrop-filter: blur(12px);
+	height: 4rem;
+	position: sticky;
+	top: 0;
+	background-color: hsl(from var(--background) h s l / 0.5);
+	border-bottom: 1px solid hsl(from var(--accent) h s l / 0.3);
+	padding: 0 var(--s);
+	margin-bottom: var(--s-2);
+
+	nav {
+		height: 100%;
+		margin: 0 auto;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		max-width: 750px;
+	}
+
+	h1 {
+		font-size: 1.25rem;
+	}
+}

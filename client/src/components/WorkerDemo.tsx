@@ -37,6 +37,7 @@ export function WorkerDemo() {
 	return (
 		<>
 			<h2>Web Worker</h2>
+			<Divider full />
 			<input
 				type="number"
 				value={a}

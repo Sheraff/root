@@ -9,7 +9,7 @@
 	},
 	"scripts": {
 		"analyze": "turbo analyze --filter client",
-		"dev": "turbo dev",
+		"dev": "turbo dev tsc:watch:css",
 		"test": "turbo root:test",
 		"test:ci": "turbo test",
 		"build": "turbo build",

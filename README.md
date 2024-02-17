@@ -126,3 +126,4 @@ pnpm analyze # bundle size analysis
   - [ ] make the default page nicer looking
   - [ ] cleanup DB demo component
 - [ ] docs: write docs w/ [fumadocs](https://fumadocs.vercel.app/) on [root-docs repo](https://github.com/Sheraff/root-docs)
+- [ ] While working on CSS, ESLint can lose the types of `classes` objects. This might have been fixed by adding a tcm process to the `dev` command, but it needs to be tested.

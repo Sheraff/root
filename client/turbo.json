@@ -31,6 +31,11 @@
 			"inputs": ["src/**/*.module.css"],
 			"outputs": ["src/**/*.module.css.d.ts"]
 		},
+		"tsc:watch:css": {
+			"inputs": ["src/**/*.module.css"],
+			"outputs": ["src/**/*.module.css.d.ts"],
+			"persistent": true
+		},
 		"tsc:app": {
 			"inputs": [
 				"main.tsx",
@@ -51,6 +56,12 @@
 		},
 		"test": {
 			"dependsOn": ["script#build"]
+		},
+		"lint": {
+			"dependsOn": ["client#tsc:build:css"]
+		},
+		"lint:fix": {
+			"dependsOn": ["client#tsc:build:css"]
 		},
 		"dev": {
 			"cache": false,

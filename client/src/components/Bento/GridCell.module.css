@@ -1,10 +1,11 @@
 .grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
-	grid-gap: 20px;
+	grid-gap: var(--s-1-5);
 	grid-auto-flow: dense;
 	min-width: 50dvw;
-	max-width: 750px;
+	padding: 0 var(--s);
+	max-width: calc(750px + 2 * var(--s));
 	margin: auto;
 }
 
@@ -13,12 +14,17 @@
 	--y: 1;
 	grid-column: span var(--x);
 	grid-row: span var(--y);
-	border-radius: 10px;
+	border-radius: var(--s-0-5);
 	overflow: hidden;
-	border: 1px solid #ad0489;
-	padding: 10px;
-	& > * {
-		max-width: 100%;
+	border: 1px solid hsl(from var(--foreground) h s l / 0.1);
+	background-color: hsl(from var(--background) h s 3%);
+	padding: var(--s);
+
+	@media (width < 500px) {
+		grid-column: 1 / -1;
+	}
+	@media (prefers-color-scheme: light) {
+		background-color: hsl(from var(--background) h s 99%);
 	}
 }
 
