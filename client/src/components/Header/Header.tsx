@@ -1,9 +1,9 @@
 import type { ReactNode } from "react"
-import classes from "./Header.module.css"
+import styles from "client/components/Header/Header.module.css"
 
 export function Header({ children }: { children: ReactNode }) {
 	return (
-		<header className={classes.header}>
+		<header className={styles.header}>
 			<nav>{children}</nav>
 		</header>
 	)

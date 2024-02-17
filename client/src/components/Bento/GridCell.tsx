@@ -1,9 +1,9 @@
 import type { CSSProperties, ReactNode } from "react"
-import classes from "./GridCell.module.css"
+import styles from "client/components/Bento/GridCell.module.css"
 import clsx from "clsx"
 
 export function Grid({ children }: { children: ReactNode }) {
-	return <div className={classes.grid}>{children}</div>
+	return <div className={styles.grid}>{children}</div>
 }
 
 export function Cell({
@@ -19,7 +19,7 @@ export function Cell({
 }) {
 	return (
 		<div
-			className={clsx(classes.cell, row && classes.row)}
+			className={clsx(styles.cell, row && styles.row)}
 			style={
 				{
 					"--x": x,
