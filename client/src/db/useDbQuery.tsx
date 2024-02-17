@@ -9,7 +9,7 @@ import { type CtxAsync } from "@vlcn.io/react"
 import { useDb } from "client/db/DbProvider"
 import { useLayoutEffect } from "react"
 
-const UNIQUE_KEY = "__vlcn__react_query__cache_manager__"
+const UNIQUE_KEY = "__vlcn__cache_manager__"
 
 type DBAsync = CtxAsync["db"]
 type StmtAsync = Awaited<ReturnType<DBAsync["prepare"]>>

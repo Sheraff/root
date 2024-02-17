@@ -19,6 +19,8 @@ export function makeHeaders(data?: Record<string, unknown>) {
 	return headers
 }
 
+const DB_KEY = "__typed_api__"
+
 export function getKey(url: string, method: string, data?: object | null) {
-	return [url.split("/"), method, data ?? {}]
+	return [DB_KEY, url.split("/").slice(1), method, data ?? {}]
 }

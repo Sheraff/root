@@ -3,7 +3,7 @@ import { useEffect } from "react"
 import { useCacheManager } from "client/db/useDbQuery"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 
-const DB_KEY = "__sqlite__react_query__db_context__"
+const DB_KEY = "__sqlite__db_context__"
 
 type DbStore = {
 	schema: string
