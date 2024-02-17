@@ -4,7 +4,7 @@ import { sql } from "shared/sql"
 import { useSync } from "client/db/Sync"
 import { useDbQuery } from "client/db/useDbQuery"
 import { useDbMutation } from "client/db/useDbMutation"
-import { Button } from "client/components/Button/Button"
+import { Button, ButtonList } from "client/components/Button/Button"
 import { useDb } from "client/db/DbProvider"
 import { Divider } from "client/components/Divider/Divider"
 
@@ -120,12 +120,12 @@ export function Content({ name }: { name: string }) {
 				}}
 			>
 				<input type="text" name="content" required />
-				<div>
+				<ButtonList>
 					<Button type="button" onClick={() => void dropData()}>
 						Clear list
 					</Button>
 					<Button>Add to list</Button>
-				</div>
+				</ButtonList>
 			</form>
 			<Divider />
 			{sync && (

@@ -1,7 +1,7 @@
 import { useApiQuery } from "client/api/useApiQuery"
 import type { Provider } from "client/auth/providers"
 import { useAuthContext } from "client/auth/useAuthContext"
-import { Button } from "client/components/Button/Button"
+import { Button, ButtonList } from "client/components/Button/Button"
 import { Divider } from "client/components/Divider/Divider"
 import { definition as accountsDefinition } from "server/api/routes/accounts"
 
@@ -50,16 +50,17 @@ function CreateAccount({
 		<>
 			<h2>Authentication</h2>
 			<div>Create Account</div>
-			{providers.map((provider) => (
-				<Button
-					key={provider.key}
-					onClick={() => createAccount(provider.key)}
-					dark
-					style={{ backgroundColor: provider.color }}
-				>
-					{provider.name}
-				</Button>
-			))}
+			<ButtonList>
+				{providers.map((provider) => (
+					<Button
+						key={provider.key}
+						onClick={() => createAccount(provider.key)}
+						style={{ backgroundColor: provider.color }}
+					>
+						{provider.name}
+					</Button>
+				))}
+			</ButtonList>
 			<Divider />
 			<Button onClick={cancelCreateAccount}>Cancel</Button>
 		</>
@@ -93,16 +94,17 @@ function NotLoggedIn({
 			</form>
 			<Divider />
 			<div>Sign in</div>
-			{providers.map((provider) => (
-				<Button
-					key={provider.key}
-					onClick={() => signIn(provider.key)}
-					dark
-					style={{ backgroundColor: provider.color }}
-				>
-					{provider.name}
-				</Button>
-			))}
+			<ButtonList>
+				{providers.map((provider) => (
+					<Button
+						key={provider.key}
+						onClick={() => signIn(provider.key)}
+						style={{ backgroundColor: provider.color }}
+					>
+						{provider.name}
+					</Button>
+				))}
+			</ButtonList>
 		</>
 	)
 }
@@ -122,23 +124,27 @@ function LoggedIn({
 	return (
 		<>
 			<h2>Authentication</h2>
+			<Divider full />
 			<div>Logged in as {userId}</div>
 			<Divider />
 			<Button onClick={() => void signOut()}>Logout</Button>
 			<Divider />
 			<div>
 				<p>Link accounts</p>
-				{providers.map((provider) => (
-					<Button
-						key={provider.key}
-						onClick={() => void linkAccount(provider.key)}
-						dark
-						style={{ backgroundColor: provider.color }}
-						disabled={accounts.data?.accounts.includes(provider.key)}
-					>
-						{provider.name}
-					</Button>
-				))}
+				<ButtonList>
+					{providers.map((provider) => (
+						<Button
+							key={provider.key}
+							onClick={() => void linkAccount(provider.key)}
+							style={{ backgroundColor: provider.color }}
+							disabled={
+								accounts.isLoading || accounts.data?.accounts.includes(provider.key)
+							}
+						>
+							{provider.name}
+						</Button>
+					))}
+				</ButtonList>
 			</div>
 		</>
 	)
