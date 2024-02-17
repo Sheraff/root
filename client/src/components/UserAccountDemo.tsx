@@ -134,7 +134,9 @@ function LoggedIn({
 						onClick={() => void linkAccount(provider.key)}
 						dark
 						style={{ backgroundColor: provider.color }}
-						disabled={accounts.data?.accounts.includes(provider.key)}
+						disabled={
+							accounts.isLoading || accounts.data?.accounts.includes(provider.key)
+						}
 					>
 						{provider.name}
 					</Button>
