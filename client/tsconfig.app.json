@@ -4,12 +4,7 @@
 		"jsx": "react-jsx",
 		"lib": ["DOM", "DOM.Iterable", "ESNext"],
 		"outDir": "../dist/client",
-		"types": ["vitest/importMeta", "vite/client"],
-		"plugins": [
-			{
-				"name": "typescript-plugin-css-modules"
-			}
-		]
+		"types": ["vitest/importMeta", "vite/client"]
 	},
 	"files": ["main.tsx"],
 	"include": [
