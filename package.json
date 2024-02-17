@@ -84,7 +84,7 @@
 		"vitest-github-actions-reporter": "^0.11.1"
 	},
 	"engines": {
-		"node": ">=20",
+		"node": ">=18",
 		"pnpm": ">=8"
 	},
 	"engineStrict": true,
