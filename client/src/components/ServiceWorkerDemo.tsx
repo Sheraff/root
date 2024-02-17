@@ -25,7 +25,12 @@ export function ServiceWorkerDemo() {
 					<Button onClick={update}>Update SW</Button>
 				</>
 			)}
-			{!shouldUpdate && <div>SW is up to date</div>}
+			{!shouldUpdate && (
+				<>
+					<div>SW is up to date</div>
+					<Button disabled>Update SW</Button>
+				</>
+			)}
 		</>
 	)
 }

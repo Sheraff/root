@@ -6,10 +6,11 @@ export function Button({
 	dark,
 	className,
 	...props
-}: ComponentProps<"button"> & { dark?: boolean }) {
+}: (ComponentProps<"button"> | ComponentProps<"a">) & { dark?: boolean }) {
+	const Component = "href" in props ? "a" : "button"
 	return (
-		<button
-			{...props}
+		<Component
+			{...(props as object)}
 			className={clsx(className, classes.main, {
 				[classes.dark]: dark,
 			})}
