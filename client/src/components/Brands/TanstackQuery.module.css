@@ -1,9 +1,0 @@
-.text {
-	background-image: linear-gradient(to right, #ef4444, #f59e0b);
-	color: transparent;
-	background-clip: text;
-	font-weight: 900;
-	font-size: 40px;
-	text-align: center;
-	display: block;
-}

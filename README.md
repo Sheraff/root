@@ -122,5 +122,7 @@ pnpm analyze # bundle size analysis
 ## TODO
 
 - [ ] database: figure out migrations story, maybe through drizzle?
-- [ ] cleanup bento: make the default page nicer looking
+- [ ] cleanup bento: 
+  - [ ] make the default page nicer looking
+  - [ ] cleanup DB demo component
 - [ ] docs: write docs w/ [fumadocs](https://fumadocs.vercel.app/) on [root-docs repo](https://github.com/Sheraff/root-docs)
