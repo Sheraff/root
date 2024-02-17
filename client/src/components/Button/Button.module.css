@@ -9,7 +9,6 @@
 	padding: var(--s-0-25) var(--s);
 	text-align: center;
 	touch-action: manipulation;
-	white-space: nowrap;
 
 	&[disabled] {
 		cursor: not-allowed;
