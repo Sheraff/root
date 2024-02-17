@@ -12,6 +12,7 @@ deoptimization
 fastify
 fract
 fumadocs
+hsts
 knip
 outdir
 outfile
