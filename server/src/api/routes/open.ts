@@ -11,11 +11,8 @@ const schema = {
 			additionalProperties: false,
 		},
 		201: {
-			type: "object",
-			properties: {
-				michel: { type: "number" },
-			},
-			required: ["michel"],
+			type: "string",
+			enum: ["red", "amber", "green"],
 		},
 		404: {
 			type: "object",
@@ -54,7 +51,8 @@ export const handler = procedure(schema, definition, {
 		request.log.info("hello world", request.query.id, request.headers["x-id"])
 		if (request.query.id === "42") {
 			void reply.code(200).send({ hello: "world" })
-			// void reply.status(200).send({ hello: "world" })
+		} else if (request.headers["x-id"] === "123") {
+			void reply.code(201).send("amber")
 		} else {
 			void reply.code(404).send({ error: "no" })
 		}

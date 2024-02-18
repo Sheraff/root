@@ -14,7 +14,7 @@ export type BaseSchema = {
 	params?: JSONSchema7 & { type: "object" }
 	headers?: JSONSchema7 & { type: "object" }
 	response?: {
-		[key in HttpKeys]?: JSONSchema7 & { type: "object" }
+		[key in HttpKeys]?: JSONSchema7 & { type: "object" | "string" }
 	}
 }
 
@@ -27,7 +27,7 @@ export type ClientDefinition = {
 		Params?: Record<string, any>
 		Headers?: Record<string, any>
 		Reply?: {
-			[Code in HttpKeys]?: Record<string, any>
+			[Code in HttpKeys]?: Record<string, any> | string
 		}
 	}
 }
