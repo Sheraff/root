@@ -3,13 +3,22 @@
 	"extends": ["//"],
 	"pipeline": {
 		"build": {
-			"outputs": ["../dist/worker/**"],
+			"outputs": ["../dist/worker/**", "!../dist/worker/.DS_Store"],
 			"inputs": [
 				"esbuild.ts",
 				"tsconfig.app.json",
 				"src/**",
 				"../dist/client/**",
-				"../assets/src/**"
+				"../assets/src/**",
+				"!**/.DS_Store",
+				"!../dist/client/.DS_Store",
+				"!../dist/client/**/*.br",
+				"!../dist/client/**/*.map",
+				"!**/*.test.ts",
+				"!**/*.d.ts",
+				"!**/*.map",
+				"!../assets/src/**.d.ts",
+				"!../assets/src/**.map"
 			],
 			"dependsOn": ["client#build", "script#build"]
 		},
@@ -30,12 +39,14 @@
 				"types/*.d.ts",
 				"../types/*.d.ts",
 				"../shared/src/**/*.ts",
+				"!../shared/src/**/*.test.ts",
 				"tsconfig.json",
 				"tsconfig.app.json"
 			]
 		},
 		"tsc": {
-			"dependsOn": ["worker#tsc:tools", "worker#tsc:app"]
+			"dependsOn": ["worker#tsc:tools", "worker#tsc:app"],
+			"inputs": ["package.json"]
 		},
 		"dev": {
 			"cache": false,
@@ -45,6 +56,9 @@
 		},
 		"test": {
 			"dependsOn": ["script#build"]
+		},
+		"spell": {
+			"inputs": ["$TURBO_DEFAULT$", "../repo.dict.txt"]
 		}
 	}
 }

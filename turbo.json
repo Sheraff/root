@@ -27,35 +27,51 @@
 				"vitest.workspace.ts"
 			]
 		},
-		"lint": {
-			"inputs": ["$TURBO_DEFAULT$", "./.eslintrc.json"]
-		},
+		"lint": {},
 		"//#root:lint": {
 			"inputs": ["./.eslintrc.json", "pnpm-lock.yaml", "package.json", "*.ts", "types/*.ts"]
 		},
-		"lint:fix": {
-			"inputs": ["$TURBO_DEFAULT$", "./.eslintrc.json"]
-		},
+		"lint:fix": {},
 		"//#root:lint:fix": {
 			"inputs": ["./.eslintrc.json", "pnpm-lock.yaml", "package.json", "*.ts", "types/*.ts"]
 		},
-		"format": {
-			"inputs": ["$TURBO_DEFAULT$", "./.prettierrc.json"]
-		},
+		"format": {},
 		"//#root:format": {
-			"inputs": ["$TURBO_DEFAULT$", "./.prettierrc.json"]
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				"!client/**",
+				"!assets/**",
+				"!script/**",
+				"!server/**",
+				"!shared/**",
+				"!worker/**"
+			]
 		},
-		"format:fix": {
-			"inputs": ["$TURBO_DEFAULT$", "./.prettierrc.json"]
-		},
+		"format:fix": {},
 		"//#root:format:fix": {
-			"inputs": ["$TURBO_DEFAULT$", "./.prettierrc.json"]
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				"!client/**",
+				"!assets/**",
+				"!script/**",
+				"!server/**",
+				"!shared/**",
+				"!worker/**"
+			]
 		},
-		"spell": {
-			"inputs": ["$TURBO_DEFAULT$", "./.cspell.json", "./repo.dict.txt"]
-		},
+		"spell": {},
 		"//#root:spell": {
-			"inputs": ["$TURBO_DEFAULT$", "./.cspell.json", "./repo.dict.txt"]
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				"./.cspell.json",
+				"./repo.dict.txt",
+				"!client/**",
+				"!assets/**",
+				"!script/**",
+				"!server/**",
+				"!shared/**",
+				"!worker/**"
+			]
 		},
 		"clear": {
 			"cache": false
@@ -65,8 +81,7 @@
 		},
 		"analyze": {
 			"cache": false
-		},
-		"tsc:watch:css": {}
+		}
 	},
 	"globalDotEnv": [".env"],
 	"globalDependencies": [
@@ -75,6 +90,7 @@
 		"types/*.d.ts",
 		".eslintrc.json",
 		".prettierrc.json",
+		".cspell.json",
 		"package.json"
 	]
 }

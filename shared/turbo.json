@@ -22,10 +22,14 @@
 			]
 		},
 		"tsc": {
-			"dependsOn": ["shared#tsc:tools", "shared#tsc:lib"]
+			"dependsOn": ["shared#tsc:tools", "shared#tsc:lib"],
+			"inputs": ["package.json"]
 		},
 		"test": {
 			"dependsOn": ["script#build"]
+		},
+		"spell": {
+			"inputs": ["$TURBO_DEFAULT$", "../repo.dict.txt"]
 		}
 	}
 }

@@ -7,13 +7,20 @@
 				"src/**",
 				"vite.config.ts",
 				"public/**",
+				"!public/sw.js",
 				"src/**",
 				"index.html",
 				"main.tsx",
 				"tsconfig.app.json",
-				"../assets/src/**"
+				"../assets/src/**",
+				"!**/.DS_Store",
+				"!**/*.test.ts",
+				"!**/*.d.ts",
+				"!**/*.map",
+				"!../assets/src/**.d.ts",
+				"!../assets/src/**.map"
 			],
-			"outputs": ["../dist/client/**"],
+			"outputs": ["../dist/client/**", "!../dist/client/.DS_Store"],
 			"dependsOn": ["script#build"]
 		},
 		"tsc:tools": {
@@ -45,14 +52,17 @@
 				"types/*.d.ts",
 				"../types/*.d.ts",
 				"../shared/src/**/*.ts",
+				"!../shared/src/**/*.test.ts",
 				"../server/src/api/**/*.ts",
+				"!../server/src/api/**/*.test.ts",
 				"tsconfig.json",
 				"tsconfig.app.json"
 			],
 			"dependsOn": ["client#tsc:build:css"]
 		},
 		"tsc": {
-			"dependsOn": ["client#tsc:tools", "client#tsc:app"]
+			"dependsOn": ["client#tsc:tools", "client#tsc:app"],
+			"inputs": ["package.json"]
 		},
 		"test": {
 			"dependsOn": ["script#build"]
@@ -67,6 +77,9 @@
 			"cache": false,
 			"persistent": true,
 			"dependsOn": ["script#build"]
+		},
+		"spell": {
+			"inputs": ["$TURBO_DEFAULT$", "../repo.dict.txt"]
 		}
 	}
 }

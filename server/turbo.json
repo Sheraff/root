@@ -3,8 +3,19 @@
 	"extends": ["//"],
 	"pipeline": {
 		"build": {
-			"outputs": ["../dist/server/**"],
-			"inputs": ["../assets/src/**", "esbuild.ts", "tsconfig.app.json", "src/**"],
+			"outputs": ["../dist/server/**", "!../dist/server/.DS_Store"],
+			"inputs": [
+				"../assets/src/**",
+				"esbuild.ts",
+				"tsconfig.app.json",
+				"src/**",
+				"!**/.DS_Store",
+				"!**/*.test.ts",
+				"!**/*.d.ts",
+				"!**/*.map",
+				"!../assets/src/**.d.ts",
+				"!../assets/src/**.map"
+			],
 			"dependsOn": ["script#build"]
 		},
 		"tsc:tools": {
@@ -12,7 +23,9 @@
 				"../types/*.d.ts",
 				"../script/src/**/*.ts",
 				"tsconfig.json",
-				"tsconfig.tools.json"
+				"tsconfig.tools.json",
+				"vitest.config.ts",
+				"vitest.setup.ts"
 			]
 		},
 		"tsc:app": {
@@ -22,13 +35,15 @@
 				"types/*.d.ts",
 				"../types/*.d.ts",
 				"../shared/src/**/*.ts",
+				"!../shared/src/**/*.test.ts",
 				"../script/src/**/*.ts",
 				"tsconfig.json",
 				"tsconfig.app.json"
 			]
 		},
 		"tsc": {
-			"dependsOn": ["server#tsc:tools", "server#tsc:app"]
+			"dependsOn": ["server#tsc:tools", "server#tsc:app"],
+			"inputs": ["package.json"]
 		},
 		"test": {
 			"dependsOn": ["script#build"]
@@ -37,6 +52,9 @@
 			"cache": false,
 			"persistent": true,
 			"dependsOn": ["script#build"]
+		},
+		"spell": {
+			"inputs": ["$TURBO_DEFAULT$", "../repo.dict.txt"]
 		}
 	}
 }

@@ -1,5 +1,9 @@
 {
 	"$schema": "https://turbo.build/schema.json",
 	"extends": ["//"],
-	"pipeline": {}
+	"pipeline": {
+		"spell": {
+			"inputs": ["$TURBO_DEFAULT$", "../repo.dict.txt"]
+		}
+	}
 }

@@ -3,9 +3,12 @@
 	"extends": ["//"],
 	"pipeline": {
 		"build": {
-			"outputs": ["src/**/*.js"],
+			"outputs": ["src/**/*.js", "src/*.js"],
 			"inputs": ["src/**/*.ts"]
 		},
-		"tsc": {}
+		"tsc": {},
+		"spell": {
+			"inputs": ["$TURBO_DEFAULT$", "../repo.dict.txt"]
+		}
 	}
 }
