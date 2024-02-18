@@ -29,7 +29,9 @@ export function useApiQuery<Def extends ClientDefinition, T = Prettify<DefRespon
 			// Headers are placed in the headers
 			const headers = makeHeaders(data?.Headers as Record<string, unknown>)
 			const response = await fetch(withBody, { method, headers })
-			const result = await response.json().catch(() => {})
+			const result = response.headers.get("Content-Type")?.includes("application/json")
+				? await response.json().catch(() => {})
+				: await response.text().catch(() => {})
 			if (response.status < 200 || response.status >= 300) throw result
 			return result as Prettify<DefResponse<Def>>
 		},
