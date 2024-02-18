@@ -213,6 +213,7 @@ export default defineConfig({
 	plugins,
 	envDir: "..",
 	cacheDir: "../node_modules/.vite",
+	clearScreen: false,
 	resolve: {
 		alias: {
 			// use alias to avoid having "client" as a package dependency of "client"
