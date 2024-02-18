@@ -5,9 +5,8 @@
 	"type": "module",
 	"scripts": {
 		"tsc:build": "tsx ./esbuild.ts --build",
-		"tsc:watch": "tsx ./esbuild.ts",
 		"tsc": "tsc --noEmit",
-		"dev": "pnpm tsc:watch",
+		"dev": "tsx ./esbuild.ts",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"spell": "cspell --config ../.cspell.json --quiet --gitignore '**/*'",
