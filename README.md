@@ -121,7 +121,13 @@ pnpm analyze # bundle size analysis
 
 ## TODO
 
-- [ ] database: figure out migrations story, maybe through drizzle?
+- [ ] database: figure out migrations story
+  - [ ] ~~maybe through drizzle?~~
+    - not compatible with sqlite wasm (https://github.com/drizzle-team/drizzle-orm/issues/193, https://github.com/drizzle-team/drizzle-orm/discussions/243)
+  - [ ] Manual migrations seem ok
+    - do we want down migrations?
+    - should migrations be separate from source code and be fetched? Or part of the source and the client simply cannot sync if the app is not up to date?
+    - how do we know which migrations to run? (on the server, and on the client)
 - [ ] cleanup bento: 
   - [ ] make the default page nicer looking
   - [ ] cleanup DB demo component
