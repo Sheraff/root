@@ -6,7 +6,7 @@ A fullstack typescript offline-first PWA template repo, ready to use
 
 > [!WARNING]
 > **Don't forget to add an `.env` file**: 
-> You can look at the `.env.example` file for a starting point
+> You can rename the `.env.example` file into `.env` for a minimal starting point that will be enough for the app to run
 
 ## Client Package
 
