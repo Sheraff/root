@@ -94,7 +94,7 @@ function Compress(): PluginOption {
 				after: 0,
 				count: 0,
 			}
-			const extensions = /\.(js|wasm|css)$/
+			const extensions = /\.(js|wasm|css|html)$/
 			let logged = false
 			await walkFsTree(outRoot, (node) => {
 				if (node.stats.isDirectory()) return
