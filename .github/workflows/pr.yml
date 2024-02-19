@@ -71,13 +71,14 @@ jobs:
           node --import tsx script/src/stdout/knip.ts pnpm knip
 
       - name: 🚦 Unit testing
-        timeout-minutes: 1
+        timeout-minutes: 2
         run: |
           STEP_NAME="🚦 Unit testing"
           node --import tsx script/src/stdout/test.ts pnpm test:ci
 
       - name: 🏷️ Versioning
         if: github.ref != 'refs/heads/main'
+        timeout-minutes: 1
         run: |
           echo "Checking version..."
           git fetch origin main:main --force --depth=1
@@ -120,6 +121,7 @@ jobs:
         if: steps.build.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
+        timeout-minutes: 2
         run: |
           echo "Creating a release..."
           version=`node -pe "require('./package.json').version"`
