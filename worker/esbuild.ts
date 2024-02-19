@@ -114,6 +114,7 @@ async function build() {
 					(f) =>
 						f.isFile() &&
 						!f.name.endsWith(".DS_Store") &&
+						!f.name.endsWith(".br") &&
 						!staticExclude.includes(f.name)
 				)
 				.map((f) => `/${f.name}`)
