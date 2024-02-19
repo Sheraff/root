@@ -4,6 +4,10 @@ A fullstack typescript offline-first PWA template repo, ready to use
 > **Quick start**: 
 > Just click the <kbd>Use this template</kbd> button to create a new repository with this template.
 
+> [!WARNING]
+> **Don't forget to add an `.env` file**: 
+> You can look at the `.env.example` file for a starting point
+
 ## Client Package
 
 A typescript React application, with
