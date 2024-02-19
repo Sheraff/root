@@ -9,7 +9,7 @@ import { type CtxAsync } from "@vlcn.io/react"
 import { useDb } from "client/db/DbProvider"
 import { useLayoutEffect } from "react"
 
-const UNIQUE_KEY = "__vlcn__cache_manager__"
+export const UNIQUE_KEY = "__vlcn__cache_manager__"
 
 type DBAsync = CtxAsync["db"]
 type StmtAsync = Awaited<ReturnType<DBAsync["prepare"]>>
@@ -23,6 +23,14 @@ type UpdateType =
 	| 9
 
 const ALL_UPDATES = [18, 23, 9] as const
+
+export type DbQueryKey = readonly [
+	typeof UNIQUE_KEY,
+	dbName: string,
+	sql: string,
+	updateTypes: Record<UpdateType, boolean>,
+	bindings: readonly string[],
+]
 
 /**
  * Not really useful, this is just to increase the cache hit rate.
@@ -90,8 +98,6 @@ function cleanupQuery({
 	hash: string
 	dbName: string
 }) {
-	console.log("cleanup query", hash)
-
 	// make sure no other queryKey is using that same SQL query and is still considered fresh
 	const filterKey = [UNIQUE_KEY, ...queryKey] as const
 	const remaining = cacheManager.find({
@@ -101,10 +107,11 @@ function cleanupQuery({
 	})
 	if (remaining) {
 		// the same SQL query is still considered fresh in some other queryKey, we should keep listening to table changes
+		console.log("cleanup query, key still in use", hash)
 		return
 	}
 
-	console.log("finalizing statement", hash)
+	console.log("cleanup query, finalizing statement", hash)
 	queryStore.delete(hash)
 	q.statement?.then((s) => s.finalize(null), console.error)
 	q.statement = null
@@ -141,13 +148,14 @@ function cleanupQuery({
 	q.tables = null
 }
 
-function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
+export function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 	console.log("~~~ start cache manager ~~~", dbName)
 
 	const cacheManager = client.getQueryCache()
 	const unsubscribe = cacheManager.subscribe((event) => {
-		const eventQueryKey = event.query.queryKey as readonly unknown[]
-		if (eventQueryKey[0] !== UNIQUE_KEY) return
+		const k = event.query.queryKey as readonly unknown[]
+		if (k[0] !== UNIQUE_KEY) return
+		const eventQueryKey = k as DbQueryKey
 		const queryKey = [eventQueryKey[1], eventQueryKey[2]] as [dbName: string, sql: string]
 		const hash = hashKey(queryKey)
 
@@ -188,12 +196,12 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 				queryStore.set(hash, q)
 			}
 			if (!q.statement) {
-				q.statement = ctx.db.prepare(eventQueryKey[2] as string)
+				q.statement = ctx.db.prepare(eventQueryKey[2])
 			}
 			if (q.activeCount !== 1) return
 			if (q.listening) return
 			q.listening = true
-			getUsedTables(ctx.db, queryKey[1]).then((tables) => {
+			getUsedTables(ctx.db, queryKey[1], (tables) => {
 				if (!q.listening) return
 				q.tables = tables
 				for (const table of tables) {
@@ -232,7 +240,7 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 						},
 					})
 				}
-			}, console.error)
+			}).catch(console.error)
 			return
 		}
 
@@ -269,8 +277,8 @@ function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
 				)
 				return
 			}
-			console.log("decrement active count", hash)
 			q.activeCount--
+			console.log("decrement active count", q.activeCount, hash)
 			if (q.activeCount !== 0) return
 
 			cleanupQuery({ q, cacheManager, queryKey, hash, dbName })
@@ -375,13 +383,7 @@ export function useDbQuery<
 		sqlToKey(query),
 		Object.fromEntries(updateTypes.map((t) => [t, true])) as Record<UpdateType, boolean>,
 		bindings,
-	] as readonly [
-		typeof UNIQUE_KEY,
-		dbName: string,
-		sql: string,
-		updateTypes: Record<UpdateType, boolean>,
-		bindings: readonly string[],
-	]
+	] as DbQueryKey
 
 	return useQuery({
 		enabled: Boolean(ctx?.db && enabled),
@@ -443,13 +445,13 @@ export function useDbQuery<
 
 /** leaky cache, seems ok though */
 const usedTableCache = new Map<string, string[]>()
-async function getUsedTables(db: DBAsync, query: string): Promise<string[]> {
+async function getUsedTables(db: DBAsync, query: string, callback: (tables: string[]) => void) {
 	const cacheKey = hashKey([db.filename, query])
 	const cached = usedTableCache.get(cacheKey)
-	if (cached) return cached
+	if (cached) return callback(cached)
 	const sanitized = query.replaceAll("'", "''")
 	const rows = (await db.tablesUsedStmt.all(null, sanitized)) as Array<[string]>
 	const result = Array.from(new Set(rows.map((r) => r[0])))
 	usedTableCache.set(cacheKey, result)
-	return result
+	return callback(result)
 }
