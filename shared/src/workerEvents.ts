@@ -15,4 +15,9 @@ type HMREvent = {
 	payload?: never
 }
 
-export type Message = FooEvent | UpdateEvent | HMREvent
+type SubscribeEvent = {
+	type: "SUBSCRIBE"
+	payload?: never
+}
+
+export type Message = FooEvent | UpdateEvent | HMREvent | SubscribeEvent

@@ -1,21 +1,10 @@
 import { onFetch } from "worker/onFetch"
 import { CACHES } from "worker/config"
 import type { Message } from "shared/workerEvents"
+import { registerPush } from "worker/Push"
+import { sw } from "worker/self"
 
 export {}
-
-declare global {
-	const sw: ServiceWorkerGlobalScope
-
-	interface WorkerNavigator {
-		connection?: {
-			downlink: number
-			rtt: number
-		}
-	}
-}
-// @ts-expect-error -- forcing here so it's available everywhere
-globalThis.sw = self as unknown as ServiceWorkerGlobalScope
 
 sw.addEventListener("install", (event) => {
 	event.waitUntil(
@@ -74,6 +63,8 @@ sw.addEventListener("message", (event) => {
 	} else if (data.type === "HMR") {
 		activationType = "hmr"
 		sw.skipWaiting().catch(console.error)
+	} else if (data.type === "SUBSCRIBE") {
+		registerPush().catch(console.error)
 	} else {
 		console.debug("[SW] received message:", data)
 	}

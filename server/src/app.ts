@@ -1,6 +1,7 @@
 import fastify from "fastify"
 import api from "server/api"
 import auth from "server/auth"
+import push from "server/push"
 import frontend from "server/frontend"
 import { env } from "server/env"
 import crsqlite from "server/crsqlite"
@@ -28,6 +29,7 @@ app.get("/health", { logLevel: "silent" }, (_, res) => res.status(200).send("OK"
 
 /**
  * Register the auth routes + session management.
+ *
  * Reserves the following routes:
  * - GET /api/oauth/connect/:provider
  * - GET /api/oauth/connect/:provider/callback
@@ -35,13 +37,28 @@ app.get("/health", { logLevel: "silent" }, (_, res) => res.status(200).send("OK"
  * - GET /api/oauth/invite
  * - POST /api/oauth/invite
  * - DELETE /api/oauth/session
+ *
+ * Also adds the `auth` decorator to the Fastify instance.
  */
 void app.register(auth, {
 	dbPath: DB_ROOT,
 })
+/**
+ * Register the push notification routes.
+ *
+ * Reserves the following routes:
+ * - GET /api/push/handshake
+ * - POST /api/push/handshake
+ *
+ * Requires the auth plugin to be registered first.
+ *
+ * Also adds the `notify` decorator to the Fastify instance.
+ */
+void app.register(push)
 
 /**
  * Register the DB Sync routes.
+ *
  * Reserves the following routes:
  * - GET /api/changes/:name
  * - POST /api/changes/:name
@@ -50,10 +67,18 @@ void app.register(crsqlite, {
 	dbPath: DB_ROOT,
 })
 
-// Register the API routes
+/**
+ * Register the API routes.
+ */
 void app.register(api)
 
-// in production mode, we serve the client built by Vite
+/**
+ * Register the frontend routes.
+ *
+ * In production mode, we serve the client built by Vite.
+ *
+ * Reserves all remaining routes.
+ */
 if (process.env.NODE_ENV === "production") {
 	void app.register(frontend)
 }
