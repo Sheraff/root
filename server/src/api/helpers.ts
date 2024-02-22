@@ -14,7 +14,7 @@ export type BaseSchema = {
 	params?: JSONSchema7 & { type: "object" }
 	headers?: JSONSchema7 & { type: "object" }
 	response?: {
-		[key in HttpKeys]?: JSONSchema7 & { type: "object" | "string" }
+		[key in HttpKeys]?: JSONSchema7 & { type: "object" | "string" | "array" }
 	}
 }
 
