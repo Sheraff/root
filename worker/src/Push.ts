@@ -10,6 +10,34 @@ sw.addEventListener("push", (event) => {
 	}
 })
 
+// async function registerSync() {
+// 	await sw.registration.sync.register("sync")
+// }
+
+// sw.addEventListener("sync", function (event) {
+// 	if (event.tag == "myFirstSync") {
+// 		event.waitUntil(doSomeStuff())
+// 	}
+// })
+
+// void sw.clients.get("foo").then((client) => {
+// 	if (client) {
+// 	void sw.clients.openWindow(client.url)
+// 	}
+// })
+
+// // when receiving a "push" event `type: "SYNC"` from the server (indicating that there is new data to be fetched)
+// void sw.clients.matchAll({type: "window", includeUncontrolled: false}).then((clients) => {
+// 	for (const client of clients) {
+// 		if (client.visibilityState === "visible") {
+// 			// if a client is visible, tell it to sync, the SQLite data is shared between all clients
+// 			client.postMessage()
+// 			return
+// 		}
+// 	}
+// 	// if no client is visible, sync from the service worker, then what?
+// })
+
 export async function registerPush() {
 	const subscription = await sw.registration.pushManager.getSubscription()
 	const url = new URL("/api/push/handshake", location.href)
