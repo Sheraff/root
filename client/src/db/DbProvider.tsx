@@ -1,15 +1,48 @@
-import { dbFactory, type CtxAsync } from "@vlcn.io/react"
 import { useEffect } from "react"
 import { useCacheManager } from "client/db/useDbQuery"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
+import initWasm, { type DB } from "@vlcn.io/crsqlite-wasm"
+import tblrx, { type TblRx } from "@vlcn.io/rx-tbl"
 
 const DB_KEY = "__sqlite__db_context__"
+
+export type Ctx = {
+	readonly db: DB
+	readonly rx: TblRx
+}
 
 type DbStore = {
 	schema: string
 	schemaName: string
-	db: CtxAsync
+	db: Ctx
 	name: string
+}
+
+declare global {
+	interface LockManager {
+		request<T>(
+			name: string,
+			options: { mode: "exclusive" },
+			fn: () => T | Promise<T>
+		): Promise<T>
+	}
+}
+
+async function makeDb(name: string, schema: string, schemaName: string): Promise<Ctx> {
+	return navigator.locks.request("db-init", { mode: "exclusive" }, async () => {
+		const sqlite = await initWasm()
+		const db = await sqlite.open(name)
+		await db.automigrateTo(schemaName, schema)
+		const rx = tblrx(db)
+		return { db, rx }
+	})
+}
+
+async function destroyDb({ db, rx }: Ctx): Promise<void> {
+	return navigator.locks.request("db-init", { mode: "exclusive" }, async () => {
+		rx.dispose()
+		await db.close()
+	})
 }
 
 /**
@@ -26,10 +59,6 @@ export function useDbProvider(name: string | undefined, schema: string, schemaNa
 		if (!name) return
 		let closed = false
 		const cleanSchema = schema.replace(/[\s\n\t]+/g, " ").trim()
-		const params = {
-			content: cleanSchema,
-			name: schemaName,
-		}
 		const key = [DB_KEY, name]
 		const existing = client.getQueryData<DbStore>(key)
 		if (existing) {
@@ -39,8 +68,7 @@ export function useDbProvider(name: string | undefined, schema: string, schemaNa
 			console.error(e)
 			throw e
 		}
-		dbFactory
-			.get(name, params)
+		makeDb(name, cleanSchema, schemaName)
 			.then((db) => {
 				if (closed) return
 				client.setQueryData<DbStore>(key, {
@@ -56,8 +84,11 @@ export function useDbProvider(name: string | undefined, schema: string, schemaNa
 			})
 		return () => {
 			closed = true
-			void dbFactory.closeAndRemove(name)
-			client.removeQueries({ queryKey: key, exact: true })
+			const db = client.getQueryData<DbStore>(key)?.db
+			if (db) {
+				void destroyDb(db)
+				client.removeQueries({ queryKey: key, exact: true })
+			}
 		}
 	}, [name, schema, schemaName])
 
@@ -68,8 +99,8 @@ export function useDbProvider(name: string | undefined, schema: string, schemaNa
  * Call this hook to retrieve a database from the cache
  * @param name Local unique name for the database, used to identify the database in the cache
  */
-export function useDb(name?: string): CtxAsync | undefined {
-	const { data } = useQuery<DbStore, unknown, CtxAsync>({
+export function useDb(name?: string): Ctx | undefined {
+	const { data } = useQuery<DbStore, unknown, Ctx>({
 		enabled: Boolean(name),
 		queryKey: [DB_KEY, name],
 		gcTime: Infinity,

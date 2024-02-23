@@ -1,10 +1,9 @@
 import { useMutation } from "@tanstack/react-query"
-import { type CtxAsync } from "@vlcn.io/react"
-import { useDb } from "client/db/DbProvider"
+import { useDb, type Ctx } from "client/db/DbProvider"
 import { useEffect, useRef } from "react"
 
-type DBAsync = CtxAsync["db"]
-type StmtAsync = Awaited<ReturnType<DBAsync["prepare"]>>
+type DB = Ctx["db"]
+type StmtAsync = Awaited<ReturnType<DB["prepare"]>>
 
 export function useDbMutation<TBindings extends readonly string[] = [], TData = null>({
 	dbName,

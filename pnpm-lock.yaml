@@ -26,9 +26,12 @@ importers:
       '@vlcn.io/crsqlite':
         specifier: 0.16.3
         version: 0.16.3
-      '@vlcn.io/react':
-        specifier: 3.1.0
-        version: 3.1.0(react@18.2.0)
+      '@vlcn.io/crsqlite-wasm':
+        specifier: 0.16.0
+        version: 0.16.0
+      '@vlcn.io/rx-tbl':
+        specifier: 0.15.0
+        version: 0.15.0
       '@vlcn.io/ws-common':
         specifier: 0.2.0
         version: 0.2.0
@@ -1709,10 +1712,6 @@ packages:
     resolution: {integrity: sha512-dn1l8LaMea/IjDoHNd9J52uBbInB796CDffS6VdIxvqYCPSG0V0DzHp76GpaWnlhg88uYyPbXCDIowa86ybd5A==}
     dev: true
 
-  /@types/throttle-debounce@5.0.2:
-    resolution: {integrity: sha512-pDzSNulqooSKvSNcksnV72nk8p7gRqN8As71Sp28nov1IgmPKWbOEIwAWvBME5pPTtaXJAvG3O4oc76HlQ4kqQ==}
-    dev: false
-
   /@typescript-eslint/eslint-plugin@7.0.2(@typescript-eslint/parser@7.0.2)(eslint@8.56.0)(typescript@5.3.3):
     resolution: {integrity: sha512-/XtVZJtbaphtdrWjr+CJclaCVGPtOdBpFEnvtNf/jRV0IiEemRrL0qABex/nEt8isYcnFacm3nPHYQwL+Wb7qg==}
     engines: {node: ^16.0.0 || >=18.0.0}
@@ -1923,39 +1922,14 @@ packages:
     requiresBuild: true
     dev: false
 
-  /@vlcn.io/react@3.1.0(react@18.2.0):
-    resolution: {integrity: sha512-sWAoEMVhuPXk4zCxIZa4SoSElNXWO8TwvcQf0xWfKTwQzkPldhiUqCIwXxHzQ37X47rlHrLfMuSvv5dT1vQupA==}
-    peerDependencies:
-      react: ^18
-    dependencies:
-      '@vlcn.io/crsqlite-wasm': 0.16.0
-      '@vlcn.io/rx-tbl': 0.15.0
-      '@vlcn.io/typed-sql': 0.3.0
-      '@vlcn.io/ws-client': 0.2.0
-      '@vlcn.io/xplat-api': 0.15.0
-      async-mutex: 0.4.1
-      react: 18.2.0
-    dev: false
-
   /@vlcn.io/rx-tbl@0.15.0:
     resolution: {integrity: sha512-6P5R8E5EJ6oASDyT7TbuV18Af4P/YobGEI3+uGUoquQi0GVl+NLdtbYA/sR4PkXsjQ1zBcs0oAi5TmYGe+Cd6A==}
     dependencies:
       '@vlcn.io/xplat-api': 0.15.0
     dev: false
 
-  /@vlcn.io/typed-sql@0.3.0:
-    resolution: {integrity: sha512-cKRh2RNzTNIv6NJs5Q2Nda8c4VQ1kEDhR6ERJEyFkmBEHnY/dBFWtZFN2ku35zfDjwVQxFqsr9GiJh0KpvtcXw==}
-    dev: false
-
   /@vlcn.io/wa-sqlite@0.22.0:
     resolution: {integrity: sha512-OujKro0mAqP7/efUeCGB6zBiyMoSCFVe7jQKPF0n47U9ZhOaIW3kQUVCwF+CmzvzQfN1Vl4PrFQRNNxlSwTCNQ==}
-    dev: false
-
-  /@vlcn.io/ws-client@0.2.0:
-    resolution: {integrity: sha512-0Nwqh/vBrKZNmRvVS2/LHUm8ssgfXbAzS5J3h3b2l9FQWDDsF3f+DfFekR/ExNagFGHEk8ZEjTQtIzj+F9doJw==}
-    dependencies:
-      '@types/throttle-debounce': 5.0.2
-      '@vlcn.io/ws-common': 0.2.0
     dev: false
 
   /@vlcn.io/ws-common@0.2.0:

@@ -5,14 +5,13 @@ import {
 	type QueryClient,
 	type QueryCache,
 } from "@tanstack/react-query"
-import { type CtxAsync } from "@vlcn.io/react"
-import { useDb } from "client/db/DbProvider"
+import { useDb, type Ctx } from "client/db/DbProvider"
 import { useLayoutEffect } from "react"
 
 export const UNIQUE_KEY = "__vlcn__cache_manager__"
 
-type DBAsync = CtxAsync["db"]
-type StmtAsync = Awaited<ReturnType<DBAsync["prepare"]>>
+type DB = Ctx["db"]
+type StmtAsync = Awaited<ReturnType<DB["prepare"]>>
 
 type UpdateType =
 	/** INSERT */
@@ -148,7 +147,7 @@ function cleanupQuery({
 	q.tables = null
 }
 
-export function start(dbName: string, ctx: CtxAsync, client: QueryClient) {
+export function start(dbName: string, ctx: Ctx, client: QueryClient) {
 	console.log("~~~ start cache manager ~~~", dbName)
 
 	const cacheManager = client.getQueryCache()
@@ -445,7 +444,7 @@ export function useDbQuery<
 
 /** leaky cache, seems ok though */
 const usedTableCache = new Map<string, string[]>()
-async function getUsedTables(db: DBAsync, query: string, callback: (tables: string[]) => void) {
+async function getUsedTables(db: DB, query: string, callback: (tables: string[]) => void) {
 	const cacheKey = hashKey([db.filename, query])
 	const cached = usedTableCache.get(cacheKey)
 	if (cached) return callback(cached)
