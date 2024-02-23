@@ -1,13 +1,13 @@
 import { sql } from "shared/sql"
-import type { CtxAsync } from "@vlcn.io/react"
+import type { Ctx } from "client/db/DbProvider"
 import { encode, decode, tags, bytesToHex, type Change } from "@vlcn.io/ws-common"
 import { useState, useEffect } from "react"
 
-type DBAsync = CtxAsync["db"]
-type StmtAsync = Awaited<ReturnType<DBAsync["prepare"]>>
+type DB = Ctx["db"]
+type StmtAsync = Awaited<ReturnType<DB["prepare"]>>
 
 type SyncArgs = Readonly<{
-	db: DBAsync
+	db: DB
 	name: string
 	schemaVersion: bigint
 	pullChangesetStmt: StmtAsync
@@ -153,7 +153,7 @@ class Sync {
 	}
 }
 
-async function createSync(db: CtxAsync["db"], room: string) {
+async function createSync(db: DB, room: string) {
 	const [schemaVersionRow] = await db.execA<[number | bigint | undefined]>(
 		sql`SELECT value FROM crsql_master WHERE key = 'schema_version'`
 	)
@@ -192,7 +192,7 @@ async function createSync(db: CtxAsync["db"], room: string) {
 	})
 }
 
-export function useSync(db: DBAsync | undefined, name: string | undefined) {
+export function useSync(db: DB | undefined, name: string | undefined) {
 	const [sync, setSync] = useState<Sync | null>(null)
 
 	useEffect(() => {

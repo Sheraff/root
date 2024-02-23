@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test, vi } from "vitest"
 import { QueryClient, QueryObserver, type QueryCache } from "@tanstack/react-query"
 import { UNIQUE_KEY, start, type DbQueryKey } from "client/db/useDbQuery"
-import { type CtxAsync } from "@vlcn.io/react"
+import type { Ctx } from "client/db/DbProvider"
 import { nextTick } from "node:process"
 
 describe.sequential("'start' listening to QueryCache for live SQL queries", () => {
@@ -39,7 +39,7 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 			},
 		}
 
-		stop = start("foo", ctx as unknown as CtxAsync, client)
+		stop = start("foo", ctx as unknown as Ctx, client)
 	})
 
 	afterAll(() => {

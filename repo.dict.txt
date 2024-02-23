@@ -24,6 +24,7 @@ spotify
 sqlite
 SQLITE_IOERR_WRITE
 tanstack
+tblrx
 treeshake
 tsbuildinfo
 turborepo
