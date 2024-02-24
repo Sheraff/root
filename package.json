@@ -1,6 +1,6 @@
 {
 	"name": "repo",
-	"version": "0.0.0-alpha.9",
+	"version": "0.0.0-alpha.10",
 	"license": "MIT",
 	"private": true,
 	"repository": {
@@ -51,7 +51,8 @@
 		"pino-pretty": "10.3.1",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"valibot": "0.28.1"
+		"valibot": "0.28.1",
+		"web-push": "^3.6.7"
 	},
 	"devDependencies": {
 		"@fastify/http-proxy": "^9.4.0",
@@ -60,6 +61,7 @@
 		"@types/node": "20.11.19",
 		"@types/react": "18.2.57",
 		"@types/react-dom": "18.2.19",
+		"@types/web-push": "^3.6.3",
 		"@typescript-eslint/eslint-plugin": "^7.0.2",
 		"@typescript-eslint/parser": "^7.0.2",
 		"@vitejs/plugin-react-swc": "3.6.0",
@@ -71,10 +73,10 @@
 		"eslint": "^8.56.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-react-refresh": "^0.4.5",
+		"json-schema-to-ts": "3.0.0",
 		"knip": "^5.0.1",
 		"prettier": "^3.2.5",
 		"rollup-plugin-visualizer": "5.12.0",
-		"json-schema-to-ts": "3.0.0",
 		"tsx": "4.7.1",
 		"turbo": "1.12.4",
 		"typed-css-modules": "^0.9.1",
