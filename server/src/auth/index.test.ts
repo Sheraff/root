@@ -21,14 +21,7 @@ describe.sequential(
 					sql`SELECT name FROM sqlite_schema WHERE type ='table' AND name NOT LIKE 'sqlite_%';`
 				)
 				.all() as Array<{ name: string }>
-			expect(tables.map((t) => t.name)).toEqual([
-				"users",
-				"sessions",
-				"accounts",
-				"invites",
-				"push_subscriptions",
-				"key_values",
-			])
+			expect(tables.map((t) => t.name)).toEqual(["users", "sessions", "accounts", "invites"])
 		})
 
 		it("accepts an invite code", async () => {
