@@ -10,4 +10,4 @@ type Foo = {
 	}
 }
 
-export type Message = Ack | Foo
+export type PushMessage = Ack | Foo

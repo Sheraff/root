@@ -1,12 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { type Message } from "shared/workerEvents"
+import { type ServiceWorkerMessage } from "shared/workerEvents"
 
 const DB_KEY = "__service_worker__"
 
 export const SW_CACHE_KEY = [DB_KEY, "ready"]
 
 type KnownServiceWorker = Omit<ServiceWorker, "postMessage"> & {
-	postMessage(message: Message, transfer?: Transferable[]): void
+	postMessage(message: ServiceWorkerMessage, transfer?: Transferable[]): void
 }
 
 export function useServiceWorker() {

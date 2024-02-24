@@ -1,6 +1,6 @@
 import { onFetch } from "worker/onFetch"
 import { CACHES } from "worker/config"
-import type { Message } from "shared/workerEvents"
+import type { ServiceWorkerMessage } from "shared/workerEvents"
 import { registerPush } from "worker/Push"
 import { sw } from "worker/self"
 
@@ -56,7 +56,7 @@ sw.addEventListener("activate", (event) => {
 sw.addEventListener("fetch", onFetch)
 
 sw.addEventListener("message", (event) => {
-	const data = event.data as Message
+	const data = event.data as ServiceWorkerMessage
 	if (data.type === "UPDATE") {
 		activationType = "prod"
 		sw.skipWaiting().catch(console.error)

@@ -1,8 +1,8 @@
-import type { Message } from "shared/pushEvents"
+import type { PushMessage } from "shared/pushEvents"
 import { sw } from "worker/self"
 
 sw.addEventListener("push", (event) => {
-	const data = event.data?.json() as Message
+	const data = event.data?.json() as PushMessage
 	if (data.type === "ACK") {
 		console.log("[SW] push subscription acknowledged by server")
 	} else {

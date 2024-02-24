@@ -20,4 +20,4 @@ type SubscribeEvent = {
 	payload?: never
 }
 
-export type Message = FooEvent | UpdateEvent | HMREvent | SubscribeEvent
+export type ServiceWorkerMessage = FooEvent | UpdateEvent | HMREvent | SubscribeEvent

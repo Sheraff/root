@@ -1,17 +1,19 @@
 import WebPush, { type PushSubscription, type VapidKeys } from "web-push"
-import type { Message } from "shared/pushEvents"
+import type { PushMessage } from "shared/pushEvents"
 import { authProtected } from "server/auth/helpers/onRequestAuthProtected"
 import type { FastifyInstance } from "fastify"
 import { sql } from "shared/sql"
+import schemaContent from "./schema.sql"
 
 declare module "fastify" {
 	interface FastifyInstance {
-		notify: (userId: string, message: Message) => void
+		notify: (userId: string, message: PushMessage) => void
 	}
 }
 
 function push(fastify: FastifyInstance, _: object, done: () => void) {
 	const authDB = fastify.auth.db
+	authDB.exec(schemaContent)
 
 	const keyValSelect = authDB.prepare<{
 		key: string
@@ -95,7 +97,7 @@ function push(fastify: FastifyInstance, _: object, done: () => void) {
 	}>(sql`SELECT * FROM push_subscriptions WHERE user_id = @userId`)
 
 	function sendAck(sub: PushSubscription) {
-		const message: Message = { type: "ACK" }
+		const message: PushMessage = { type: "ACK" }
 		void WebPush.sendNotification(sub, JSON.stringify(message))
 	}
 
@@ -165,7 +167,7 @@ function push(fastify: FastifyInstance, _: object, done: () => void) {
 		},
 	})
 
-	fastify.decorate("notify", (userId: string, message: Message) => {
+	fastify.decorate("notify", (userId: string, message: PushMessage) => {
 		const subscriptions = selectSubscription.all({ userId }) as SubscriptionRecord[]
 		for (const sub of subscriptions) {
 			void WebPush.sendNotification(recordToSubscription(sub), JSON.stringify(message))
@@ -177,11 +179,9 @@ function push(fastify: FastifyInstance, _: object, done: () => void) {
 
 export default Object.assign(push, {
 	/**
-	 * this makes the decorators added in this plugin
-	 * (session, cookie, grant, etc.)
+	 * this makes the decorators added in this plugin (notify, etc.)
 	 * persist outside of the scope of this plugin.
-	 * This makes other plugins able to read the session
-	 * and cookie data.
+	 * This makes other plugins able to send notifications.
 	 *
 	 * @see {@link https://fastify.dev/docs/latest/Reference/Plugins#handle-the-scope}
 	 */
