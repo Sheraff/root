@@ -48,6 +48,14 @@ function push(fastify: FastifyInstance, _: object, done: () => void) {
 		KeyVal.set("vapid_public_key", vapidKeys.publicKey)
 		KeyVal.set("vapid_private_key", vapidKeys.privateKey)
 		fastify.log.info(`Generated new VAPID keys, public key: ${vapidKeys.publicKey}`)
+
+		// old subscriptions cannot work anymore, delete them
+		authDB.exec(sql`DELETE FROM push_subscriptions`)
+		const deleted = authDB.prepare(sql`SELECT changes() as count`).get() as { count: number }
+		if (deleted.count) {
+			fastify.log.info(`Deleted ${deleted.count} push subscriptions using the old VAPID keys`)
+		}
+
 		return vapidKeys
 	}
 
