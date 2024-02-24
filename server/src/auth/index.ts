@@ -104,6 +104,7 @@ function auth(fastify: FastifyInstance, { dbPath }: { dbPath: string }, done: ()
 	void fastify.register(
 		grant.fastify()({
 			defaults: {
+				// TODO: this should come from the env, so that redirection works when hosted
 				origin: "http://localhost:3001",
 				transport: "session",
 				state: true,
