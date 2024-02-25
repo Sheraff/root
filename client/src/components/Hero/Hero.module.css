@@ -160,13 +160,13 @@
 	50% {
 		opacity: 0.2;
 		--angle: 35deg;
-		--falloff: 25deg;
+		--falloff: 35deg;
 		--light: 75%;
 	}
 	100% {
 		opacity: 0.1;
-		--angle: 10deg;
-		--falloff: 55deg;
+		--angle: 5deg;
+		--falloff: 5deg;
 		--light: 65%;
 	}
 }
