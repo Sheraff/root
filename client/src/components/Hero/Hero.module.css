@@ -185,7 +185,7 @@
 	animation-range-start: exit 0%;
 	animation-range-end: exit 80%;
 	animation-fill-mode: both;
-	animation-timing-function: ease-in;
+	animation-timing-function: cubic-bezier(0, 0.34, 0.71, 0.66);
 
 	transition: transform 120ms;
 	&:hover {

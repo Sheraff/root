@@ -1,0 +1,15 @@
+.output {
+	background: black;
+	padding: var(--s);
+	border-radius: var(--s-0-5);
+	white-space: pre-wrap;
+	display: block;
+	margin: var(--s-0-5) 0;
+	transition: border-color 400ms;
+	border: 1px solid hsl(from var(--background) h 25% 10%);
+}
+
+.active {
+	transition-duration: 0ms;
+	border-color: hsl(from var(--accent) h 80% 65% / 0.5);
+}

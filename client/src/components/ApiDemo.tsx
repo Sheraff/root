@@ -1,7 +1,9 @@
 import { useApiMutation } from "client/api/useApiMutation"
 import { useApiQuery } from "client/api/useApiQuery"
+import { Title } from "client/components/Bento/Title"
 import { Button } from "client/components/Button/Button"
 import { Divider } from "client/components/Divider/Divider"
+import { Output } from "client/components/Output/Output"
 import { definition as openDefinition } from "server/api/routes/open"
 import { definition as protectedDefinition } from "server/api/routes/protected"
 import { definition as saveDefinition } from "server/api/routes/save"
@@ -25,19 +27,31 @@ export function ApiDemo() {
 
 	return (
 		<>
-			<h2>API</h2>
+			<Title
+				icon="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNhYmxlIj48cGF0aCBkPSJNNCA5YTIgMiAwIDAgMS0yLTJWNWg2djJhMiAyIDAgMCAxLTIgMloiLz48cGF0aCBkPSJNMyA1VjMiLz48cGF0aCBkPSJNNyA1VjMiLz48cGF0aCBkPSJNMTkgMTVWNi41YTMuNSAzLjUgMCAwIDAtNyAwdjExYTMuNSAzLjUgMCAwIDEtNyAwVjkiLz48cGF0aCBkPSJNMTcgMjF2LTIiLz48cGF0aCBkPSJNMjEgMjF2LTIiLz48cGF0aCBkPSJNMjIgMTloLTZ2LTJhMiAyIDAgMCAxIDItMmgyYTIgMiAwIDAgMSAyIDJaIi8+PC9zdmc+"
+				title="API"
+			/>
 			<Divider full />
 			<h3>Open</h3>
-			<pre>{open.data ? JSON.stringify(open.data, null, 2) : " \n  loading\n "}</pre>
+			<Output>{open.data ? JSON.stringify(open.data, null, 2) : " \n  loading\n "}</Output>
 			<h3>Protected</h3>
-			<pre>
+			<Output>
 				{secret.error
 					? JSON.stringify(secret.error, null, 2)
 					: secret.data
 						? JSON.stringify(secret.data, null, 2)
 						: " \n  loading\n "}
-			</pre>
+			</Output>
 			<h3>Mutation</h3>
+			<Output>
+				{JSON.stringify(
+					{
+						status: save.status,
+					},
+					null,
+					2
+				)}
+			</Output>
 			<Button
 				disabled={save.isPending || save.isSuccess}
 				onClick={() => save.mutate({ Body: { hello: "world", moo: 42 } })}

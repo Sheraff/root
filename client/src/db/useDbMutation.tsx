@@ -1,25 +1,30 @@
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, type UseMutationOptions } from "@tanstack/react-query"
 import { useDb, type Ctx } from "client/db/DbProvider"
 import { useEffect, useRef } from "react"
 
 type DB = Ctx["db"]
 type StmtAsync = Awaited<ReturnType<DB["prepare"]>>
 
-export function useDbMutation<TBindings extends readonly string[] = [], TData = null>({
+export function useDbMutation<
+	TBindings extends ReadonlyArray<string | number> = [],
+	TData = null,
+	TReturnData extends TData extends null ? void : TData[] = TData extends null ? void : TData[],
+>({
 	dbName,
 	query,
 	returning,
-}: TData extends null
+	onSuccess,
+}: {
+	dbName: string
+	query: string
+	onSuccess?: UseMutationOptions<TReturnData, unknown, TBindings>["onSuccess"]
+} & (TData extends null
 	? {
-			dbName: string
-			query: string
 			returning?: false
 		}
 	: {
-			dbName: string
-			query: string
 			returning: true
-		}) {
+		})) {
 	const ctx = useDb(dbName)
 	const statement = useRef<Promise<StmtAsync> | null>(null)
 	useEffect(() => {
@@ -27,7 +32,6 @@ export function useDbMutation<TBindings extends readonly string[] = [], TData = 
 		statement.current = ctx.db.prepare(query)
 		return () => void statement.current?.then((s) => s.finalize(null))
 	}, [ctx, query])
-	type TReturnData = TData extends null ? void : TData[]
 	return useMutation<TReturnData, unknown, TBindings>({
 		mutationFn(bindings) {
 			if (!statement.current)
@@ -44,5 +48,6 @@ export function useDbMutation<TBindings extends readonly string[] = [], TData = 
 		},
 		networkMode: "always",
 		retry: false,
+		onSuccess,
 	})
 }
