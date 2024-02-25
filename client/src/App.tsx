@@ -7,12 +7,13 @@ import { WorkerDemo } from "client/components/WorkerDemo"
 import { DbDemo } from "client/components/DbDemo"
 import { ReadTheDocs } from "client/components/ReadTheDocs"
 import { Header } from "client/components/Header/Header"
+import styles from "client/App.module.css"
 
 fooBar()
 
 export default function App() {
 	return (
-		<div>
+		<main className={styles.main}>
 			<Header>
 				<h1>🌳 Root</h1>
 				<ReadTheDocs />
@@ -34,6 +35,6 @@ export default function App() {
 					<DbDemo />
 				</Cell>
 			</Grid>
-		</div>
+		</main>
 	)
 }

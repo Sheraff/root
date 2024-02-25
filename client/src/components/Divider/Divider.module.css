@@ -1,12 +1,12 @@
 .divider {
 	border: none;
 	height: 1px;
-	background-color: hsl(from var(--foreground) h s l / 0.1);
+	background-color: hsl(from var(--background) h 25% 10%);
 	margin: 1em 0;
 }
 
 .accent {
-	background-color: hsl(from var(--accent) h s l / 0.4);
+	background-color: hsl(from var(--accent) h s 15%);
 }
 
 .full {
