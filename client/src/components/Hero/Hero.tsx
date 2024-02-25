@@ -1,5 +1,4 @@
 import styles from "client/components/Hero/Hero.module.css"
-import type { CSSProperties } from "react"
 
 export function Hero() {
 	return (
@@ -15,25 +14,13 @@ export function Hero() {
 				<div className={styles.spotlight}></div>
 			</div>
 			<div className={styles.brands}>
-				<a
-					className={styles.item}
-					href="https://vitejs.dev"
-					style={{ "--color": "#646cffaa" } as CSSProperties}
-				>
+				<a className={styles.item} href="https://vitejs.dev">
 					<img src="/vite.svg" alt="Vite Logo" />
 				</a>
-				<a
-					className={styles.item}
-					href="https://reactjs.org"
-					style={{ "--color": "#61dafbaa" } as CSSProperties}
-				>
+				<a className={styles.item} href="https://reactjs.org">
 					<img src="/react.svg" alt="React Logo" />
 				</a>
-				<a
-					className={styles.item}
-					href="https://vlcn.io"
-					style={{ "--color": "#e3eaefaa" } as CSSProperties}
-				>
+				<a className={styles.item} href="https://vlcn.io">
 					<img src="/vlcn.png" alt="Vulcan Logo" />
 				</a>
 			</div>
