@@ -31,13 +31,13 @@ export function ServiceWorkerDemo() {
 			<Divider full />
 			{shouldUpdate && (
 				<>
-					<div>SW is out of date</div>
+					<p>SW is out of date</p>
 					<Button onClick={update}>Update SW</Button>
 				</>
 			)}
 			{!shouldUpdate && (
 				<>
-					<div>SW is up to date</div>
+					<p>SW is up to date</p>
 					<Button disabled>Update SW</Button>
 				</>
 			)}

@@ -3,6 +3,7 @@ import type { Incoming, Outgoing } from "client/worker/sum.worker"
 import Worker from "client/worker/sum.worker?worker"
 import { Divider } from "client/components/Divider/Divider"
 import { Title } from "client/components/Bento/Title"
+import { Output } from "client/components/Output/Output"
 
 export function WorkerDemo() {
 	const [a, setA] = useState(0)
@@ -53,7 +54,7 @@ export function WorkerDemo() {
 				pattern="[0-9]*"
 				step="1"
 			/>
-			<div>+</div>
+			<p>+</p>
 			<input
 				type="number"
 				value={b}
@@ -66,7 +67,7 @@ export function WorkerDemo() {
 				step="1"
 			/>
 			<Divider />
-			<output>{result}</output>
+			<Output>{result}</Output>
 		</>
 	)
 }

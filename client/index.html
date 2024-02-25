@@ -90,7 +90,7 @@
 		/* global styles */
 
 		:root {
-			color-scheme: dark light;
+			color-scheme: dark;
 			--foreground: hsl(287deg 100% 99%);
 			--background: hsl(130deg 82% 2.25%);
 			--accent: hsl(287deg 94% 40%);
@@ -102,18 +102,16 @@
 			--s-2: 2rem;
 			--s-3: 3rem;
 		}
-		@media (prefers-color-scheme: light) {
-			:root {
-				--foreground: hsl(287deg 82% 2%);
-				--background: hsl(130deg 92% 97%);
-				--accent: hsl(287deg 100% 40%);
-			}
-		}
 
 		body {
 			color: var(--foreground);
 			background-color: var(--background);
 			accent-color: var(--accent);
+		}
+
+		p {
+			margin-block-start: var(--s-0-5);
+			margin-block-end: var(--s-0-5);
 		}
 	</style>
 	<body>

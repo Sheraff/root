@@ -3,6 +3,7 @@ import { useApiQuery } from "client/api/useApiQuery"
 import { Title } from "client/components/Bento/Title"
 import { Button } from "client/components/Button/Button"
 import { Divider } from "client/components/Divider/Divider"
+import { Output } from "client/components/Output/Output"
 import { definition as openDefinition } from "server/api/routes/open"
 import { definition as protectedDefinition } from "server/api/routes/protected"
 import { definition as saveDefinition } from "server/api/routes/save"
@@ -32,16 +33,25 @@ export function ApiDemo() {
 			/>
 			<Divider full />
 			<h3>Open</h3>
-			<pre>{open.data ? JSON.stringify(open.data, null, 2) : " \n  loading\n "}</pre>
+			<Output>{open.data ? JSON.stringify(open.data, null, 2) : " \n  loading\n "}</Output>
 			<h3>Protected</h3>
-			<pre>
+			<Output>
 				{secret.error
 					? JSON.stringify(secret.error, null, 2)
 					: secret.data
 						? JSON.stringify(secret.data, null, 2)
 						: " \n  loading\n "}
-			</pre>
+			</Output>
 			<h3>Mutation</h3>
+			<Output>
+				{JSON.stringify(
+					{
+						status: save.status,
+					},
+					null,
+					2
+				)}
+			</Output>
 			<Button
 				disabled={save.isPending || save.isSuccess}
 				onClick={() => save.mutate({ Body: { hello: "world", moo: 42 } })}

@@ -54,7 +54,7 @@ function CreateAccount({
 }) {
 	return (
 		<>
-			<div>Create Account</div>
+			<p>Create Account</p>
 			<ButtonList>
 				{providers.map((provider) => (
 					<Button
@@ -88,9 +88,9 @@ function NotLoggedIn({
 }) {
 	return (
 		<>
-			<div>Not logged in</div>
+			<p>Not logged in</p>
 			<Divider />
-			<div>Sign up with invite code</div>
+			<p>Sign up with invite code</p>
 			<form
 				onSubmit={(event) => {
 					event.preventDefault()
@@ -102,7 +102,7 @@ function NotLoggedIn({
 				<Button type="submit">Submit</Button>
 			</form>
 			<Divider />
-			<div>Sign in</div>
+			<p>Sign in</p>
 			<ButtonList>
 				{providers.map((provider) => (
 					<Button
@@ -137,32 +137,30 @@ function LoggedIn({
 	const accounts = useApiQuery(accountsDefinition, null)
 	return (
 		<>
-			<div>Logged in as {userId}</div>
+			<p>Logged in as {userId}</p>
 			<Divider />
 			<Button onClick={() => void signOut()}>Logout</Button>
 			<Divider />
-			<div>
-				<p>Link accounts</p>
-				<ButtonList>
-					{providers.map((provider) => (
-						<Button
-							key={provider.key}
-							onClick={() => void linkAccount(provider.key)}
-							style={
-								{
-									"--button-bg": provider.color,
-									"--button-border": provider.color,
-								} as CSSProperties
-							}
-							disabled={
-								accounts.isLoading || accounts.data?.accounts.includes(provider.key)
-							}
-						>
-							{provider.name}
-						</Button>
-					))}
-				</ButtonList>
-			</div>
+			<p>Link accounts</p>
+			<ButtonList>
+				{providers.map((provider) => (
+					<Button
+						key={provider.key}
+						onClick={() => void linkAccount(provider.key)}
+						style={
+							{
+								"--button-bg": provider.color,
+								"--button-border": provider.color,
+							} as CSSProperties
+						}
+						disabled={
+							accounts.isLoading || accounts.data?.accounts.includes(provider.key)
+						}
+					>
+						{provider.name}
+					</Button>
+				))}
+			</ButtonList>
 		</>
 	)
 }
