@@ -2,7 +2,7 @@ import styles from "client/components/Output/Output.module.css"
 import clsx from "clsx"
 import { useState, useEffect, useRef } from "react"
 
-export function Output({ children }: { children: string }) {
+export function Output({ children }: { children: string | number }) {
 	// display "active" state for 1 second after changing children
 	const [active, setActive] = useState(false)
 	const previous = useRef(children)
