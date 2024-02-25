@@ -3,6 +3,7 @@ import type { Provider } from "client/auth/providers"
 import { useAuthContext } from "client/auth/useAuthContext"
 import { Button, ButtonList } from "client/components/Button/Button"
 import { Divider } from "client/components/Divider/Divider"
+import type { CSSProperties } from "react"
 import { definition as accountsDefinition } from "server/api/routes/accounts"
 
 export function UserAccountDemo() {
@@ -55,7 +56,12 @@ function CreateAccount({
 					<Button
 						key={provider.key}
 						onClick={() => createAccount(provider.key)}
-						style={{ backgroundColor: provider.color }}
+						style={
+							{
+								"--button-bg": provider.color,
+								"--button-border": provider.color,
+							} as CSSProperties
+						}
 					>
 						{provider.name}
 					</Button>
@@ -99,7 +105,12 @@ function NotLoggedIn({
 					<Button
 						key={provider.key}
 						onClick={() => signIn(provider.key)}
-						style={{ backgroundColor: provider.color }}
+						style={
+							{
+								"--button-bg": provider.color,
+								"--button-border": provider.color,
+							} as CSSProperties
+						}
 					>
 						{provider.name}
 					</Button>
@@ -136,7 +147,12 @@ function LoggedIn({
 						<Button
 							key={provider.key}
 							onClick={() => void linkAccount(provider.key)}
-							style={{ backgroundColor: provider.color }}
+							style={
+								{
+									"--button-bg": provider.color,
+									"--button-border": provider.color,
+								} as CSSProperties
+							}
 							disabled={
 								accounts.isLoading || accounts.data?.accounts.includes(provider.key)
 							}
