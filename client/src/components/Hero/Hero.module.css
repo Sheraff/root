@@ -1,0 +1,190 @@
+.hero {
+	--color: hsl(from var(--accent) h 80% 65%);
+	min-height: 50dvh;
+	position: relative;
+	z-index: 0;
+	overflow-x: clip;
+	margin-bottom: 200px;
+	view-timeline: --parent block;
+}
+
+.title {
+	position: relative;
+	overflow: hidden;
+	padding: 20dvh 0;
+	text-align: center;
+
+	& > * {
+		position: relative;
+		z-index: -1;
+		animation-name: parallax;
+		animation-timeline: --parent;
+		animation-range-start: exit 0%;
+		animation-range-end: exit 100%;
+		animation-fill-mode: both;
+		animation-timing-function: linear;
+	}
+
+	h1 {
+		font-size: 10rem;
+		line-height: 1;
+	}
+}
+
+@keyframes parallax {
+	from {
+		transform: translateY(0);
+	}
+	to {
+		transform: translateY(150%);
+	}
+}
+
+.brands {
+	display: grid;
+	justify-items: center;
+	grid-auto-columns: 1fr;
+	grid-auto-flow: column;
+	grid-gap: var(--s-3);
+	margin: 0 auto;
+	max-width: 750px;
+	padding: 0 var(--s);
+}
+
+.item {
+	width: 100%;
+	max-width: 150px;
+	display: flex;
+
+	transition: transform 120ms;
+	&:hover {
+		transform: translateY(-5%) scaleX(0.9) scaleY(1.1);
+	}
+	&:active {
+		transform: translateY(5%) scaleX(1.1) scaleY(0.9);
+	}
+}
+
+.neon {
+	opacity: 0.8;
+	mix-blend-mode: soft-light;
+	margin: 0 auto 100px;
+	height: 1px;
+	width: 70dvw;
+	background: hsl(from var(--color) h 95% 95%);
+	position: relative;
+	pointer-events: none;
+	isolation: isolate;
+
+	&::before {
+		content: "";
+		position: absolute;
+		z-index: -1;
+		opacity: 0.2;
+		inset: 50%;
+		width: 110dvw;
+		height: 50dvh;
+		transform: translate(-50%, -60%);
+		background: no-repeat center / 100%
+			radial-gradient(ellipse closest-side at center, var(--color) 0px, transparent 100%);
+	}
+
+	&::after {
+		content: "";
+		position: absolute;
+		z-index: -1;
+		opacity: 0.2;
+		top: 0;
+		left: 50%;
+		width: 85%;
+		height: 80dvh;
+		transform: translateX(-50%);
+		background: radial-gradient(
+			ellipse farthest-side at center top,
+			var(--color) -100%,
+			transparent 100%
+		);
+	}
+}
+
+.spotlight {
+	position: absolute;
+	z-index: -1;
+	inset: 0;
+	opacity: 0.2;
+
+	/* --angle: 90deg; */
+	/* --falloff: 25deg; */
+	/* --light: 65%; */
+
+	animation-name: on-off;
+	animation-timeline: --parent;
+	animation-range-start: exit 0%;
+	animation-range-end: exit 80%;
+	animation-fill-mode: both;
+	animation-timing-function: ease-in;
+
+	&::before {
+		content: "";
+		position: absolute;
+		top: 100%;
+		left: 0;
+		height: 50dvh;
+		width: 200%;
+		transform: translateX(-25%);
+		will-change: mask-image, background-color, opacity;
+		background-color: hsl(from var(--color) h s var(--light));
+		mask-image: conic-gradient(
+				from 0deg at 25% top,
+				black 90deg calc(270deg - var(--angle)),
+				transparent calc(270deg - var(--angle) + var(--falloff))
+			),
+			conic-gradient(
+				from 0deg at 75% top,
+				transparent 0deg calc(90deg + var(--angle) - var(--falloff)),
+				black calc(90deg + var(--angle))
+			),
+			linear-gradient(-90deg, transparent 0, black 25% 75%, transparent 100%),
+			linear-gradient(0deg, transparent 0, black 75% 100%);
+		mask-composite: intersect;
+	}
+}
+
+@keyframes on-off {
+	0% {
+		opacity: 0;
+		--angle: 80deg;
+		--falloff: 5deg;
+		--light: 65%;
+	}
+	50% {
+		opacity: 0.2;
+		--angle: 35deg;
+		--falloff: 25deg;
+		--light: 75%;
+	}
+	100% {
+		opacity: 0.1;
+		--angle: 10deg;
+		--falloff: 55deg;
+		--light: 65%;
+	}
+}
+
+@property --angle {
+	syntax: "<angle>";
+	inherits: true;
+	initial-value: 35deg;
+}
+
+@property --falloff {
+	syntax: "<angle>";
+	inherits: true;
+	initial-value: 25deg;
+}
+
+@property --light {
+	syntax: "<percentage>";
+	inherits: true;
+	initial-value: 65%;
+}

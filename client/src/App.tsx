@@ -5,18 +5,22 @@ import { ApiDemo } from "client/components/ApiDemo"
 import { UserAccountDemo } from "client/components/UserAccountDemo"
 import { WorkerDemo } from "client/components/WorkerDemo"
 import { DbDemo } from "client/components/DbDemo"
-import { ReadTheDocs } from "client/components/ReadTheDocs"
-import { Header } from "client/components/Header/Header"
+import { Hero } from "client/components/Hero/Hero"
+import styles from "client/App.module.css"
 
 fooBar()
 
 export default function App() {
 	return (
-		<div>
-			<Header>
-				<h1>🌳 Root</h1>
-				<ReadTheDocs />
-			</Header>
+		<main className={styles.main}>
+			<Hero />
+			<a
+				href="https://sheraff.github.io/root-docs/"
+				target="_blank"
+				style={{ textAlign: "center", display: "block", padding: "3rem" }}
+			>
+				Read the documentation
+			</a>
 			<Grid>
 				<Cell>
 					<ServiceWorkerDemo />
@@ -34,6 +38,6 @@ export default function App() {
 					<DbDemo />
 				</Cell>
 			</Grid>
-		</div>
+		</main>
 	)
 }
