@@ -4,7 +4,12 @@ import { clsx } from "clsx"
 
 export function Button({ className, ...props }: ComponentProps<"button"> | ComponentProps<"a">) {
 	const Component = "href" in props ? "a" : "button"
-	return <Component {...(props as object)} className={clsx(className, styles.main)} />
+	return (
+		<Component {...(props as object)} className={clsx(className, styles.main)}>
+			<div className={styles.border} />
+			{props.children}
+		</Component>
+	)
 }
 
 export function ButtonList({ children }: { children: ReactNode }) {

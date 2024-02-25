@@ -38,15 +38,16 @@ export function ServiceWorkerDemo() {
 				</>
 			)}
 			<Divider />
+			<div>Server push messaging</div>
 			<Button
 				disabled={!sw || !signedIn}
 				onClick={() =>
 					void Notification.requestPermission()
-						.then(() => sw?.postMessage({ type: "SUBSCRIBE" }))
+						.then(() => sw!.postMessage({ type: "SUBSCRIBE" }))
 						.catch(console.error)
 				}
 			>
-				{signedIn ? "Subscribe to server notifications" : "Sign in to subscribe"}
+				{signedIn ? "Subscribe" : "Sign in to subscribe"}
 			</Button>
 		</>
 	)
