@@ -2,7 +2,7 @@
 	background:
 		fixed no-repeat center / 100dvw 100dvh
 			radial-gradient(transparent 30%, var(--background) 70%),
-		repeat center / 40px 40px
+		fixed repeat center / 40px 40px
 			radial-gradient(hsl(from var(--foreground) h s l / 0.1) 1px, transparent 0),
 		var(--background);
 }
