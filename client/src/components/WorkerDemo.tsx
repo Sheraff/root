@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import type { Incoming, Outgoing } from "client/worker/sum.worker"
 import Worker from "client/worker/sum.worker?worker"
 import { Divider } from "client/components/Divider/Divider"
+import { Title } from "client/components/Bento/Title"
 
 export function WorkerDemo() {
 	const [a, setA] = useState(0)
@@ -36,7 +37,10 @@ export function WorkerDemo() {
 
 	return (
 		<>
-			<h2>Web Worker</h2>
+			<Title
+				icon="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNwdSI+PHJlY3QgeD0iNCIgeT0iNCIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iMiIvPjxyZWN0IHg9IjkiIHk9IjkiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cGF0aCBkPSJNMTUgMnYyIi8+PHBhdGggZD0iTTE1IDIwdjIiLz48cGF0aCBkPSJNMiAxNWgyIi8+PHBhdGggZD0iTTIgOWgyIi8+PHBhdGggZD0iTTIwIDE1aDIiLz48cGF0aCBkPSJNMjAgOWgyIi8+PHBhdGggZD0iTTkgMnYyIi8+PHBhdGggZD0iTTkgMjB2MiIvPjwvc3ZnPg=="
+				title="Web Worker"
+			/>
 			<Divider full />
 			<input
 				type="number"

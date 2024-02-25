@@ -1,6 +1,7 @@
 import { useApiQuery } from "client/api/useApiQuery"
 import type { Provider } from "client/auth/providers"
 import { useAuthContext } from "client/auth/useAuthContext"
+import { Title } from "client/components/Bento/Title"
 import { Button, ButtonList } from "client/components/Button/Button"
 import { Divider } from "client/components/Divider/Divider"
 import type { CSSProperties } from "react"
@@ -9,33 +10,37 @@ import { definition as accountsDefinition } from "server/api/routes/accounts"
 export function UserAccountDemo() {
 	const auth = useAuthContext()
 
-	switch (auth.type) {
-		case "signed-in":
-			return (
+	return (
+		<>
+			<Title
+				icon="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWxvY2sta2V5aG9sZSI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxNiIgcj0iMSIvPjxyZWN0IHg9IjMiIHk9IjEwIiB3aWR0aD0iMTgiIGhlaWdodD0iMTIiIHJ4PSIyIi8+PHBhdGggZD0iTTcgMTBWN2E1IDUgMCAwIDEgMTAgMHYzIi8+PC9zdmc+"
+				title="Authentication"
+			/>
+			<Divider full />
+			{auth.type === "signed-in" && (
 				<LoggedIn
 					userId={auth.userId}
 					signOut={auth.signOut}
 					linkAccount={auth.linkAccount}
 					providers={auth.providers}
 				/>
-			)
-		case "creating-account":
-			return (
+			)}
+			{auth.type === "creating-account" && (
 				<CreateAccount
 					createAccount={auth.createAccount}
 					cancelCreateAccount={auth.cancelCreateAccount}
 					providers={auth.providers}
 				/>
-			)
-		case "unauthenticated":
-			return (
+			)}
+			{auth.type === "unauthenticated" && (
 				<NotLoggedIn
 					submitInviteCode={auth.submitInviteCode}
 					signIn={auth.signIn}
 					providers={auth.providers}
 				/>
-			)
-	}
+			)}
+		</>
+	)
 }
 
 function CreateAccount({
@@ -49,7 +54,6 @@ function CreateAccount({
 }) {
 	return (
 		<>
-			<h2>Authentication</h2>
 			<div>Create Account</div>
 			<ButtonList>
 				{providers.map((provider) => (
@@ -84,7 +88,6 @@ function NotLoggedIn({
 }) {
 	return (
 		<>
-			<h2>Authentication</h2>
 			<div>Not logged in</div>
 			<Divider />
 			<div>Sign up with invite code</div>
@@ -134,8 +137,6 @@ function LoggedIn({
 	const accounts = useApiQuery(accountsDefinition, null)
 	return (
 		<>
-			<h2>Authentication</h2>
-			<Divider full />
 			<div>Logged in as {userId}</div>
 			<Divider />
 			<Button onClick={() => void signOut()}>Logout</Button>

@@ -14,3 +14,9 @@
 	margin-right: calc(-1 * var(--s));
 	max-width: none;
 }
+
+.vertical {
+	width: 1px;
+	height: auto;
+	margin: calc(-1 * var(--s)) 0;
+}

@@ -1,0 +1,14 @@
+.h2 {
+	display: flex;
+	align-items: stretch;
+	gap: var(--s);
+	white-space: nowrap;
+
+	& > * {
+		flex-shrink: 0;
+	}
+
+	img {
+		filter: contrast(0) brightness(100);
+	}
+}

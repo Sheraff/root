@@ -99,7 +99,6 @@ export function Content({ name }: { name: string }) {
 
 	return (
 		<>
-			<h2>Database</h2>
 			<Button onClick={() => setToggle((toggle) => !toggle)}>Toggle {String(!toggle)}</Button>
 			{toggle && <Test name={name} />}
 			<Button onClick={() => setToggleBis((toggle) => !toggle)}>
