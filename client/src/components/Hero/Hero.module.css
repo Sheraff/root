@@ -40,31 +40,6 @@
 	}
 }
 
-.brands {
-	display: grid;
-	justify-items: center;
-	grid-auto-columns: 1fr;
-	grid-auto-flow: column;
-	grid-gap: var(--s-3);
-	margin: 0 auto;
-	max-width: 750px;
-	padding: 0 var(--s);
-}
-
-.item {
-	width: 100%;
-	max-width: 150px;
-	display: flex;
-
-	transition: transform 120ms;
-	&:hover {
-		transform: translateY(-5%) scaleX(0.9) scaleY(1.1);
-	}
-	&:active {
-		transform: translateY(5%) scaleX(1.1) scaleY(0.9);
-	}
-}
-
 .neon {
 	opacity: 0.8;
 	mix-blend-mode: soft-light;
@@ -187,4 +162,51 @@
 	syntax: "<percentage>";
 	inherits: true;
 	initial-value: 65%;
+}
+
+.brands {
+	display: grid;
+	justify-items: center;
+	grid-auto-columns: 1fr;
+	grid-auto-flow: column;
+	grid-gap: var(--s-3);
+	margin: 0 auto;
+	max-width: 750px;
+	padding: 0 var(--s);
+}
+
+.item {
+	width: 100%;
+	max-width: 150px;
+	display: flex;
+
+	animation-name: shadow;
+	animation-timeline: --parent;
+	animation-range-start: exit 0%;
+	animation-range-end: exit 80%;
+	animation-fill-mode: both;
+	animation-timing-function: ease-in;
+
+	transition: transform 120ms;
+	&:hover {
+		transform: translateY(-2.5%) scaleX(0.95) scaleY(1.05);
+	}
+	&:active {
+		transform: translateY(2.5%) scaleX(1.05) scaleY(0.95);
+	}
+}
+
+@keyframes shadow {
+	0% {
+		scale: 0.9;
+		filter: drop-shadow(0 0 5px hsl(0 0 0 / 0)) brightness(1);
+	}
+	70% {
+		scale: 1;
+		filter: drop-shadow(0 100px 10px hsl(0 0 0 / 0.8)) brightness(1.2);
+	}
+	100% {
+		scale: 1;
+		filter: drop-shadow(0 120px 20px hsl(0 0 0 / 0.3)) brightness(0.9);
+	}
 }
