@@ -8,8 +8,6 @@ import type { CSSProperties } from "react"
 import { definition as accountsDefinition } from "server/api/routes/accounts"
 
 export function UserAccountDemo() {
-	const auth = useAuthContext()
-
 	return (
 		<>
 			<Title
@@ -17,30 +15,45 @@ export function UserAccountDemo() {
 				title="Authentication"
 			/>
 			<Divider full />
-			{auth.type === "signed-in" && (
+			<DynamicAuthContent />
+		</>
+	)
+}
+
+const DynamicAuthContent = () => {
+	const auth = useAuthContext()
+
+	if (!auth.providers.length) {
+		return <p>No OAuth API keys specified in the .env file, auth is disabled.</p>
+	}
+
+	switch (auth.type) {
+		case "signed-in":
+			return (
 				<LoggedIn
 					userId={auth.userId}
 					signOut={auth.signOut}
 					linkAccount={auth.linkAccount}
 					providers={auth.providers}
 				/>
-			)}
-			{auth.type === "creating-account" && (
+			)
+		case "creating-account":
+			return (
 				<CreateAccount
 					createAccount={auth.createAccount}
 					cancelCreateAccount={auth.cancelCreateAccount}
 					providers={auth.providers}
 				/>
-			)}
-			{auth.type === "unauthenticated" && (
+			)
+		case "unauthenticated":
+			return (
 				<NotLoggedIn
 					submitInviteCode={auth.submitInviteCode}
 					signIn={auth.signIn}
 					providers={auth.providers}
 				/>
-			)}
-		</>
-	)
+			)
+	}
 }
 
 function CreateAccount({
