@@ -269,6 +269,7 @@ export default defineConfig({
 			{ name: "google", enabled: !!process.env.GOOGLE_CLIENT_ID },
 			{ name: "spotify", enabled: !!process.env.SPOTIFY_CLIENT_ID },
 			{ name: "discord", enabled: !!process.env.DISCORD_CLIENT_ID },
+			{ name: "github", enabled: !!process.env.GITHUB_CLIENT_ID },
 		]
 			.filter((p) => p.enabled)
 			.map((p) => p.name),
