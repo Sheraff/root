@@ -2,6 +2,7 @@ import * as Twitch from "server/auth/providers/twitch"
 import * as Google from "server/auth/providers/google"
 import * as Spotify from "server/auth/providers/spotify"
 import * as Discord from "server/auth/providers/discord"
+import * as Github from "server/auth/providers/github"
 
 export type RawGrant = {
 	provider: string
@@ -35,6 +36,8 @@ export function getGrantData(grant: RawGrant) {
 			return Spotify.getIdFromGrant(grant.response)
 		case "discord":
 			return Discord.getIdFromGrant(grant.response)
+		case "github":
+			return Github.getIdFromGrant(grant.response)
 	}
 }
 
@@ -43,4 +46,5 @@ export const grantOptions = {
 	google: Google.options,
 	spotify: Spotify.options,
 	discord: Discord.options,
+	github: Github.options,
 }
