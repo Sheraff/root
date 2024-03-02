@@ -25,7 +25,7 @@
 		}
 
 		& .border::after {
-			background-color: hsl(from var(--button-bg) h s calc(l * 0.5));
+			background-color: oklch(from var(--button-bg) calc(l * 0.5) c h);
 		}
 	}
 }
@@ -42,14 +42,18 @@
 	inset: 0;
 	border-radius: var(--s-0-25);
 	overflow: hidden;
-	background-color: hsl(from var(--button-border) h 30 40);
+	background-color: oklch(from var(--button-border) 40% 30% h);
 
 	&::before {
 		content: "";
 		position: absolute;
 		inset: 0;
 		background: center / 2em 2em no-repeat
-			radial-gradient(circle, hsl(from var(--button-border) h 70 70) 30%, transparent 80%);
+			radial-gradient(
+				circle in oklch,
+				oklch(from var(--button-border) 80% 50% h) 30%,
+				transparent 80%
+			);
 		transition: opacity 150ms;
 		opacity: 0;
 		animation:
@@ -63,7 +67,7 @@
 		inset: 1px;
 		border-radius: calc(var(--s-0-25) - 0.5px);
 		transition: background-color 150ms;
-		background-color: hsl(from var(--button-bg) h s calc(l * 0.4));
+		background-color: oklch(from var(--button-bg) calc(l * 0.4) c h);
 	}
 }
 

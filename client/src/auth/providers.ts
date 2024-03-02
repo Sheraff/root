@@ -34,6 +34,6 @@ export const providers: Provider[] = [
 		key: "github",
 		name: "Github",
 		// icon: ,
-		color: "hsl(131.52deg 58.58% 0%)",
+		color: "oklch(0 0.15 146.25)",
 	},
 ]

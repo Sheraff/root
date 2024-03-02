@@ -1,7 +1,7 @@
 .divider {
 	border: none;
 	height: 1px;
-	background-color: hsl(from var(--background) h 25% 10%);
+	background-color: oklch(from var(--background) 23% 12% h);
 	margin: 1em 0;
 }
 

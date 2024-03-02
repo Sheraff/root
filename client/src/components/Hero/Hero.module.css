@@ -1,5 +1,6 @@
 .hero {
-	--color: hsl(from var(--accent) h 80% 65%);
+	--color: oklch(from var(--accent) 70% 0.25 h);
+
 	min-height: 50dvh;
 	position: relative;
 	z-index: 0;
@@ -46,7 +47,7 @@
 	margin: 0 auto 100px;
 	height: 1px;
 	width: 70dvw;
-	background: hsl(from var(--color) h 95% 95%);
+	background: oklch(from var(--color) 99.9% 0.05 h);
 	position: relative;
 	pointer-events: none;
 	isolation: isolate;
@@ -61,7 +62,11 @@
 		height: 50dvh;
 		transform: translate(-50%, -60%);
 		background: no-repeat center / 100%
-			radial-gradient(ellipse closest-side at center, var(--color) 0px, transparent 100%);
+			radial-gradient(
+				ellipse closest-side at center in oklch,
+				var(--color) 0px,
+				transparent 100%
+			);
 	}
 
 	&::after {
@@ -75,7 +80,7 @@
 		height: 80dvh;
 		transform: translateX(-50%);
 		background: radial-gradient(
-			ellipse farthest-side at center top,
+			ellipse farthest-side at center top in oklch,
 			var(--color) -100%,
 			transparent 100%
 		);
@@ -107,8 +112,9 @@
 		height: 50dvh;
 		width: 200%;
 		transform: translateX(-25%);
+
 		will-change: mask-image, background-color, opacity;
-		background-color: hsl(from var(--color) h s var(--light));
+		background-color: oklch(from var(--color) var(--light) c h);
 		mask-image: conic-gradient(
 				from 0deg at 25% top,
 				black 90deg calc(270deg - var(--angle)),
@@ -136,7 +142,7 @@
 		opacity: 0.2;
 		--angle: 35deg;
 		--falloff: 35deg;
-		--light: 75%;
+		--light: 80%;
 	}
 	100% {
 		opacity: 0.1;
@@ -199,14 +205,14 @@
 @keyframes shadow {
 	0% {
 		scale: 0.9;
-		filter: drop-shadow(0 0 5px hsl(0 0 0 / 0)) brightness(1);
+		filter: drop-shadow(0 0 5px rgb(0 0 0 / 0)) brightness(1);
 	}
 	70% {
 		scale: 1;
-		filter: drop-shadow(0 100px 10px hsl(0 0 0 / 0.8)) brightness(1.2);
+		filter: drop-shadow(0 100px 10px rgb(0 0 0 / 0.8)) brightness(1.2);
 	}
 	100% {
 		scale: 1;
-		filter: drop-shadow(0 170px 15px hsl(0 0 0 / 0)) brightness(0.9);
+		filter: drop-shadow(0 170px 15px rgb(0 0 0 / 0)) brightness(0.9);
 	}
 }

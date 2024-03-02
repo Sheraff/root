@@ -15,16 +15,13 @@
 	grid-row: span var(--y);
 	border-radius: var(--s-0-5);
 	overflow: hidden;
-	border: 1px solid hsl(from var(--background) h 25% 10%);
-	background-color: hsl(from var(--background) h s 3% / 0.3);
+	border: 1px solid oklch(from var(--background) 23% 12% h);
+	background-color: oklch(from var(--background) 13% c h / 0.3);
 	backdrop-filter: blur(1px) brightness(120%);
 	padding: var(--s);
 
 	@media (width < 500px) {
 		grid-column: 1 / -1;
-	}
-	@media (prefers-color-scheme: light) {
-		background-color: hsl(from var(--background) h s 99%);
 	}
 }
 
