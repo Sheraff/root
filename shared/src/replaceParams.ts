@@ -18,7 +18,12 @@ export function replaceParams(url: string, data: Record<string, unknown>) {
 		let offset = 0
 		for (const match of matches) {
 			const index = match.index + offset
-			if (index > 0 && part[index - 1] === ":") continue // ignore double colon
+			if (index > 0 && part[index - 1] === ":") {
+				// ignore double colon
+				part = part.substring(0, index - 1) + part.substring(index)
+				offset -= 1
+				continue
+			}
 			const found = match[0]
 			const key = match[1]!
 			if (!(key in data)) {
@@ -35,8 +40,12 @@ export function replaceParams(url: string, data: Record<string, unknown>) {
 			}
 			const value = data[key]
 			const str = String(value)
-			part = part.substring(0, index) + str + part.substring(index + found.length)
-			offset += str.length - found.length
+			let cutLength = found.length
+			if (i === parts.length - 1 && part[index + found.length] === "?") {
+				cutLength += 1
+			}
+			part = part.substring(0, index) + str + part.substring(index + cutLength)
+			offset += str.length - cutLength
 		}
 		parts[i] = part
 	}

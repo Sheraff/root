@@ -12,11 +12,12 @@ describe("replaceParams", () => {
 		const data = { id: 1, name: "foo", other: 2 }
 		expect(replaceParams(url, data)).toBe("/api/1-foo/end")
 	})
-	it("should ignore double colon", () => {
+	it("should interpret double colon as 'single colon, not a param'", () => {
 		const url = "/api/:id/fii::name"
 		const data = { id: 1, name: "foo", other: 2 }
-		// TODO: in reality, we shouldn't ignore it, just replace it with a single colon
-		expect(replaceParams(url, data)).toBe("/api/1/fii::name")
+		expect(replaceParams(url, data)).toBe("/api/1/fii:name")
+		expect(replaceParams("/foo::bar/::baz", {})).toBe("/foo:bar/:baz")
+		expect(replaceParams("/foo::bar:baz:qux/foo", { baz: 1, qux: 2 })).toBe("/foo:bar12/foo")
 	})
 	it("works like fastify route from `find-my-way`, but without the regex and the *", () => {
 		expect(
@@ -26,6 +27,15 @@ describe("replaceParams", () => {
 				r: "20",
 			})
 		).toBe("/example/near/15°N-30°E/radius/20")
-		expect(replaceParams("/example/posts/:id?", {})).toBe("/example/posts")
+		expect(replaceParams("/example/:id?", {})).toBe("/example")
+		expect(replaceParams("/example/:id?", { id: 2 })).toBe("/example/2")
+		expect(replaceParams("/foo/:f.png", { f: "hello" })).toBe("/foo/hello.png")
+		expect(replaceParams("/foo/:f.:ext", { f: "hello", ext: "png" })).toBe("/foo/hello.png")
+	})
+	it("has the same edge-cases as `find-my-way`", () => {
+		// only the last param can be made optional
+		expect(replaceParams("/example/:id?/coco", { id: 2 })).toBe("/example/2?/coco")
+		// so not passing a param will throw
+		expect(() => replaceParams("/example/:id?/coco", {})).toThrowError("No value for key id")
 	})
 })
