@@ -17,7 +17,6 @@ export function replaceParams(url: string, data: Record<string, unknown>) {
 		const matches = part.matchAll(re)
 		let offset = 0
 		for (const match of matches) {
-			if (match.index === undefined) continue // type-safety
 			const index = match.index + offset
 			if (index > 0 && part[index - 1] === ":") continue // ignore double colon
 			const found = match[0]
