@@ -64,7 +64,7 @@ function Content({ name }: { name: string }) {
 
 	return (
 		<>
-			<Output>{JSON.stringify(list.data, null, 2)}</Output>
+			<Output>{JSON.stringify(list.data ?? [], null, 2)}</Output>
 			<form
 				onSubmit={(event) => {
 					event.preventDefault()
