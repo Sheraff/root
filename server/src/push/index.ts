@@ -1,7 +1,7 @@
 import WebPush, { type PushSubscription, type VapidKeys } from "web-push"
 import type { PushMessage } from "shared/pushEvents"
 import { authProtected } from "server/auth/helpers/onRequestAuthProtected"
-import type { FastifyInstance } from "fastify"
+import type { FastifyInstance, FastifyRequest } from "fastify"
 import { sql } from "shared/sql"
 import schemaContent from "./schema.sql"
 
@@ -96,9 +96,12 @@ function push(fastify: FastifyInstance, _: object, done: () => void) {
 		userId: string
 	}>(sql`SELECT * FROM push_subscriptions WHERE user_id = @userId`)
 
-	function sendAck(sub: PushSubscription) {
+	function sendAck(sub: PushSubscription, req: FastifyRequest) {
 		const message: PushMessage = { type: "ACK" }
-		void WebPush.sendNotification(sub, JSON.stringify(message))
+		fastify.log.info({ reqId: req.id, sub }, `Sending ACK Push`)
+		void WebPush.sendNotification(sub, JSON.stringify(message)).then((res) => {
+			fastify.log.info({ reqId: req.id, res }, `Sent ACK Push`)
+		})
 	}
 
 	fastify.get("/api/push/handshake", {
@@ -134,7 +137,7 @@ function push(fastify: FastifyInstance, _: object, done: () => void) {
 				)
 				if (match) {
 					void reply.status(204).send()
-					sendAck(recordToSubscription(match))
+					sendAck(recordToSubscription(match), req)
 					return
 				}
 			}
@@ -163,7 +166,7 @@ function push(fastify: FastifyInstance, _: object, done: () => void) {
 			})
 			req.log.warn(subscription)
 			void reply.status(200).send()
-			sendAck(subscription)
+			sendAck(subscription, req)
 		},
 	})
 
