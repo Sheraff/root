@@ -1,6 +1,21 @@
 import type { PushMessage } from "shared/pushEvents"
 import { sw } from "worker/self"
 
+declare global {
+	interface NotificationAction {
+		/** A string identifying a user action to be displayed on the notification. */
+		action: string
+		/** A string containing action text to be shown to the user. */
+		title: string
+		/** A string containing the URL of an icon to display with the action. */
+		icon?: string
+	}
+	interface NotificationOptions {
+		/** An array of actions to display in the notification. */
+		actions?: NotificationAction[]
+	}
+}
+
 sw.addEventListener("push", (event) => {
 	const data = event.data?.json() as PushMessage
 	if (data.type === "ACK") {
@@ -8,6 +23,26 @@ sw.addEventListener("push", (event) => {
 	} else {
 		console.error("[SW] unknown push message:", data)
 	}
+	void sw.registration.showNotification("New push message", {
+		data,
+		icon: "/vite.svg",
+		body: "Click here to act now!",
+		actions: [
+			{
+				action: "act-now",
+				title: "Act now!!",
+			},
+		],
+	})
+})
+
+sw.addEventListener("notificationclick", (event) => {
+	const data = event.notification.data as PushMessage
+	console.log("[SW] notification clicked", {
+		action: event.action,
+		data,
+	})
+	event.notification.close()
 })
 
 // async function registerSync() {
