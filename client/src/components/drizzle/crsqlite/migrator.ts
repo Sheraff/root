@@ -56,6 +56,9 @@ export async function migrate<TSchema extends Record<string, unknown>>(
 	console.log("dbMigrationsAfter", dbMigrationsAfter)
 }
 
+/**
+ * TODO: this should be done at build-time through Vite `define` config
+ */
 export async function getMigrations() {
 	const journal = migrationJournal as {
 		entries: Array<{ idx: number; when: number; tag: string; breakpoints: boolean }>
