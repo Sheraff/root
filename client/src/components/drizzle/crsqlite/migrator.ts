@@ -13,40 +13,41 @@ export async function migrate<TSchema extends Record<string, unknown>>(
 	const migrationTableIdent = sql.identifier(migrationsTable)
 	const migrationTableCreate = sql`
 		CREATE TABLE IF NOT EXISTS ${migrationTableIdent} (
-			id SERIAL PRIMARY KEY,
+			id TEXT NOT NULL PRIMARY KEY,
 			hash text NOT NULL,
-			created_at numeric
+			created_at INTEGER
 		)
 	`
 
 	await db.session.run(migrationTableCreate)
+	type MigrationEntry = { id: string; hash: string; created_at: number }
 
-	const dbMigrations = await db.values<[number, string, string]>(
+	const dbMigrations = await db.get<MigrationEntry | null>(
 		sql`SELECT id, hash, created_at FROM ${migrationTableIdent} ORDER BY created_at DESC LIMIT 1`
 	)
 
-	const lastDbMigration = dbMigrations[0] ?? undefined
+	const lastDbMigration = dbMigrations ?? undefined
 
 	console.log("migrations", migrations)
 	console.log("lastDbMigration", lastDbMigration)
 	console.log("dbMigrations", dbMigrations)
 
 	for (const migration of migrations) {
-		if (!lastDbMigration || Number(lastDbMigration[2]) < migration.folderMillis) {
+		if (!lastDbMigration || lastDbMigration.created_at < migration.folderMillis) {
 			console.log("migrating", migration)
 			for (const stmt of migration.sql) {
 				await db.run(sql.raw(stmt))
 			}
 
 			await db.run(
-				sql`INSERT INTO ${migrationTableIdent} ("hash", "created_at") VALUES(${migration.hash}, ${migration.folderMillis})`
+				sql`INSERT INTO ${migrationTableIdent} ("id", "hash", "created_at") VALUES(${crypto.randomUUID()}, ${migration.hash}, ${migration.folderMillis})`
 			)
 		}
 	}
 	console.log("done migrating")
 
-	const dbMigrationsAfter = await db.values<[number, string, string]>(
-		sql`SELECT id, hash, created_at FROM ${sql.identifier(migrationsTable)} ORDER BY created_at DESC LIMIT 1`
+	const dbMigrationsAfter = await db.get<MigrationEntry | undefined>(
+		sql`SELECT id, hash, created_at FROM ${migrationTableIdent} ORDER BY created_at DESC LIMIT 1`
 	)
 	console.log("dbMigrationsAfter", dbMigrationsAfter)
 }

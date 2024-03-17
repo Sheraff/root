@@ -51,7 +51,7 @@ export class CRSQLiteSession<
 		executeMethod: SQLiteExecuteMethod,
 		customResultMapper?: (rows: unknown[][]) => unknown
 	): CRSQLPreparedQuery<T> {
-		console.log("CRSQLiteSession.prepareQuery")
+		console.log("CRSQLiteSession.prepareQuery", query)
 		return new CRSQLPreparedQuery(
 			this.client,
 			query,
