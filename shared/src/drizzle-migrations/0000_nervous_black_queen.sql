@@ -1,13 +1,16 @@
 CREATE TABLE `cities` (
-	`id` integer PRIMARY KEY NOT NULL,
+	`id` TEXT NOT NULL PRIMARY KEY,
 	`name` text,
-	`country_id` integer,
-	FOREIGN KEY (`country_id`) REFERENCES `countries`(`id`) ON UPDATE no action ON DELETE no action
+	`country_id` text
 );
 --> statement-breakpoint
+SELECT crsql_as_crr ('cities');
+--> statement-breakpoint
 CREATE TABLE `countries` (
-	`id` integer PRIMARY KEY NOT NULL,
+	`id` TEXT NOT NULL PRIMARY KEY,
 	`name` text
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `nameIdx` ON `countries` (`name`);
+SELECT crsql_as_crr ('countries');
+--> statement-breakpoint
+CREATE INDEX `nameIdx` ON `countries` (`name`);
