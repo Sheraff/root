@@ -83,6 +83,7 @@ function TestChild() {
 				},
 			})
 			.prepare()
+		console.log("prepared user-query", res)
 		res.all({ cityName: "New York" }).then(console.log).catch(console.error)
 	}, [data])
 	return <div>Test</div>

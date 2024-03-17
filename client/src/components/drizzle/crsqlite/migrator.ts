@@ -2,7 +2,8 @@ import type { MigrationConfig, MigrationMeta } from "drizzle-orm/migrator"
 import type { CRSQLite3Database } from "./driver"
 import migrationJournal from "shared/drizzle-migrations/meta/_journal.json"
 import { migrations } from "shared/drizzle-migrations/index"
-import { sql } from "drizzle-orm"
+import { sql, type TablesRelationalConfig } from "drizzle-orm"
+import type { SQLiteSession } from "drizzle-orm/sqlite-core"
 
 export async function migrate<TSchema extends Record<string, unknown>>(
 	db: CRSQLite3Database<TSchema>,
@@ -19,7 +20,10 @@ export async function migrate<TSchema extends Record<string, unknown>>(
 		)
 	`
 
-	await db.session.run(migrationTableCreate)
+	// @ts-expect-error -- `session` exists but is marked as `@internal` on the type level
+	await (db.session as SQLiteSession<"async", void, TSchema, TablesRelationalConfig>).run(
+		migrationTableCreate
+	)
 	type MigrationEntry = { id: string; hash: string; created_at: number }
 
 	const dbMigrations = await db.get<MigrationEntry | null>(
@@ -71,7 +75,7 @@ export async function getMigrations() {
 }
 
 /**
- * Browser implementation of node's
+ * Cross-platform implementation of node's
  * ```ts
  * crypto.createHash("sha256").update(query).digest("hex")
  * ```
@@ -79,7 +83,7 @@ export async function getMigrations() {
 async function createSha256Hash(query: string) {
 	const encoder = new TextEncoder()
 	const data = encoder.encode(query)
-	const hash = await window.crypto.subtle.digest("SHA-256", data)
+	const hash = await globalThis.crypto.subtle.digest("SHA-256", data)
 	const hashArray = Array.from(new Uint8Array(hash))
 	const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
 	return hashHex
