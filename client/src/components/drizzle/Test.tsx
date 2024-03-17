@@ -1,9 +1,9 @@
 import type { DB } from "@vlcn.io/crsqlite-wasm"
 import { drizzle } from "./crsqlite"
-import type * as schema from "./schema"
+import * as schema from "./schema"
 
 export function makeDrizzleDb(db: DB) {
-	return drizzle<typeof schema>(db)
+	return drizzle(db, { schema })
 }
 
 const db = makeDrizzleDb({} as DB)
