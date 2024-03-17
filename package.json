@@ -31,7 +31,8 @@
 		"root:format": "prettier --check '*.ts' '*.json' 'types/*' '.github/**/*' --config .prettierrc.json --log-level warn",
 		"root:format:fix": "prettier --write '*.ts' '*.json' 'types/*' '.github/**/*' --config .prettierrc.json --log-level warn",
 		"root:spell": "cspell --config .cspell.json --quiet --gitignore '*' 'types/*' '.github/**/*'",
-		"root:clear": "rm -rf dist; rm -rf node_modules; rm -rf .turbo; find . -name '*.tsbuildinfo' -type f -delete;"
+		"root:clear": "rm -rf dist; rm -rf node_modules; rm -rf .turbo; find . -name '*.tsbuildinfo' -type f -delete;",
+		"generate": "drizzle-kit generate:sqlite"
 	},
 	"dependencies": {
 		"@fastify/cookie": "^9.3.1",
@@ -70,6 +71,7 @@
 		"chalk": "^5.3.0",
 		"chokidar": "3.6.0",
 		"cspell": "^8.6.0",
+		"drizzle-kit": "^0.20.14",
 		"esbuild": "0.20.1",
 		"eslint": "^8.57.0",
 		"eslint-config-prettier": "^9.1.0",
