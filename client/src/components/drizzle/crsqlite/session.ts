@@ -87,6 +87,11 @@ export class CRSQLiteSession<
 		}
 	}
 
+	exec(query: string) {
+		console.log("CRSQLiteSession.exec")
+		return this.client.exec(query)
+	}
+
 	// run(query: SQL<unknown>): Promise<void> {
 	// 	console.log("CRSQLiteSession.run")
 	// 	return this.client.exec(query.)

@@ -2,13 +2,53 @@ import type { MigrationConfig, MigrationMeta } from "drizzle-orm/migrator"
 import type { CRSQLite3Database } from "./driver"
 import migrationJournal from "shared/drizzle-migrations/meta/_journal.json"
 import { migrations } from "shared/drizzle-migrations/index"
+import { sql } from "drizzle-orm"
 
 export async function migrate<TSchema extends Record<string, unknown>>(
 	db: CRSQLite3Database<TSchema>,
 	config: string | MigrationConfig
 ) {
 	const migrations = await getMigrations()
-	db.dialect.migrate(migrations, db.session, config)
+	const migrationsTable = "__drizzle_migrations"
+	const migrationTableIdent = sql.identifier(migrationsTable)
+	const migrationTableCreate = sql`
+		CREATE TABLE IF NOT EXISTS ${migrationTableIdent} (
+			id SERIAL PRIMARY KEY,
+			hash text NOT NULL,
+			created_at numeric
+		)
+	`
+
+	await db.session.run(migrationTableCreate)
+
+	const dbMigrations = await db.values<[number, string, string]>(
+		sql`SELECT id, hash, created_at FROM ${migrationTableIdent} ORDER BY created_at DESC LIMIT 1`
+	)
+
+	const lastDbMigration = dbMigrations[0] ?? undefined
+
+	console.log("migrations", migrations)
+	console.log("lastDbMigration", lastDbMigration)
+	console.log("dbMigrations", dbMigrations)
+
+	for (const migration of migrations) {
+		if (!lastDbMigration || Number(lastDbMigration[2]) < migration.folderMillis) {
+			console.log("migrating", migration)
+			for (const stmt of migration.sql) {
+				await db.run(sql.raw(stmt))
+			}
+
+			await db.run(
+				sql`INSERT INTO ${migrationTableIdent} ("hash", "created_at") VALUES(${migration.hash}, ${migration.folderMillis})`
+			)
+		}
+	}
+	console.log("done migrating")
+
+	const dbMigrationsAfter = await db.values<[number, string, string]>(
+		sql`SELECT id, hash, created_at FROM ${sql.identifier(migrationsTable)} ORDER BY created_at DESC LIMIT 1`
+	)
+	console.log("dbMigrationsAfter", dbMigrationsAfter)
 }
 
 export async function getMigrations() {
@@ -29,6 +69,12 @@ export async function getMigrations() {
 	return migrationQueries
 }
 
+/**
+ * Browser implementation of node's
+ * ```ts
+ * crypto.createHash("sha256").update(query).digest("hex")
+ * ```
+ */
 async function createSha256Hash(query: string) {
 	const encoder = new TextEncoder()
 	const data = encoder.encode(query)

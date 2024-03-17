@@ -1,5 +1,5 @@
 import type { DB } from "@vlcn.io/crsqlite-wasm"
-import { drizzle } from "./crsqlite"
+import { drizzle, type CRSQLite3Database } from "./crsqlite"
 import * as schema from "../../../../shared/src/drizzle-test/schema"
 import type { Dialect, SQL } from "drizzle-orm"
 import { useEffect } from "react"
@@ -33,13 +33,13 @@ import tblrx from "@vlcn.io/rx-tbl"
 // console.log(data)
 
 import { migrate } from "./crsqlite/migrator"
-import { useQueryClient } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 
 async function make() {
 	const sqlite = await initWasm()
 	const sql = await sqlite.open("test")
 	const db = drizzle(sql, { schema })
-	await migrate(db, { migrationsFolder: "drizzle" })
+	await migrate(db, { migrationsFolder: "drizzle" }).catch(console.error)
 	const rx = tblrx(sql)
 	return { db, rx }
 }
@@ -49,12 +49,13 @@ export function DrizzleTest() {
 	useEffect(() => {
 		const key = "test"
 		make()
-			.then((db) => {
-				client.setQueryData<DbStore>(key, {
+			.then((ctx) => {
+				console.log("ctx", ctx)
+				client.setQueryData<DbStore>([key], {
 					// schema: cleanSchema,
 					// schemaName,
 					name: "test",
-					db,
+					ctx,
 				})
 			})
 			.catch(console.error)
@@ -69,5 +70,20 @@ export function DrizzleTest() {
 }
 
 function TestChild() {
+	const { data } = useQuery({ queryKey: ["test"] })
+	useEffect(() => {
+		if (!data) return
+		const db = data.ctx.db as CRSQLite3Database<typeof schema>
+		const res = db.query.countries
+			.findMany({
+				with: {
+					cities: {
+						where: (city, { eq, sql }) => eq(city.name, sql.placeholder("cityName")),
+					},
+				},
+			})
+			.prepare()
+		res.all({ cityName: "New York" }).then(console.log).catch(console.error)
+	}, [data])
 	return <div>Test</div>
 }
