@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, uniqueIndex } from "drizzle-orm/sqlite-core"
+import { sqliteTable, text, integer, uniqueIndex, index } from "drizzle-orm/sqlite-core"
 import { relations } from "drizzle-orm"
 
 export const countries = sqliteTable(
@@ -9,7 +9,7 @@ export const countries = sqliteTable(
 		population: integer("population"),
 	},
 	(countries) => ({
-		nameIdx: uniqueIndex("nameIdx").on(countries.name),
+		nameIdx: index("nameIdx").on(countries.name),
 	})
 )
 
@@ -20,7 +20,7 @@ export const countriesRelations = relations(countries, ({ many }) => ({
 export const cities = sqliteTable("cities", {
 	id: text("id").primaryKey(),
 	name: text("name"),
-	countryId: integer("country_id").references(() => countries.id),
+	countryId: text("country_id").references(() => countries.id),
 	population: integer("population"),
 })
 

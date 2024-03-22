@@ -1,7 +1,7 @@
 import type { DB } from "@vlcn.io/crsqlite-wasm"
 import { drizzle, type CRSQLite3Database } from "./crsqlite"
-import * as schema from "../../../../shared/src/drizzle-test/schema"
-import type { Dialect, SQL } from "drizzle-orm"
+import * as schema from "shared/drizzle-test/schema"
+import { eq, type Dialect, type SQL } from "drizzle-orm"
 import { useEffect } from "react"
 import initWasm from "@vlcn.io/crsqlite-wasm"
 import tblrx from "@vlcn.io/rx-tbl"
@@ -74,17 +74,49 @@ function TestChild() {
 	useEffect(() => {
 		if (!data) return
 		const db = data.ctx.db as CRSQLite3Database<typeof schema>
-		const res = db.query.countries
-			.findMany({
-				with: {
-					cities: {
-						where: (city, { eq, sql }) => eq(city.name, sql.placeholder("cityName")),
+		void (async function () {
+			let [usa] = await db
+				.select()
+				.from(schema.countries)
+				.where(eq(schema.countries.name, "USA"))
+			if (!usa) {
+				;[usa] = await db
+					.insert(schema.countries)
+					.values({
+						id: crypto.randomUUID(),
+						name: "USA",
+						population: 331_900_000,
+					})
+					.returning()
+			}
+			let [nyc] = await db
+				.select()
+				.from(schema.cities)
+				.where(eq(schema.cities.name, "New York"))
+			if (!nyc) {
+				;[nyc] = await db
+					.insert(schema.cities)
+					.values({
+						id: crypto.randomUUID(),
+						name: "New York",
+						population: 8_336_817,
+						countryId: usa!.id,
+					})
+					.returning()
+			}
+			const res = db.query.countries
+				.findMany({
+					with: {
+						cities: {
+							where: (city, { eq, sql }) =>
+								eq(city.name, sql.placeholder("cityName")),
+						},
 					},
-				},
-			})
-			.prepare()
-		console.log("prepared user-query", res)
-		res.all({ cityName: "New York" }).then(console.log).catch(console.error)
+				})
+				.prepare()
+			console.log("prepared user-query", res)
+			res.all({ cityName: "New York" }).then(console.log).catch(console.error)
+		})()
 	}, [data])
 	return <div>Test</div>
 }
