@@ -15,7 +15,11 @@
 	grid-row: span var(--y);
 	border-radius: var(--s-0-5);
 	overflow: hidden;
-	border: 1px solid oklch(from var(--background) 23% 12% h);
+	margin: 1px;
+	box-shadow:
+		-1px -1px 1px 0 oklch(from var(--background) 25% 12% h),
+		1px 1px 1px 0 oklch(from var(--background) 15% 12% h),
+		0 0 1px 1px oklch(from var(--background) 20% 12% h);
 
 	padding: var(--s);
 
