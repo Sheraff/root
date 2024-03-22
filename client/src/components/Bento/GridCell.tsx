@@ -27,6 +27,7 @@ export function Cell({
 				} as CSSProperties
 			}
 		>
+			<div className={styles.bg} />
 			{children}
 		</div>
 	)

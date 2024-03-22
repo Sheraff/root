@@ -16,12 +16,49 @@
 	border-radius: var(--s-0-5);
 	overflow: hidden;
 	border: 1px solid oklch(from var(--background) 23% 12% h);
-	background-color: oklch(from var(--background) 13% c h / 0.3);
-	backdrop-filter: blur(1px) brightness(120%);
+
 	padding: var(--s);
+
+	position: relative;
+	z-index: 0;
 
 	@media (width < 500px) {
 		grid-column: 1 / -1;
+	}
+}
+
+.bg {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	isolation: isolate;
+
+	background:
+		fixed repeat center / 40px 40px
+			radial-gradient(in oklch, oklch(from var(--foreground) l c h / 0.2) 1px, transparent 0),
+		oklch(from var(--background) 13% c h / 1);
+
+	&::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		background: fixed
+			linear-gradient(
+				135deg,
+				oklch(from var(--background) 30% c h / 0) 45dvmin,
+				oklch(from var(--background) 30% c h / 0.3) calc(45dvmin + 200px),
+				oklch(from var(--background) 30% c h / 0.1) calc(45dvmin + 300px),
+				oklch(from var(--background) 30% c h / 0) calc(45dvmin + 500px)
+			);
+	}
+
+	&::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		backdrop-filter: blur(2px);
 	}
 }
 
