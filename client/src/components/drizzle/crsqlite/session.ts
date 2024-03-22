@@ -151,8 +151,26 @@ export class CRSQLPreparedQuery<
 		const params = fillPlaceholders(this.query.params, placeholderValues ?? {})
 		this.logger.logQuery(this.query.sql, params)
 		const stmt = await this.stmt
-		const rows = await stmt.all(null, ...params)
+		stmt.bind(params)
+		stmt.raw(false)
+		const rows = await stmt.all(null)
+		console.log("CRSQLPreparedQuery.all", rows)
+		// debugger
 		return this.customResultMapper ? this.customResultMapper(rows) : rows
+
+		// const { fields, logger, query, tx, client, customResultMapper } = this
+		// if (!fields && !customResultMapper) {
+		// 	const params = fillPlaceholders(query.params, placeholderValues ?? {})
+		// 	logger.logQuery(query.sql, params)
+		// 	const stmt: InStatement = { sql: query.sql, args: params as InArgs }
+		// 	return (tx ? tx.execute(stmt) : client.execute(stmt)).then(({ rows }) =>
+		// 		this.mapAllResult(rows)
+		// 	)
+		// }
+
+		// const rows = (await this.values(placeholderValues)) as unknown[][]
+
+		// return this.mapAllResult(rows)
 	}
 
 	/**
