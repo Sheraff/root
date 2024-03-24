@@ -49,9 +49,10 @@ export class CRSQLiteSession<
 		query: Query,
 		fields: SelectedFieldsOrdered | undefined,
 		executeMethod: SQLiteExecuteMethod,
+		_isResponseInArrayMode: boolean,
 		customResultMapper?: (rows: unknown[][]) => unknown
 	): CRSQLPreparedQuery<T> {
-		console.log("CRSQLiteSession.prepareQuery", query)
+		console.log("CRSQLiteSession.prepareQuery", executeMethod, query)
 		return new CRSQLPreparedQuery(
 			this.client,
 			query,
@@ -67,7 +68,8 @@ export class CRSQLiteSession<
 	prepareOneTimeQuery(
 		query: Query,
 		fields: SelectedFieldsOrdered | undefined,
-		executeMethod: SQLiteExecuteMethod
+		executeMethod: SQLiteExecuteMethod,
+		_isResponseInArrayMode: boolean
 	): SQLitePreparedQuery<PreparedQueryConfig & { type: "async" }> {
 		console.log("CRSQLiteSession.prepareOneTimeQuery", executeMethod, query)
 		return new CRSQLPreparedQuery(
@@ -96,6 +98,7 @@ export class CRSQLiteSession<
 		)
 		const tx = new CRSQLTransaction("async", this.dialect, session, this.schema)
 		try {
+			console.log("transaction built, calling transaction function")
 			const result = await transaction(tx)
 			crsqliteTx[0]()
 			return result
@@ -109,10 +112,29 @@ export class CRSQLiteSession<
 		console.log("CRSQLiteSession.exec")
 		return this.client.exec(query)
 	}
+
+	// TODO: can we implement these methods without going through a prepared query? (they are called when doing "one time queries")
+	// run(query: SQL) {
+	// 	console.log("CRSQLiteSession.run")
+	// 	return this.client.run(query)
+	// }
+	// all<T = unknown>(query: SQL<unknown>): Promise<T[]> {
+	// 	console.log("CRSQLiteSession.all")
+	// 	return this.client.all(query)
+	// }
+	// get<T = unknown>(query: SQL<unknown>): Promise<T> {
+	// 	console.log("CRSQLiteSession.get")
+	// 	return this.client.get(query)
+	// }
+	// values<T extends any[] = unknown[]>(query: SQL<unknown>): Promise<T[]> {
+	// 	console.log("CRSQLiteSession.values")
+	// 	return this.client.values(query)
+	// }
 }
 
 type StmtAsync = Awaited<ReturnType<DB["prepare"]>>
 
+// TODO: this interface augmentation doesn't work, why? we do get a `SQLitePreparedQuery` when calling `.prepare()` but it doesn't have the `finalize` method at the type level
 declare module "drizzle-orm/session" {
 	interface PreparedQuery {
 		finalize(): Promise<void>
@@ -237,6 +259,7 @@ export class CRSQLTransaction<
 	override async transaction<T>(
 		transaction: (tx: CRSQLTransaction<TFullSchema, TSchema>) => Promise<T>
 	): Promise<T> {
+		console.log("CRSQLTransaction.transaction inside transaction function of transaction class")
 		const savepointName = `sp${this.nestedIndex}`
 		const tx = new CRSQLTransaction(
 			"async",

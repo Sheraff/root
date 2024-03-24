@@ -47,7 +47,7 @@
 		"better-sqlite3": "^9.4.3",
 		"clsx": "^2.1.0",
 		"dotenv": "^16.4.5",
-		"drizzle-orm": "^0.30.2",
+		"drizzle-orm": "^0.30.4",
 		"fastify": "^4.26.2",
 		"grant": "^5.4.22",
 		"pino-pretty": "10.3.1",
