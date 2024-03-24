@@ -1,7 +1,7 @@
 import type { DB } from "@vlcn.io/crsqlite-wasm"
 import { drizzle, type CRSQLite3Database } from "./crsqlite"
 import * as schema from "shared/drizzle-test/schema"
-import { eq, type Dialect, type SQL } from "drizzle-orm"
+import { eq, fillPlaceholders, type Dialect, type SQL } from "drizzle-orm"
 import { useEffect } from "react"
 import initWasm from "@vlcn.io/crsqlite-wasm"
 import tblrx from "@vlcn.io/rx-tbl"
@@ -41,7 +41,7 @@ async function make() {
 	const db = drizzle(sql, { schema, logger: true })
 	await migrate(db, { migrationsFolder: "drizzle" }).catch(console.error)
 	const rx = tblrx(sql)
-	return { db, rx }
+	return { db, rx, sql }
 }
 
 export function DrizzleTest() {
@@ -93,6 +93,7 @@ function TestChild() {
 				.select()
 				.from(schema.cities)
 				.where(eq(schema.cities.name, "New York"))
+			console.log("::::::::::: nyc", nyc)
 			if (!nyc) {
 				;[nyc] = await db
 					.insert(schema.cities)
@@ -104,18 +105,23 @@ function TestChild() {
 					})
 					.returning()
 			}
-			const res = db.query.countries
-				.findMany({
-					with: {
-						cities: {
-							where: (city, { eq, sql }) =>
-								eq(city.name, sql.placeholder("cityName")),
-						},
+			const res = db.query.countries.findMany({
+				with: {
+					cities: {
+						where: (city, { eq, sql }) => eq(city.name, sql.placeholder("cityName")),
 					},
-				})
-				.prepare()
-			console.log("prepared user-query", res)
-			res.all({ cityName: "New York" }).then(console.log).catch(console.error)
+				},
+			})
+
+			console.log(":::::::::::::: prepared user-query", res.toSQL())
+			;(data.ctx.sql as DB)
+				.exec(
+					res.toSQL().sql,
+					fillPlaceholders(res.toSQL().params, { cityName: "New York" })
+				)
+				.then(console.log)
+				.catch(console.error)
+			res.prepare().all({ cityName: "New York" }).then(console.log).catch(console.error)
 		})()
 	}, [data])
 	return <div>Test</div>

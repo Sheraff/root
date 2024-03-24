@@ -152,7 +152,9 @@ export class CRSQLPreparedQuery<
 		this.logger.logQuery(this.query.sql, params)
 		const stmt = await this.stmt
 		stmt.bind(params)
-		stmt.raw(false)
+		if (this.customResultMapper) {
+			stmt.raw(true)
+		}
 		const rows = await stmt.all(null)
 		console.log("CRSQLPreparedQuery.all", rows)
 		// debugger
@@ -180,8 +182,21 @@ export class CRSQLPreparedQuery<
 		const params = fillPlaceholders(this.query.params, placeholderValues ?? {})
 		this.logger.logQuery(this.query.sql, params)
 		const stmt = await this.stmt
+		if (this.customResultMapper) {
+			stmt.raw(true)
+		}
 		const row = await stmt.get(null, ...params)
 		return this.customResultMapper ? this.customResultMapper([row]) : row
+
+		// (rawRows, mapColumnValue) => {
+		// 	const rows = rawRows.map(
+		// 	  (row) => mapRelationalRow(this.schema, this.tableConfig, row, query.selection, mapColumnValue)
+		// 	);
+		// 	if (this.mode === "first") {
+		// 	  return rows[0];
+		// 	}
+		// 	return rows;
+		//   }
 	}
 
 	/**
@@ -191,6 +206,7 @@ export class CRSQLPreparedQuery<
 		const params = fillPlaceholders(this.query.params, placeholderValues ?? {})
 		this.logger.logQuery(this.query.sql, params)
 		const stmt = await this.stmt
+		stmt.raw(true)
 		const rows = await stmt.all(null, ...params)
 		return rows.map((row) => Object.values(row)[0])
 	}
