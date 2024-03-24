@@ -111,8 +111,10 @@ function NotLoggedIn({
 					void submitInviteCode(code)
 				}}
 			>
-				<input type="text" name="code" required minLength={17} maxLength={17} />
-				<Button type="submit">Submit</Button>
+				<ButtonList>
+					<input type="text" name="code" required minLength={17} maxLength={17} />
+					<Button type="submit">Submit</Button>
+				</ButtonList>
 			</form>
 			<Divider />
 			<p>Sign in</p>
