@@ -123,6 +123,30 @@ function TestChild() {
 				.catch(console.error)
 			await res.finalize()
 			console.log("--------------------------")
+			const foo = await db.transaction(async (tx) => {
+				// throw "rollback"
+				console.log("inside tx function")
+				const [usa] = await tx
+					.select({
+						name: schema.countries.name,
+						pop: schema.countries.population,
+					})
+					.from(schema.countries)
+					.where(eq(schema.countries.name, "USA"))
+				console.log("after tx select", usa)
+				const [nyc] = await tx.transaction(async (tx) => {
+					console.log("inside nested tx function")
+					return tx
+						.select({
+							name: schema.cities.name,
+							pop: schema.cities.population,
+						})
+						.from(schema.cities)
+						.where(eq(schema.cities.name, "New York"))
+				})
+				return { usa, nyc }
+			})
+			console.log("FOO", foo)
 		})()
 	}, [data])
 	return <div>Test</div>

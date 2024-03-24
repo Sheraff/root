@@ -84,7 +84,7 @@ export class CRSQLiteSession<
 	}
 
 	override async transaction<T>(
-		transaction: (db: CRSQLTransaction<TFullSchema, TSchema>) => T | Promise<T>
+		transaction: (db: CRSQLTransaction<TFullSchema, TSchema>) => Promise<T>
 		// _config?: SQLiteTransactionConfig
 	): Promise<T> {
 		console.log("CRSQLiteSession.transaction")
@@ -98,7 +98,6 @@ export class CRSQLiteSession<
 		)
 		const tx = new CRSQLTransaction("async", this.dialect, session, this.schema)
 		try {
-			console.log("transaction built, calling transaction function")
 			const result = await transaction(tx)
 			crsqliteTx[0]()
 			return result
@@ -110,7 +109,8 @@ export class CRSQLiteSession<
 
 	exec(query: string) {
 		console.log("CRSQLiteSession.exec")
-		return this.client.exec(query)
+		this.logger.logQuery(query, [])
+		return (this.tx ?? this.client).exec(query)
 	}
 
 	// TODO: can we implement these methods without going through a prepared query? (they are called when doing "one time queries")
@@ -166,7 +166,7 @@ export class CRSQLPreparedQuery<
 		private customResultMapper?: (rows: unknown[][]) => unknown
 	) {
 		super("async", executeMethod, query)
-		this.stmt = this.client.prepare(query.sql)
+		this.stmt = (this.tx ?? this.client).prepare(query.sql)
 	}
 
 	/**
@@ -211,16 +211,6 @@ export class CRSQLPreparedQuery<
 			void stmt.finalize(this.tx)
 		}
 		return this.customResultMapper ? this.customResultMapper([row]) : row
-
-		// (rawRows, mapColumnValue) => {
-		// 	const rows = rawRows.map(
-		// 	  (row) => mapRelationalRow(this.schema, this.tableConfig, row, query.selection, mapColumnValue)
-		// 	);
-		// 	if (this.mode === "first") {
-		// 	  return rows[0];
-		// 	}
-		// 	return rows;
-		//   }
 	}
 
 	/**
@@ -243,7 +233,7 @@ export class CRSQLPreparedQuery<
 			throw new Error("Cannot finalize one-time query")
 		}
 		const stmt = await this.stmt
-		await stmt.finalize(null)
+		await stmt.finalize(this.tx)
 	}
 }
 
@@ -252,9 +242,6 @@ export class CRSQLTransaction<
 	TSchema extends TablesRelationalConfig,
 > extends SQLiteTransaction<"async", void, TFullSchema, TSchema> {
 	static readonly [entityKind]: string = "CRSQLTransaction"
-
-	private dialect!: SQLiteAsyncDialect
-	private session!: CRSQLiteSession<TFullSchema, TSchema>
 
 	override async transaction<T>(
 		transaction: (tx: CRSQLTransaction<TFullSchema, TSchema>) => Promise<T>
@@ -268,13 +255,13 @@ export class CRSQLTransaction<
 			this.schema,
 			this.nestedIndex + 1
 		)
-		await this.session.run(sql.raw(`SAVEPOINT ${savepointName}`))
+		await this.session.exec(`SAVEPOINT ${savepointName};`)
 		try {
 			const result = await transaction(tx)
-			await this.session.run(sql.raw(`RELEASE savepoint ${savepointName}`))
+			await this.session.exec(`RELEASE savepoint ${savepointName};`)
 			return result
 		} catch (err) {
-			await this.session.run(sql.raw(`ROLLBACK TO savepoint ${savepointName}`))
+			await this.session.exec(`ROLLBACK TO savepoint ${savepointName};`)
 			throw err
 		}
 	}
