@@ -134,15 +134,17 @@ function TestChild() {
 					.from(schema.countries)
 					.where(eq(schema.countries.name, "USA"))
 				console.log("after tx select", usa)
-				const [nyc] = await tx.transaction(async (tx) => {
+				const nyc = await tx.transaction(async (tx) => {
 					console.log("inside nested tx function")
-					return tx
+					const [nyc] = await tx
 						.select({
 							name: schema.cities.name,
 							pop: schema.cities.population,
 						})
 						.from(schema.cities)
 						.where(eq(schema.cities.name, "New York"))
+					tx.rollback()
+					return nyc
 				})
 				return { usa, nyc }
 			})

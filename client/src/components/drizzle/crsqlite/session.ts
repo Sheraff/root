@@ -98,7 +98,7 @@ export class CRSQLiteSession<
 		)
 		const tx = new CRSQLTransaction("async", this.dialect, session, this.schema)
 		try {
-			const result = await transaction(tx)
+			const result = await tx.transaction(transaction)
 			crsqliteTx[0]()
 			return result
 		} catch (err) {
