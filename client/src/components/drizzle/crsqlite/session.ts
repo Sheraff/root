@@ -38,7 +38,7 @@ export class CRSQLiteSession<
 		private dialect: SQLiteAsyncDialect,
 		private schema: RelationalSchemaConfig<TSchema> | undefined,
 		private options: CRSQLiteSessionOptions,
-		private tx?: Transaction | undefined
+		private tx?: Transaction[1] | undefined
 	) {
 		super(dialect)
 		this.logger = options.logger ?? new NoopLogger()
@@ -55,17 +55,35 @@ export class CRSQLiteSession<
 		return new CRSQLPreparedQuery(
 			this.client,
 			query,
+			false,
 			this.logger,
 			fields,
-			this.tx,
+			this.tx ?? null,
 			executeMethod,
 			customResultMapper
 		)
 	}
 
+	prepareOneTimeQuery(
+		query: Query,
+		fields: SelectedFieldsOrdered | undefined,
+		executeMethod: SQLiteExecuteMethod
+	): SQLitePreparedQuery<PreparedQueryConfig & { type: "async" }> {
+		console.log("CRSQLiteSession.prepareOneTimeQuery", executeMethod, query)
+		return new CRSQLPreparedQuery(
+			this.client,
+			query,
+			true,
+			this.logger,
+			fields,
+			this.tx ?? null,
+			executeMethod
+		)
+	}
+
 	override async transaction<T>(
-		transaction: (db: CRSQLTransaction<TFullSchema, TSchema>) => T | Promise<T>,
-		_config?: SQLiteTransactionConfig
+		transaction: (db: CRSQLTransaction<TFullSchema, TSchema>) => T | Promise<T>
+		// _config?: SQLiteTransactionConfig
 	): Promise<T> {
 		console.log("CRSQLiteSession.transaction")
 		const crsqliteTx = await this.client.imperativeTx()
@@ -74,7 +92,7 @@ export class CRSQLiteSession<
 			this.dialect,
 			this.schema,
 			this.options,
-			crsqliteTx
+			crsqliteTx[1]
 		)
 		const tx = new CRSQLTransaction("async", this.dialect, session, this.schema)
 		try {
@@ -91,21 +109,15 @@ export class CRSQLiteSession<
 		console.log("CRSQLiteSession.exec")
 		return this.client.exec(query)
 	}
-
-	// run(query: SQL<unknown>): Promise<void> {
-	// 	console.log("CRSQLiteSession.run")
-	// 	return this.client.exec(query.)
-
-	// }
 }
 
 type StmtAsync = Awaited<ReturnType<DB["prepare"]>>
 
-// declare module "drizzle-orm/sqlite-core/session" {
-// 	export interface PreparedQuery {
-// 		finalize(): Promise<void>
-// 	}
-// }
+declare module "drizzle-orm/session" {
+	interface PreparedQuery {
+		finalize(): Promise<void>
+	}
+}
 
 export class CRSQLPreparedQuery<
 	T extends PreparedQueryConfig = PreparedQueryConfig,
@@ -124,9 +136,10 @@ export class CRSQLPreparedQuery<
 	constructor(
 		private client: DB,
 		query: Query,
+		private oneTime: boolean,
 		private logger: Logger,
 		fields: SelectedFieldsOrdered | undefined,
-		private tx: Transaction | undefined,
+		private tx: Transaction[1] | null,
 		executeMethod: SQLiteExecuteMethod,
 		private customResultMapper?: (rows: unknown[][]) => unknown
 	) {
@@ -141,7 +154,10 @@ export class CRSQLPreparedQuery<
 		const params = fillPlaceholders(this.query.params, placeholderValues ?? {})
 		this.logger.logQuery(this.query.sql, params)
 		const stmt = await this.stmt
-		await stmt.run(null, ...params)
+		await stmt.run(this.tx, ...params)
+		if (this.oneTime) {
+			void stmt.finalize(this.tx)
+		}
 	}
 
 	/**
@@ -151,28 +167,13 @@ export class CRSQLPreparedQuery<
 		const params = fillPlaceholders(this.query.params, placeholderValues ?? {})
 		this.logger.logQuery(this.query.sql, params)
 		const stmt = await this.stmt
-		stmt.bind(params)
-		if (this.customResultMapper) {
-			stmt.raw(true)
-		}
-		const rows = await stmt.all(null)
+		stmt.raw(Boolean(this.customResultMapper))
+		const rows = await stmt.all(this.tx, ...params)
 		console.log("CRSQLPreparedQuery.all", rows)
-		// debugger
+		if (this.oneTime) {
+			void stmt.finalize(this.tx)
+		}
 		return this.customResultMapper ? this.customResultMapper(rows) : rows
-
-		// const { fields, logger, query, tx, client, customResultMapper } = this
-		// if (!fields && !customResultMapper) {
-		// 	const params = fillPlaceholders(query.params, placeholderValues ?? {})
-		// 	logger.logQuery(query.sql, params)
-		// 	const stmt: InStatement = { sql: query.sql, args: params as InArgs }
-		// 	return (tx ? tx.execute(stmt) : client.execute(stmt)).then(({ rows }) =>
-		// 		this.mapAllResult(rows)
-		// 	)
-		// }
-
-		// const rows = (await this.values(placeholderValues)) as unknown[][]
-
-		// return this.mapAllResult(rows)
 	}
 
 	/**
@@ -182,10 +183,11 @@ export class CRSQLPreparedQuery<
 		const params = fillPlaceholders(this.query.params, placeholderValues ?? {})
 		this.logger.logQuery(this.query.sql, params)
 		const stmt = await this.stmt
-		if (this.customResultMapper) {
-			stmt.raw(true)
+		stmt.raw(Boolean(this.customResultMapper))
+		const row = await stmt.get(this.tx, ...params)
+		if (this.oneTime) {
+			void stmt.finalize(this.tx)
 		}
-		const row = await stmt.get(null, ...params)
 		return this.customResultMapper ? this.customResultMapper([row]) : row
 
 		// (rawRows, mapColumnValue) => {
@@ -207,11 +209,17 @@ export class CRSQLPreparedQuery<
 		this.logger.logQuery(this.query.sql, params)
 		const stmt = await this.stmt
 		stmt.raw(true)
-		const rows = await stmt.all(null, ...params)
-		return rows.map((row) => Object.values(row)[0])
+		const rows = (await stmt.all(null, ...params)) as unknown[][]
+		if (this.oneTime) {
+			void stmt.finalize(this.tx)
+		}
+		return rows.map((row) => row[0])
 	}
 
 	async finalize(): Promise<void> {
+		if (this.oneTime) {
+			throw new Error("Cannot finalize one-time query")
+		}
 		const stmt = await this.stmt
 		await stmt.finalize(null)
 	}
@@ -223,8 +231,8 @@ export class CRSQLTransaction<
 > extends SQLiteTransaction<"async", void, TFullSchema, TSchema> {
 	static readonly [entityKind]: string = "CRSQLTransaction"
 
-	private dialect: SQLiteAsyncDialect
-	private session: CRSQLiteSession<TFullSchema, TSchema>
+	private dialect!: SQLiteAsyncDialect
+	private session!: CRSQLiteSession<TFullSchema, TSchema>
 
 	override async transaction<T>(
 		transaction: (tx: CRSQLTransaction<TFullSchema, TSchema>) => Promise<T>

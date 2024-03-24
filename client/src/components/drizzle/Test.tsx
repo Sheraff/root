@@ -41,7 +41,7 @@ async function make() {
 	const db = drizzle(sql, { schema, logger: true })
 	await migrate(db, { migrationsFolder: "drizzle" }).catch(console.error)
 	const rx = tblrx(sql)
-	return { db, rx, sql }
+	return { db, rx }
 }
 
 export function DrizzleTest() {
@@ -105,23 +105,24 @@ function TestChild() {
 					})
 					.returning()
 			}
-			const res = db.query.countries.findMany({
-				with: {
-					cities: {
-						where: (city, { eq, sql }) => eq(city.name, sql.placeholder("cityName")),
+			const res = db.query.countries
+				.findMany({
+					with: {
+						cities: {
+							where: (city, { eq, sql }) =>
+								eq(city.name, sql.placeholder("cityName")),
+						},
 					},
-				},
-			})
+				})
+				.prepare()
 
-			console.log(":::::::::::::: prepared user-query", res.toSQL())
-			;(data.ctx.sql as DB)
-				.exec(
-					res.toSQL().sql,
-					fillPlaceholders(res.toSQL().params, { cityName: "New York" })
-				)
-				.then(console.log)
+			console.log(":::::::::::::: user-query", res)
+			await res
+				.all({ cityName: "New York" })
+				.then((a) => console.log("DRIZZLE", a))
 				.catch(console.error)
-			res.prepare().all({ cityName: "New York" }).then(console.log).catch(console.error)
+			await res.finalize()
+			console.log("--------------------------")
 		})()
 	}, [data])
 	return <div>Test</div>
