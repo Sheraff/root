@@ -1,16 +1,22 @@
-import type { MigrationConfig, MigrationMeta } from "drizzle-orm/migrator"
+import type { MigrationMeta } from "drizzle-orm/migrator"
 import type { CRSQLite3Database } from "./driver"
 import migrationJournal from "shared/drizzle-migrations/meta/_journal.json"
 import { migrations } from "shared/drizzle-migrations/index"
 import { sql, type TablesRelationalConfig } from "drizzle-orm"
 import type { SQLiteSession } from "drizzle-orm/sqlite-core"
 
+type MigrationConfig = {
+	/** @default "__drizzle_migrations" */
+	migrationsTable?: string
+	migrations: MigrationMeta[]
+}
+
 export async function migrate<TSchema extends Record<string, unknown>>(
 	db: CRSQLite3Database<TSchema>,
-	config: string | MigrationConfig
+	config: MigrationConfig
 ) {
-	const migrations = await getMigrations()
-	const migrationsTable = "__drizzle_migrations"
+	const migrations = config.migrations
+	const migrationsTable = config.migrationsTable ?? "__drizzle_migrations"
 	const migrationTableIdent = sql.identifier(migrationsTable)
 	const migrationTableCreate = sql`
 		CREATE TABLE IF NOT EXISTS ${migrationTableIdent} (

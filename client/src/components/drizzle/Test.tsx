@@ -32,14 +32,14 @@ import tblrx from "@vlcn.io/rx-tbl"
 
 // console.log(data)
 
-import { migrate } from "./crsqlite/migrator"
+import { getMigrations, migrate } from "./crsqlite/migrator"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 
 async function make() {
 	const sqlite = await initWasm()
 	const sql = await sqlite.open("test")
 	const db = drizzle(sql, { schema, logger: true })
-	await migrate(db, { migrationsFolder: "drizzle" }).catch(console.error)
+	await migrate(db, { migrations: await getMigrations() }).catch(console.error)
 	const rx = tblrx(sql)
 	return { db, rx }
 }
