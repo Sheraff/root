@@ -52,7 +52,7 @@
 	},
 	"prettier.enable": true,
 	"explorer.fileNesting.patterns": {
-		"*package.json": "${capture}.eslint*, ${capture}.prettier*, ${capture}pnpm*, ${capture}turbo*, ${capture}tsconfig.json, ${capture}vite.config.ts, ${capture}vitest.*, ${capture}.gitignore, ${capture}esbuild.*, ${capture}knip.*, ${capture}.nvmrc, ${capture}.cspell.json, ${capture}*.dict.txt",
+		"*package.json": "${capture}.eslint*, ${capture}.prettier*, ${capture}pnpm*, ${capture}turbo*, ${capture}tsconfig.json, ${capture}vite.config.ts, ${capture}vitest.*, ${capture}.gitignore, ${capture}esbuild.*, ${capture}knip.*, ${capture}.nvmrc, ${capture}.cspell.json, ${capture}*.dict.txt, ${capture}drizzle.config.*",
 		"*.js": "${capture}.js.*, ${capture}.d.ts*",
 		"*.ts": "${capture}.ts.*, ${capture}.d.ts*, ${capture}.js*, ${capture}.mjs*",
 		"*.css": "${capture}.css.*",
