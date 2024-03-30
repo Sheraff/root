@@ -48,8 +48,8 @@ importers:
         specifier: ^0.30.6
         version: 0.30.6(@types/better-sqlite3@7.6.9)(@types/react@18.2.64)(better-sqlite3@9.4.3)(react@18.2.0)
       drizzle-orm-crsqlite-wasm:
-        specifier: 0.0.2
-        version: 0.0.2(@vlcn.io/xplat-api@0.15.0)(drizzle-orm@0.30.6)
+        specifier: 0.0.3
+        version: 0.0.3(@vlcn.io/xplat-api@0.15.0)(drizzle-orm@0.30.6)
       fastify:
         specifier: ^4.26.2
         version: 4.26.2
@@ -3010,8 +3010,8 @@ packages:
       - supports-color
     dev: true
 
-  /drizzle-orm-crsqlite-wasm@0.0.2(@vlcn.io/xplat-api@0.15.0)(drizzle-orm@0.30.6):
-    resolution: {integrity: sha512-QEvgdS8GTr7j9Lt+iuiZ+6iRlp5zAbZZAwjd1gTSlnorKjwPykciekP9ujrolitHh7sYMuZNyrv3OkPjYxQIng==}
+  /drizzle-orm-crsqlite-wasm@0.0.3(@vlcn.io/xplat-api@0.15.0)(drizzle-orm@0.30.6):
+    resolution: {integrity: sha512-hkTppNrDfSABGWvnFklY2+8vNcwlFcKQkPksbCTzdiz/xQKftSfcKyhi2uKiCVRVss5yEreCDUDoP9PVVE5+dw==}
     peerDependencies:
       '@vlcn.io/xplat-api': ^0.15.0
       drizzle-orm: ^0.30.6
