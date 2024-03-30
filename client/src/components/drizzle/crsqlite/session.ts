@@ -1,23 +1,14 @@
-// import type { Client, InArgs, InStatement, ResultSet, Transaction } from '@libsql/client';
-import type { SQLite3, DB } from "@vlcn.io/crsqlite-wasm"
-import type { BatchItem as BatchItem } from "drizzle-orm/batch"
+import type { DB } from "@vlcn.io/crsqlite-wasm"
 import { entityKind } from "drizzle-orm/entity"
 import type { Logger } from "drizzle-orm/logger"
 import { NoopLogger } from "drizzle-orm/logger"
 import type { RelationalSchemaConfig, TablesRelationalConfig } from "drizzle-orm/relations"
-import type { PreparedQuery } from "drizzle-orm/session"
-import { fillPlaceholders, type Query, sql, type SQL } from "drizzle-orm/sql/sql"
+import { fillPlaceholders, type Query } from "drizzle-orm/sql/sql"
 import type { SQLiteAsyncDialect } from "drizzle-orm/sqlite-core/dialect"
 import { SQLiteTransaction } from "drizzle-orm/sqlite-core"
 import type { SelectedFieldsOrdered } from "drizzle-orm/sqlite-core/query-builders/select.types"
-import type {
-	PreparedQueryConfig,
-	SQLiteExecuteMethod,
-	SQLiteTransactionConfig,
-} from "drizzle-orm/sqlite-core/session"
+import type { PreparedQueryConfig, SQLiteExecuteMethod } from "drizzle-orm/sqlite-core/session"
 import { SQLitePreparedQuery, SQLiteSession } from "drizzle-orm/sqlite-core/session"
-import type { Dialect } from "drizzle-orm"
-// import { mapResultRow } from 'drizzle-orm/utils';
 
 type Transaction = Awaited<ReturnType<DB["imperativeTx"]>>
 
@@ -195,7 +186,7 @@ export class CRSQLPreparedQuery<
 		if (this.oneTime) {
 			void stmt.finalize(this.tx)
 		}
-		return this.customResultMapper ? this.customResultMapper(rows) : rows
+		return this.customResultMapper ? (this.customResultMapper(rows) as unknown[]) : rows
 	}
 
 	/**
