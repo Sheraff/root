@@ -1,39 +1,13 @@
-import type { DB } from "@vlcn.io/crsqlite-wasm"
-import { drizzle, type CRSQLite3Database } from "./crsqlite"
 import * as schema from "shared/drizzle-test/schema"
-import { eq, fillPlaceholders, type Dialect, type SQL } from "drizzle-orm"
+import { eq } from "drizzle-orm"
 import { useEffect } from "react"
 import initWasm from "@vlcn.io/crsqlite-wasm"
 import tblrx from "@vlcn.io/rx-tbl"
 
-// export function makeDrizzleDb(db: DB) {
-// 	return drizzle(db, { schema })
-// }
-
-// const db = makeDrizzleDb({} as DB)
-
-// const res = db.query.countries
-// 	.findMany({
-// 		with: {
-// 			cities: {
-// 				where: (city, { eq, sql }) => eq(city.name, sql.placeholder("cityName")),
-// 			},
-// 		},
-// 	})
-// 	.prepare()
-
-// type foo = keyof typeof res & {} & string
-// //   ^?
-
-// res.finalize()
-
-// const data = await res.all({ cityName: "New York" })
-// //    ^?
-
-// console.log(data)
-
-import { getMigrations, migrate } from "./crsqlite/migrator"
+import { getMigrations } from "./getMigrations"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { migrate } from "drizzle-orm-crsqlite-wasm/migrator"
+import { drizzle, type CRSQLiteDatabase } from "drizzle-orm-crsqlite-wasm"
 
 async function make() {
 	const sqlite = await initWasm()
@@ -51,7 +25,7 @@ export function DrizzleTest() {
 		make()
 			.then((ctx) => {
 				console.log("ctx", ctx)
-				client.setQueryData<DbStore>([key], {
+				client.setQueryData([key], {
 					// schema: cleanSchema,
 					// schemaName,
 					name: "test",
@@ -69,11 +43,17 @@ export function DrizzleTest() {
 	)
 }
 
+declare module "drizzle-orm/session" {
+	export interface PreparedQuery {
+		finalize(): Promise<void>
+	}
+}
+
 function TestChild() {
 	const { data } = useQuery({ queryKey: ["test"] })
 	useEffect(() => {
 		if (!data) return
-		const db = data.ctx.db as CRSQLite3Database<typeof schema>
+		const db = data.ctx.db as CRSQLiteDatabase<typeof schema>
 		void (async function () {
 			let [usa] = await db
 				.select()
@@ -121,6 +101,7 @@ function TestChild() {
 				.all({ cityName: "New York" })
 				.then((a) => console.log("DRIZZLE", a))
 				.catch(console.error)
+			// @ts-expect-error -- the lib does not expose this method on the type level, but it does exist
 			await res.finalize()
 			console.log("--------------------------")
 			const foo = await db.transaction(async (tx) => {

@@ -45,8 +45,11 @@ importers:
         specifier: ^16.4.5
         version: 16.4.5
       drizzle-orm:
-        specifier: ^0.30.4
-        version: 0.30.4(@types/better-sqlite3@7.6.9)(@types/react@18.2.64)(better-sqlite3@9.4.3)(react@18.2.0)
+        specifier: ^0.30.6
+        version: 0.30.6(@types/better-sqlite3@7.6.9)(@types/react@18.2.64)(better-sqlite3@9.4.3)(react@18.2.0)
+      drizzle-orm-crsqlite-wasm:
+        specifier: 0.0.2
+        version: 0.0.2(@vlcn.io/xplat-api@0.15.0)(drizzle-orm@0.30.6)
       fastify:
         specifier: ^4.26.2
         version: 4.26.2
@@ -3007,11 +3010,22 @@ packages:
       - supports-color
     dev: true
 
-  /drizzle-orm@0.30.4(@types/better-sqlite3@7.6.9)(@types/react@18.2.64)(better-sqlite3@9.4.3)(react@18.2.0):
-    resolution: {integrity: sha512-kWoSMGbrOFkmkAweLTFtHJMpN+nwhx89q0mLELqT2aEU+1szNV8jrnBmJwZ0WGNp7J7yQn/ezEtxBI/qzTSElQ==}
+  /drizzle-orm-crsqlite-wasm@0.0.2(@vlcn.io/xplat-api@0.15.0)(drizzle-orm@0.30.6):
+    resolution: {integrity: sha512-QEvgdS8GTr7j9Lt+iuiZ+6iRlp5zAbZZAwjd1gTSlnorKjwPykciekP9ujrolitHh7sYMuZNyrv3OkPjYxQIng==}
+    peerDependencies:
+      '@vlcn.io/xplat-api': ^0.15.0
+      drizzle-orm: ^0.30.6
+    dependencies:
+      '@vlcn.io/xplat-api': 0.15.0
+      drizzle-orm: 0.30.6(@types/better-sqlite3@7.6.9)(@types/react@18.2.64)(better-sqlite3@9.4.3)(react@18.2.0)
+    dev: false
+
+  /drizzle-orm@0.30.6(@types/better-sqlite3@7.6.9)(@types/react@18.2.64)(better-sqlite3@9.4.3)(react@18.2.0):
+    resolution: {integrity: sha512-8RgNUmY7J03GRuRgBV5SaJNbYgLVPjdSWNS/bRkIMIHt2TFCA439lJsNpqYX8asyKMqkw8ceBiamUnCIXZIt9w==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=3'
+      '@electric-sql/pglite': '>=0.1.1'
       '@libsql/client': '*'
       '@neondatabase/serverless': '>=0.1'
       '@op-engineering/op-sqlite': '>=2'
@@ -3038,6 +3052,8 @@ packages:
       '@aws-sdk/client-rds-data':
         optional: true
       '@cloudflare/workers-types':
+        optional: true
+      '@electric-sql/pglite':
         optional: true
       '@libsql/client':
         optional: true
