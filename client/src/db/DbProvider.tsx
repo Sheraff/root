@@ -34,13 +34,13 @@ declare global {
 async function makeDb(
 	name: string,
 	schema: Record<string, unknown>,
-	getMigrations: () => MigrationMeta[] | Promise<MigrationMeta[]>
+	migrations: MigrationMeta[]
 ): Promise<Ctx> {
 	return navigator.locks.request("db-init", { mode: "exclusive" }, async () => {
 		const sqlite = await initWasm()
 		const client = await sqlite.open(name)
 		const db = drizzle(client, { schema, logger: true })
-		await migrate(db, { migrations: await getMigrations() }).catch(console.error)
+		await migrate(db, { migrations }).catch(console.error)
 		const rx = tblrx(client)
 		return { client, rx, db }
 	})
@@ -63,7 +63,7 @@ async function destroyDb({ client, rx }: Ctx): Promise<void> {
 export function useDbProvider(
 	name: string | undefined,
 	schema: Record<string, unknown>,
-	getMigrations: () => MigrationMeta[] | Promise<MigrationMeta[]>
+	migrations: MigrationMeta[]
 ) {
 	const client = useQueryClient()
 
@@ -80,7 +80,7 @@ export function useDbProvider(
 			console.error(e)
 			throw e
 		}
-		makeDb(name, schema, getMigrations)
+		makeDb(name, schema, migrations)
 			.then((db) => {
 				if (closed) return
 				const exactKey = [DB_KEY, { id: db.client.db, name }]
@@ -116,7 +116,7 @@ export function useDbProvider(
  */
 export function useDb<TSchema extends Record<string, unknown> = Record<string, unknown>>(
 	name?: string
-): Ctx | undefined {
+): Ctx<TSchema> | undefined {
 	const { data } = useQuery<DbStore<TSchema>, unknown, Ctx<TSchema>>({
 		enabled: Boolean(name),
 		queryKey: [DB_KEY, name],

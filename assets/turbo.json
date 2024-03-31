@@ -2,6 +2,32 @@
 	"$schema": "https://turbo.build/schema.json",
 	"extends": ["//"],
 	"pipeline": {
+		"tsc:build": {
+			"outputs": ["src/**/migrations.json"]
+		},
+		"tsc:tools": {
+			"inputs": [
+				"../script/src/**/*.ts",
+				"**/*.drizzle.config.ts",
+				"esbuild.ts",
+				"../types/*.d.ts",
+				"tsconfig.json",
+				"tsconfig.tools.json"
+			]
+		},
+		"tsc:lib": {
+			"inputs": [
+				"src/**/*",
+				"!src/**/drizzle.config.ts",
+				"tsconfig.json",
+				"tsconfig.lib.json"
+			],
+			"dependsOn": ["assets#tsc:build"]
+		},
+		"tsc": {
+			"dependsOn": ["assets#tsc:tools", "assets#tsc:lib"],
+			"inputs": ["package.json"]
+		},
 		"spell": {
 			"inputs": ["$TURBO_DEFAULT$", "../repo.dict.txt"]
 		}

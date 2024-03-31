@@ -1,4 +1,5 @@
 import { onlineManager } from "@tanstack/react-query"
+import { schema } from "assets/drizzle-test"
 import { useAuthContext } from "client/auth/useAuthContext"
 import { Title } from "client/components/Bento/Title"
 import { Button, ButtonList } from "client/components/Button/Button"
@@ -29,37 +30,36 @@ export function DbDemo() {
 }
 
 function Content({ name }: { name: string }) {
-	const ctx = useDb(name)
-	const sync = useSync(ctx?.db, name)
+	const ctx = useDb<typeof schema>(name)
+	// const sync = useSync(ctx?.db, name)
 
-	// Sync with server on reconnect
-	useEffect(() => {
-		if (!sync) return
-		if (navigator.onLine) {
-			void sync.roundTrip()
-		}
-		return onlineManager.subscribe((online) => {
-			if (online) {
-				void sync.roundTrip()
-			}
-		})
-	}, [sync])
+	// // Sync with server on reconnect
+	// useEffect(() => {
+	// 	if (!sync) return
+	// 	if (navigator.onLine) {
+	// 		void sync.roundTrip()
+	// 	}
+	// 	return onlineManager.subscribe((online) => {
+	// 		if (online) {
+	// 			void sync.roundTrip()
+	// 		}
+	// 	})
+	// }, [sync])
 
-	const list = useDbQuery<{ id: string; content: string; position: number }>({
-		dbName: name,
-		query: sql`SELECT id, content, position FROM test ORDER BY position, id ASC`,
-	})
+	const list = useDbQuery(
+		ctx?.db.select().from(schema.list).orderBy(schema.list.position, schema.list.id)
+	)
 
 	const { mutate: insertData } = useDbMutation<[id: string, content: string, position: number]>({
 		dbName: name,
 		query: sql`INSERT INTO test (id, content, position) VALUES (?, ?, ?) RETURNING id, content;`,
-		onSuccess: () => sync?.roundTrip(),
+		// onSuccess: () => sync?.roundTrip(),
 	})
 
 	const { mutate: dropData } = useDbMutation({
 		dbName: name,
 		query: sql`DELETE FROM test;`,
-		onSuccess: () => sync?.roundTrip(),
+		// onSuccess: () => sync?.roundTrip(),
 	})
 
 	return (

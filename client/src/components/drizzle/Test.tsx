@@ -1,19 +1,18 @@
-import * as schema from "shared/drizzle-test/schema"
 import { eq, type Query } from "drizzle-orm"
 import { useEffect } from "react"
-import initWasm, { type DB } from "@vlcn.io/crsqlite-wasm"
+import initWasm from "@vlcn.io/crsqlite-wasm"
 import tblrx from "@vlcn.io/rx-tbl"
 
-import { getMigrations } from "./getMigrations"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { migrate } from "drizzle-orm-crsqlite-wasm/migrator"
 import { drizzle, type CRSQLiteDatabase, type CRSQLiteSession } from "drizzle-orm-crsqlite-wasm"
+import { migrations, schema } from "assets/drizzle-test"
 
 async function make() {
 	const sqlite = await initWasm()
-	const sql = await sqlite.open("test")
+	const sql = await sqlite.open("foo")
 	const db = drizzle(sql, { schema, logger: true })
-	await migrate(db, { migrations: await getMigrations() }).catch(console.error)
+	await migrate(db, { migrations }).catch(console.error)
 	const rx = tblrx(sql)
 	return { db, rx }
 }

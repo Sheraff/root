@@ -8,6 +8,7 @@ import {
 import { useDb, type Ctx } from "client/db/DbProvider"
 import type { Query } from "drizzle-orm"
 import type { CRSQLitePreparedQuery, CRSQLiteSession } from "drizzle-orm-crsqlite-wasm"
+import type { SQLitePreparedQuery } from "drizzle-orm/sqlite-core"
 import { useLayoutEffect } from "react"
 
 export const UNIQUE_KEY = "__vlcn__cache_manager__"
@@ -355,18 +356,20 @@ export function useDbQuery<
 	// TError = DefaultError, // TODO
 	TData = TQueryFnData[],
 >(
-	query: {
-		toSQL(): Query
-		prepare(): CRSQLitePreparedQuery<{
-			all(): Promise<TQueryFnData[]>
-			type: "async"
-			run: void
-			get: any
-			values: any
-			execute: any
-		}>
-		session?: CRSQLiteSession<any, any>
-	},
+	query:
+		| {
+				toSQL(): Query
+				prepare(): SQLitePreparedQuery<{
+					all: TQueryFnData[]
+					type: "async"
+					run: void
+					get: any
+					values: any
+					execute: any
+				}>
+				session?: CRSQLiteSession<any, any>
+		  }
+		| undefined,
 	{
 		select,
 		updateTypes = ALL_UPDATES,
@@ -377,19 +380,19 @@ export function useDbQuery<
 		enabled?: boolean
 	} = {}
 ) {
-	const sqlParams = query.toSQL()
+	const sqlParams = query?.toSQL()
 
 	const queryKey = [
 		UNIQUE_KEY,
 		//@ts-expect-error -- these are exposed by `drizzle-orm-crsqlite-wasm` but not at the type level
 		query.session.client.db,
-		sqlParams.sql,
-		sqlParams.params,
+		sqlParams?.sql,
+		sqlParams?.params,
 		Object.fromEntries(updateTypes.map((t) => [t, true])) as Record<UpdateType, boolean>,
 	] as DbQueryKey
 
 	return useQuery({
-		enabled: Boolean(enabled),
+		enabled: Boolean(enabled && query),
 		queryKey,
 		queryFn: async () => {
 			console.debug("::::::queryFn")
@@ -400,7 +403,7 @@ export function useDbQuery<
 				throw new Error("Query not in store when trying to execute queryFn")
 			}
 			if (!q.statement) {
-				q.statement = query.prepare()
+				q.statement = query!.prepare() as unknown as CRSQLitePreparedQuery
 			}
 			return q.statement.all() as Promise<TQueryFnData[]>
 		},
