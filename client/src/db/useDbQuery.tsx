@@ -29,14 +29,14 @@ type Binding = string | number | null | undefined
 
 export type DbQueryKey = readonly [
 	typeof UNIQUE_KEY,
-	dbName: string,
+	dbName: number,
 	sql: string,
 	bindings: readonly Binding[],
 	updateTypes: Record<UpdateType, boolean>,
 ]
 
 type QueryEntry = {
-	dbName: string
+	dbName: number
 	/** how many react-query cache entries match this key */
 	count: number
 	/** how many react-query cache entries match this key and are actively being used */
@@ -70,7 +70,7 @@ const tableStore = new Map<
 	/** dbName, table */
 	string,
 	{
-		dbName: string
+		dbName: number
 		queries: Map<
 			/** dbName, sql */
 			string,
@@ -90,9 +90,9 @@ function cleanupQuery({
 }: {
 	q: QueryEntry
 	cacheManager: QueryCache
-	queryKey: readonly [dbName: string, sql: string, bindings: Binding[]]
+	queryKey: readonly [dbName: number, sql: string, bindings: Binding[]]
 	hash: string
-	dbName: string
+	dbName: number
 }) {
 	// make sure no other queryKey is using that same SQL query and is still considered fresh
 	const filterKey = [UNIQUE_KEY, ...queryKey] as const
@@ -144,7 +144,7 @@ function cleanupQuery({
 	q.tables = null
 }
 
-export function start(dbName: string, ctx: Ctx, client: QueryClient) {
+export function start(dbName: number, ctx: Ctx, client: QueryClient) {
 	console.log("~~~ start cache manager ~~~", dbName)
 
 	const cacheManager = client.getQueryCache()
@@ -154,7 +154,7 @@ export function start(dbName: string, ctx: Ctx, client: QueryClient) {
 		if (k[1] !== dbName) return
 		const eventQueryKey = k as DbQueryKey
 		const queryKey = [eventQueryKey[1], eventQueryKey[2], eventQueryKey[3]] as [
-			dbName: string,
+			dbName: number,
 			sql: string,
 			bindings: Binding[],
 		]
@@ -317,18 +317,18 @@ export function start(dbName: string, ctx: Ctx, client: QueryClient) {
 
 	return () => {
 		unsubscribe()
-		tableStore.forEach((t) => {
+		for (const [key, t] of tableStore.entries()) {
 			if (t.dbName === dbName) {
 				t.unsubscribe()
-				tableStore.delete(t.dbName)
+				tableStore.delete(key)
 			}
-		})
-		queryStore.forEach((q) => {
+		}
+		for (const [key, q] of queryStore.entries()) {
 			if (q.dbName === dbName) {
 				q.statement?.finalize().catch(console.error)
-				queryStore.delete(q.dbName)
+				queryStore.delete(key)
 			}
-		})
+		}
 	}
 }
 
@@ -347,7 +347,7 @@ export function useCacheManager(dbName?: string) {
 
 	useLayoutEffect(() => {
 		if (!ctx || !dbName) return
-		start(dbName, ctx, client)
+		start(ctx.client.db, ctx, client)
 	}, [dbName, ctx, client])
 }
 
@@ -382,6 +382,8 @@ export function useDbQuery<
 ) {
 	const sqlParams = query?.toSQL()
 
+	console.log(query, sqlParams)
+
 	const queryKey = [
 		UNIQUE_KEY,
 		//@ts-expect-error -- these are exposed by `drizzle-orm-crsqlite-wasm` but not at the type level
@@ -399,12 +401,14 @@ export function useDbQuery<
 			const partialKey = [queryKey[1], queryKey[2], queryKey[3]] as const
 			const key = hashKey(partialKey)
 			const q = queryStore.get(key)
+			console.log("query", key, q)
 			if (!q) {
 				throw new Error("Query not in store when trying to execute queryFn")
 			}
 			if (!q.statement) {
 				q.statement = query!.prepare() as unknown as CRSQLitePreparedQuery
 			}
+			console.log("executing query", key)
 			return q.statement.all() as Promise<TQueryFnData[]>
 		},
 		select,

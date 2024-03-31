@@ -70,9 +70,8 @@ export function useDbProvider(
 	useEffect(() => {
 		if (!name) return
 		let closed = false
-		const existing = client
-			.getQueryCache()
-			.find<DbStore>({ queryKey: [DB_KEY, { name }], exact: false })
+		const keyByName = [DB_KEY, name]
+		const existing = client.getQueryData<DbStore>(keyByName)
 		if (existing) {
 			const e = new Error(
 				`\`useDbProvider\` called multiple times with the same DB name "${name}"`
@@ -83,12 +82,10 @@ export function useDbProvider(
 		makeDb(name, schema, migrations)
 			.then((db) => {
 				if (closed) return
-				const exactKey = [DB_KEY, { id: db.client.db, name }]
-				client.setQueryData<DbStore>(exactKey, {
-					schema,
-					name,
-					db,
-				})
+				const keyById = [DB_KEY, db.client.db]
+				const stored = { schema, name, db }
+				client.setQueryData<DbStore>(keyByName, stored)
+				client.setQueryData<DbStore>(keyById, stored) // do we need the "by id" entry in the end?
 			})
 			.catch((e) => {
 				console.error("Error creating db", e)
@@ -96,13 +93,12 @@ export function useDbProvider(
 			})
 		return () => {
 			closed = true
-			const cache = client.getQueryCache()
-			const query = cache.find<DbStore>({ queryKey: [DB_KEY, { name }], exact: false })
-			if (query) {
-				if (query.state.data) {
-					void destroyDb(query.state.data.db)
-				}
-				query.destroy()
+			const existing = client.getQueryData<DbStore>(keyByName)
+			if (existing) {
+				const keyById = [DB_KEY, existing.db.client.db]
+				client.removeQueries({ queryKey: keyByName, exact: true })
+				void destroyDb(existing.db)
+				client.removeQueries({ queryKey: keyById, exact: true }) // do we need the "by id" entry in the end?
 			}
 		}
 	}, [name, schema])

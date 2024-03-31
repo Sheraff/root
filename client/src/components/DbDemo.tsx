@@ -9,8 +9,9 @@ import { useDb } from "client/db/DbProvider"
 import { useSync } from "client/db/Sync"
 import { useDbMutation } from "client/db/useDbMutation"
 import { useDbQuery } from "client/db/useDbQuery"
+import { sql } from "drizzle-orm"
 import { useEffect } from "react"
-import { sql } from "shared/sql"
+// import { sql } from "shared/sql"
 
 export function DbDemo() {
 	const auth = useAuthContext()
@@ -50,17 +51,39 @@ function Content({ name }: { name: string }) {
 		ctx?.db.select().from(schema.list).orderBy(schema.list.position, schema.list.id)
 	)
 
-	const { mutate: insertData } = useDbMutation<[id: string, content: string, position: number]>({
-		dbName: name,
-		query: sql`INSERT INTO test (id, content, position) VALUES (?, ?, ?) RETURNING id, content;`,
-		// onSuccess: () => sync?.roundTrip(),
-	})
+	console.log("list", list.data)
 
-	const { mutate: dropData } = useDbMutation({
-		dbName: name,
-		query: sql`DELETE FROM test;`,
-		// onSuccess: () => sync?.roundTrip(),
-	})
+	useEffect(() => {
+		console.log("------cocococococ-------------")
+		const insert = ctx?.db.insert(schema.list).values({
+			id: sql.placeholder("id"),
+			content: sql.placeholder("content"),
+			position: sql.placeholder("position"),
+		})
+		console.log(insert)
+		const insert2 = ctx?.db
+			.insert(schema.list)
+			.values({
+				id: sql.placeholder("id"),
+				content: sql.placeholder("content"),
+				position: sql.placeholder("position"),
+			})
+			.returning({ id: schema.list.id })
+		console.log(insert2)
+		// insert.config.returning
+	}, [ctx?.db])
+
+	// const { mutate: insertData } = useDbMutation<[id: string, content: string, position: number]>({
+	// 	dbName: name,
+	// 	query: sql`INSERT INTO test (id, content, position) VALUES (?, ?, ?) RETURNING id, content;`,
+	// 	// onSuccess: () => sync?.roundTrip(),
+	// })
+
+	// const { mutate: dropData } = useDbMutation({
+	// 	dbName: name,
+	// 	query: sql`DELETE FROM test;`,
+	// 	// onSuccess: () => sync?.roundTrip(),
+	// })
 
 	return (
 		<>
@@ -69,7 +92,7 @@ function Content({ name }: { name: string }) {
 				onSubmit={(event) => {
 					event.preventDefault()
 					const content = (event.currentTarget.content as HTMLInputElement).value
-					insertData([crypto.randomUUID(), content, 1])
+					// insertData([crypto.randomUUID(), content, 1])
 					event.currentTarget.reset()
 				}}
 			>
@@ -82,7 +105,10 @@ function Content({ name }: { name: string }) {
 						autoComplete="off"
 					/>
 					<Button type="submit">Add to list</Button>
-					<Button type="button" onClick={() => dropData([])}>
+					<Button
+						type="button"
+						// onClick={() => dropData([])}
+					>
 						Clear list
 					</Button>
 				</ButtonList>
