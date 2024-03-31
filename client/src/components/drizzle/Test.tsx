@@ -1,13 +1,13 @@
 import * as schema from "shared/drizzle-test/schema"
-import { eq } from "drizzle-orm"
+import { eq, type Query } from "drizzle-orm"
 import { useEffect } from "react"
-import initWasm from "@vlcn.io/crsqlite-wasm"
+import initWasm, { type DB } from "@vlcn.io/crsqlite-wasm"
 import tblrx from "@vlcn.io/rx-tbl"
 
 import { getMigrations } from "./getMigrations"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { migrate } from "drizzle-orm-crsqlite-wasm/migrator"
-import { drizzle, type CRSQLiteDatabase } from "drizzle-orm-crsqlite-wasm"
+import { drizzle, type CRSQLiteDatabase, type CRSQLiteSession } from "drizzle-orm-crsqlite-wasm"
 
 async function make() {
 	const sqlite = await initWasm()
@@ -55,82 +55,62 @@ function TestChild() {
 		if (!data) return
 		const db = data.ctx.db as CRSQLiteDatabase<typeof schema>
 		void (async function () {
-			let [usa] = await db
-				.select()
-				.from(schema.countries)
-				.where(eq(schema.countries.name, "USA"))
-			if (!usa) {
-				;[usa] = await db
-					.insert(schema.countries)
-					.values({
-						id: crypto.randomUUID(),
-						name: "USA",
-						population: 331_900_000,
-					})
-					.returning()
-			}
-			let [nyc] = await db
-				.select()
-				.from(schema.cities)
-				.where(eq(schema.cities.name, "New York"))
-			console.log("::::::::::: nyc", nyc)
-			if (!nyc) {
-				;[nyc] = await db
-					.insert(schema.cities)
-					.values({
-						id: crypto.randomUUID(),
-						name: "New York",
-						population: 8_336_817,
-						countryId: usa!.id,
-					})
-					.returning()
-			}
-			const res = db.query.countries
-				.findMany({
-					with: {
-						cities: {
-							where: (city, { eq, sql }) =>
-								eq(city.name, sql.placeholder("cityName")),
-						},
-					},
-				})
-				.prepare()
-
-			console.log(":::::::::::::: user-query", res)
-			await res
-				.all({ cityName: "New York" })
-				.then((a) => console.log("DRIZZLE", a))
-				.catch(console.error)
-			// @ts-expect-error -- the lib does not expose this method on the type level, but it does exist
-			await res.finalize()
-			console.log("--------------------------")
-			const foo = await db.transaction(async (tx) => {
-				// throw "rollback"
-				console.log("inside tx function")
-				const [usa] = await tx
-					.select({
-						name: schema.countries.name,
-						pop: schema.countries.population,
-					})
-					.from(schema.countries)
-					.where(eq(schema.countries.name, "USA"))
-				console.log("after tx select", usa)
-				const nyc = await tx.transaction(async (tx) => {
-					console.log("inside nested tx function")
-					const [nyc] = await tx
-						.select({
-							name: schema.cities.name,
-							pop: schema.cities.population,
-						})
-						.from(schema.cities)
-						.where(eq(schema.cities.name, "New York"))
-					tx.rollback()
-					return nyc
-				})
-				return { usa, nyc }
-			})
-			console.log("FOO", foo)
+			const foo = db.select().from(schema.countries).where(eq(schema.countries.name, "USA"))
+			console.log("foo", foo)
+			console.log(foo.toSQL().sql)
+			console.log(foo.toSQL().params)
+			const yo = useDrizzQuery(
+				db.select().from(schema.countries).where(eq(schema.countries.name, "USA"))
+			)
+			await new Promise((resolve) => setTimeout(resolve, 1000))
+			const prep = foo.prepare()
+			console.log("prep", prep)
+			await new Promise((resolve) => setTimeout(resolve, 1000))
+			const data = await prep.all()
+			console.log("data", data)
+			await new Promise((resolve) => setTimeout(resolve, 1000))
+			await prep.finalize()
+			console.log("finalized")
 		})()
 	}, [data])
 	return <div>Test</div>
 }
+
+const UNIQUE_KEY = "drizzle"
+
+function useDrizzQuery<T>(
+	query: {
+		toSQL(): Query
+		prepare(): {
+			all(): Promise<T>
+			finalize?: () => Promise<void>
+		}
+		session?: CRSQLiteSession<any, any>
+	},
+	updateTypes = [18, 23, 9]
+): T {
+	const q = query.toSQL()
+
+	console.log("qqqqqqqqqq", query)
+
+	const queryKey = [
+		UNIQUE_KEY,
+		query.session!.client.db,
+		q.sql,
+		Object.fromEntries(updateTypes.map((t) => [t, true])), // as Record<UpdateType, boolean>,
+		q.params,
+	] //as DbQueryKey
+
+	console.log("useDrizzQuery", queryKey)
+	return {} as T
+}
+
+interface MinDrizzle<T = unknown> {
+	toSql: () => { sql: string; params: any[] }
+	prepare(): {
+		all(): Promise<T>
+		finalize(): Promise<void>
+	}
+}
+
+type Res<T extends MinDrizzle> = T extends MinDrizzle<infer R> ? R : never

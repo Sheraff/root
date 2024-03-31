@@ -5,8 +5,8 @@
 		"pnpm-lock.yaml": true
 	},
 	"files.exclude": {
-		"**/dist/**": true,
-		"**/node_modules": true,
+		// "**/dist/**": true,
+		// "**/node_modules": true,
 		"**/.turbo": true,
 		"client/public/sw.js": true,
 		"client/public/sw.js.map": true,
@@ -15,7 +15,7 @@
 		"**/*.module.css.d.ts": true,
 		"**/*.sql.d.ts": true,
 		"**/*.sql.d.ts.map": true,
-		"**/*.js": true,
+		// "**/*.js": true,
 		"**/*.mjs": true,
 		"**/*.tsbuildinfo": true
 	},

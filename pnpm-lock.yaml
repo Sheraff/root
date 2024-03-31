@@ -48,8 +48,8 @@ importers:
         specifier: ^0.30.6
         version: 0.30.6(@types/better-sqlite3@7.6.9)(@types/react@18.2.64)(better-sqlite3@9.4.3)(react@18.2.0)
       drizzle-orm-crsqlite-wasm:
-        specifier: 0.0.3
-        version: 0.0.3(@vlcn.io/xplat-api@0.15.0)(drizzle-orm@0.30.6)
+        specifier: file:../../drizzle-orm-crsqlite-wasm
+        version: file:../../drizzle-orm-crsqlite-wasm(@vlcn.io/xplat-api@0.15.0)(drizzle-orm@0.30.6)
       fastify:
         specifier: ^4.26.2
         version: 4.26.2
@@ -3009,16 +3009,6 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
-
-  /drizzle-orm-crsqlite-wasm@0.0.3(@vlcn.io/xplat-api@0.15.0)(drizzle-orm@0.30.6):
-    resolution: {integrity: sha512-hkTppNrDfSABGWvnFklY2+8vNcwlFcKQkPksbCTzdiz/xQKftSfcKyhi2uKiCVRVss5yEreCDUDoP9PVVE5+dw==}
-    peerDependencies:
-      '@vlcn.io/xplat-api': ^0.15.0
-      drizzle-orm: ^0.30.6
-    dependencies:
-      '@vlcn.io/xplat-api': 0.15.0
-      drizzle-orm: 0.30.6(@types/better-sqlite3@7.6.9)(@types/react@18.2.64)(better-sqlite3@9.4.3)(react@18.2.0)
-    dev: false
 
   /drizzle-orm@0.30.6(@types/better-sqlite3@7.6.9)(@types/react@18.2.64)(better-sqlite3@9.4.3)(react@18.2.0):
     resolution: {integrity: sha512-8RgNUmY7J03GRuRgBV5SaJNbYgLVPjdSWNS/bRkIMIHt2TFCA439lJsNpqYX8asyKMqkw8ceBiamUnCIXZIt9w==}
@@ -6264,3 +6254,15 @@ packages:
   /zod@3.22.4:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
     dev: true
+
+  file:../../drizzle-orm-crsqlite-wasm(@vlcn.io/xplat-api@0.15.0)(drizzle-orm@0.30.6):
+    resolution: {directory: ../../drizzle-orm-crsqlite-wasm, type: directory}
+    id: file:../../drizzle-orm-crsqlite-wasm
+    name: drizzle-orm-crsqlite-wasm
+    peerDependencies:
+      '@vlcn.io/xplat-api': ^0.15.0
+      drizzle-orm: ^0.30.6
+    dependencies:
+      '@vlcn.io/xplat-api': 0.15.0
+      drizzle-orm: 0.30.6(@types/better-sqlite3@7.6.9)(@types/react@18.2.64)(better-sqlite3@9.4.3)(react@18.2.0)
+    dev: false
