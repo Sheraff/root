@@ -2,8 +2,9 @@ import type { FastifyInstance, FastifyError } from "fastify"
 import { makeCrsqliteDb, type CrsqliteDatabase } from "server/crsqlite/db"
 import { encode, decode, tags, hexToBytes } from "@vlcn.io/ws-common"
 import { compressBuffer } from "script/compressBuffer"
-import schema from "assets/test-v0.sql"
+import { type schema } from "assets/drizzle-test"
 import type { SqliteError } from "server/types/Sqlite"
+import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3"
 
 export default function crsqlite(
 	fastify: FastifyInstance,
@@ -30,14 +31,15 @@ export default function crsqlite(
 		name: string
 		version: bigint
 		dbPath?: string
-		db: CrsqliteDatabase
+		client: CrsqliteDatabase
+		db: BetterSQLite3Database<typeof schema>
 	} | null = null
 
 	fastify.addHook("onClose", (fastify, done) => {
 		if (lastDb) {
 			fastify.log.info("Closing crsqlite database...")
 			console.log("Closing crsqlite database...")
-			lastDb.db.close()
+			lastDb.client.close()
 			lastDb = null
 			fastify.log.info("Closed crsqlite database")
 			console.log("Closed crsqlite database")
@@ -54,12 +56,12 @@ export default function crsqlite(
 		) {
 			return lastDb.db
 		}
-		lastDb?.db.close()
+		lastDb?.client.close()
 		lastDb = null
-		const db = makeCrsqliteDb(fastify, {
+		const { db, client } = makeCrsqliteDb(fastify, {
 			name,
 			version,
-			schema,
+			// schema,
 			dbPath,
 		})
 		lastDb = {
@@ -67,6 +69,7 @@ export default function crsqlite(
 			version,
 			dbPath,
 			db,
+			client,
 		}
 		return db
 	}
@@ -113,7 +116,7 @@ export default function crsqlite(
 			done()
 		},
 		async handler(req, res) {
-			let db: CrsqliteDatabase
+			let db: BetterSQLite3Database<typeof schema>
 			try {
 				db = getDb(req.params.name, BigInt(req.query.schemaVersion))
 			} catch (e: any) {
@@ -130,6 +133,7 @@ export default function crsqlite(
 				}
 				throw error
 			}
+			throw new Error("Not implemented")
 
 			const data = new Uint8Array((req.body as { raw: Buffer }).raw)
 			if (data.length > 0) {

@@ -5,6 +5,9 @@ import { extensionPath } from "@vlcn.io/crsqlite"
 import { cryb64, type Change, type Changes } from "@vlcn.io/ws-common"
 import { sql } from "shared/sql"
 import { makeDbLogger } from "server/utils/dbLogger"
+import { drizzle } from "drizzle-orm/better-sqlite3"
+import { migrate } from "drizzle-orm/better-sqlite3/migrator"
+import { schema } from "assets/drizzle-test"
 
 export type CrsqliteDatabase = Database.Database & {
 	getChanges(sinceVersion: bigint, requestorSiteId: Uint8Array): Change[]
@@ -72,7 +75,7 @@ export function makeCrsqliteDb(
 		name?: string
 		version: bigint
 		dbPath?: string
-		schema: string
+		// schema: string
 	}
 ) {
 	const name =
@@ -80,55 +83,22 @@ export function makeCrsqliteDb(
 			? path.join(options.dbPath, `${options.name}.sqlite3`)
 			: ":memory:"
 	fastify.log.info(`Connecting to database @ ${name}`)
-	const db = new Database(name, {
+	const client = new Database(name, {
 		verbose: makeDbLogger(fastify),
 	})
-	db.pragma("journal_mode = WAL")
-	db.pragma("synchronous = NORMAL")
-	db.loadExtension(extensionPath)
+	client.pragma("journal_mode = WAL")
+	client.pragma("synchronous = NORMAL")
+	client.loadExtension(extensionPath)
+	const db = drizzle(client, { logger: true, schema })
 
 	try {
-		// auto-migrate
-		const masterStatement = db
-			.prepare(sql`SELECT value FROM crsql_master WHERE key = ?`)
-			.pluck()
-
-		const schemaVersion = masterStatement.safeIntegers().get("schema_version") as
-			| bigint
-			| undefined
-		if (options.version === schemaVersion) {
-			return wrapDatabase(db)
-		}
-		if (schemaVersion) {
-			fastify.log.warn(
-				`Mismatch schema version for database "${name}". Client requested v${options.version} but server is on v${schemaVersion}. Will try to auto-migrate...`
-			)
-		} else {
-			fastify.log.info(`First client request for database "${name}". Initializing...`)
-		}
-
-		const content = options.schema.replace(/[\s\n\t]+/g, " ").trim()
-
-		const residentVersion = cryb64(content)
-		if (residentVersion !== options.version) {
-			throw new Error(
-				`Server has schema version v${residentVersion} but client requested v${options.version} for database "${name}"`
-			)
-		}
-
-		const autoMigrateStatement = db.prepare(sql`SELECT crsql_automigrate(?)`)
-		const masterInsertStatement = db.prepare(
-			sql`INSERT OR REPLACE INTO crsql_master (key, value) VALUES (?, ?)`
-		)
-		db.transaction(() => {
-			autoMigrateStatement.run(content)
-			masterInsertStatement.run("schema_version", options.version.toString())
-		})()
+		migrate(db, { migrationsFolder: "../../../assets/src/drizzle-test/migrations" })
 	} catch (e) {
-		db.prepare(sql`SELECT crsql_finalize()`).run()
-		db.close()
+		client.prepare(sql`SELECT crsql_finalize()`).run()
+		client.close()
 		throw e
 	}
 
-	return wrapDatabase(db)
+	const wrapped = wrapDatabase(client)
+	return { db, client: wrapped }
 }

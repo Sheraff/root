@@ -385,7 +385,7 @@ export function useDbQuery<
 	const queryKey = [
 		UNIQUE_KEY,
 		//@ts-expect-error -- these are exposed by `drizzle-orm-crsqlite-wasm` but not at the type level
-		query.session.client.db,
+		query?.session.client.db,
 		sqlParams?.sql,
 		sqlParams?.params,
 		Object.fromEntries(updateTypes.map((t) => [t, true])) as Record<UpdateType, boolean>,
