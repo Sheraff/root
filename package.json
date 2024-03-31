@@ -32,7 +32,7 @@
 		"root:format:fix": "prettier --write '*.ts' '*.json' 'types/*' '.github/**/*' --config .prettierrc.json --log-level warn",
 		"root:spell": "cspell --config .cspell.json --quiet --gitignore '*' 'types/*' '.github/**/*'",
 		"root:clear": "rm -rf dist; rm -rf node_modules; rm -rf .turbo; find . -name '*.tsbuildinfo' -type f -delete;",
-		"generate": "drizzle-kit generate:sqlite"
+		"generate:drizzle-test": "drizzle-kit generate:sqlite --config=assets/src/drizzle-test/drizzle.config.ts"
 	},
 	"dependencies": {
 		"@fastify/cookie": "^9.3.1",
