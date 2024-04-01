@@ -3,7 +3,8 @@
 	"extends": ["//"],
 	"pipeline": {
 		"tsc:build": {
-			"outputs": ["src/**/migrations.json"]
+			"outputs": ["src/**/migrations.json"],
+			"dependsOn": ["script#build"]
 		},
 		"tsc:tools": {
 			"inputs": [
@@ -13,7 +14,8 @@
 				"../types/*.d.ts",
 				"tsconfig.json",
 				"tsconfig.tools.json"
-			]
+			],
+			"dependsOn": ["script#build"]
 		},
 		"tsc:lib": {
 			"inputs": [
@@ -27,6 +29,10 @@
 		"tsc": {
 			"dependsOn": ["assets#tsc:tools", "assets#tsc:lib"],
 			"inputs": ["package.json"]
+		},
+		"dev": {
+			"persistent": true,
+			"dependsOn": ["script#build"]
 		},
 		"spell": {
 			"inputs": ["$TURBO_DEFAULT$", "../repo.dict.txt"]
