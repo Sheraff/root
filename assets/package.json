@@ -5,7 +5,9 @@
 	"type": "module",
 	"scripts": {
 		"tsc:build": "tsx ./esbuild.ts --build",
-		"tsc": "tsc --noEmit",
+		"tsc:lib": "tsc --noEmit --project tsconfig.lib.json",
+		"tsc:tools": "tsc --noEmit --project tsconfig.tools.json",
+		"tsc": "echo 'done'",
 		"dev": "tsx ./esbuild.ts",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",

@@ -1,4 +1,5 @@
 import { onlineManager } from "@tanstack/react-query"
+import { schema } from "assets/drizzle-test"
 import { useAuthContext } from "client/auth/useAuthContext"
 import { Title } from "client/components/Bento/Title"
 import { Button, ButtonList } from "client/components/Button/Button"
@@ -8,11 +9,13 @@ import { useDb } from "client/db/DbProvider"
 import { useSync } from "client/db/Sync"
 import { useDbMutation } from "client/db/useDbMutation"
 import { useDbQuery } from "client/db/useDbQuery"
-import { useEffect } from "react"
-import { sql } from "shared/sql"
+import { desc, sql } from "drizzle-orm"
+import { useEffect, useState } from "react"
+// import { sql } from "shared/sql"
 
 export function DbDemo() {
 	const auth = useAuthContext()
+	const [flag, setFlag] = useState(false)
 	if (auth.type !== "signed-in") {
 		return <p>User DB only available to signed-in users</p>
 	}
@@ -23,44 +26,66 @@ export function DbDemo() {
 				title="Database"
 			/>
 			<Divider full />
-			<Content name={auth.userId} />
+			<Button onClick={() => setFlag(!flag)}>Toggle</Button>
+			{flag && <Content name={auth.userId} />}
 		</>
 	)
 }
 
 function Content({ name }: { name: string }) {
-	const ctx = useDb(name)
-	const sync = useSync(ctx?.db, name)
+	const ctx = useDb<typeof schema>(name)
+	// const sync = useSync(ctx?.db, name)
 
-	// Sync with server on reconnect
+	// // Sync with server on reconnect
+	// useEffect(() => {
+	// 	if (!sync) return
+	// 	if (navigator.onLine) {
+	// 		void sync.roundTrip()
+	// 	}
+	// 	return onlineManager.subscribe((online) => {
+	// 		if (online) {
+	// 			void sync.roundTrip()
+	// 		}
+	// 	})
+	// }, [sync])
+
+	const list = useDbQuery(
+		ctx?.db.select().from(schema.list).orderBy(desc(schema.list.position), schema.list.id)
+	)
+
+	console.log("list", list.data)
+
 	useEffect(() => {
-		if (!sync) return
-		if (navigator.onLine) {
-			void sync.roundTrip()
-		}
-		return onlineManager.subscribe((online) => {
-			if (online) {
-				void sync.roundTrip()
-			}
+		console.log("------cocococococ-------------")
+		const insert = ctx?.db.insert(schema.list).values({
+			id: sql.placeholder("id"),
+			content: sql.placeholder("content"),
+			position: sql.placeholder("position"),
 		})
-	}, [sync])
+		console.log(insert)
+		const insert2 = ctx?.db
+			.insert(schema.list)
+			.values({
+				id: sql.placeholder("id"),
+				content: sql.placeholder("content"),
+				position: sql.placeholder("position"),
+			})
+			.returning({ id: schema.list.id })
+		console.log(insert2)
+		// insert.config.returning
+	}, [ctx?.db])
 
-	const list = useDbQuery<{ id: string; content: string; position: number }>({
-		dbName: name,
-		query: sql`SELECT id, content, position FROM test ORDER BY position, id ASC`,
-	})
+	// const { mutate: insertData } = useDbMutation<[id: string, content: string, position: number]>({
+	// 	dbName: name,
+	// 	query: sql`INSERT INTO test (id, content, position) VALUES (?, ?, ?) RETURNING id, content;`,
+	// 	// onSuccess: () => sync?.roundTrip(),
+	// })
 
-	const { mutate: insertData } = useDbMutation<[id: string, content: string, position: number]>({
-		dbName: name,
-		query: sql`INSERT INTO test (id, content, position) VALUES (?, ?, ?) RETURNING id, content;`,
-		onSuccess: () => sync?.roundTrip(),
-	})
-
-	const { mutate: dropData } = useDbMutation({
-		dbName: name,
-		query: sql`DELETE FROM test;`,
-		onSuccess: () => sync?.roundTrip(),
-	})
+	// const { mutate: dropData } = useDbMutation({
+	// 	dbName: name,
+	// 	query: sql`DELETE FROM test;`,
+	// 	// onSuccess: () => sync?.roundTrip(),
+	// })
 
 	return (
 		<>
@@ -69,7 +94,7 @@ function Content({ name }: { name: string }) {
 				onSubmit={(event) => {
 					event.preventDefault()
 					const content = (event.currentTarget.content as HTMLInputElement).value
-					insertData([crypto.randomUUID(), content, 1])
+					// insertData([crypto.randomUUID(), content, 1])
 					event.currentTarget.reset()
 				}}
 			>
@@ -82,7 +107,10 @@ function Content({ name }: { name: string }) {
 						autoComplete="off"
 					/>
 					<Button type="submit">Add to list</Button>
-					<Button type="button" onClick={() => dropData([])}>
+					<Button
+						type="button"
+						// onClick={() => dropData([])}
+					>
 						Clear list
 					</Button>
 				</ButtonList>

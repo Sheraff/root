@@ -5,8 +5,8 @@
 		"pnpm-lock.yaml": true
 	},
 	"files.exclude": {
-		"**/dist/**": true,
-		"**/node_modules": true,
+		// "**/dist/**": true,
+		// "**/node_modules": true,
 		"**/.turbo": true,
 		"client/public/sw.js": true,
 		"client/public/sw.js.map": true,
@@ -15,7 +15,7 @@
 		"**/*.module.css.d.ts": true,
 		"**/*.sql.d.ts": true,
 		"**/*.sql.d.ts.map": true,
-		"**/*.js": true,
+		// "**/*.js": true,
 		"**/*.mjs": true,
 		"**/*.tsbuildinfo": true
 	},
@@ -58,6 +58,20 @@
 		"*.css": "${capture}.css.*",
 		"*.wasm": "${capture}.wasm.*",
 		"*.sql": "${capture}.sql.d.ts, ${capture}.sql.d.ts.map"
+	},
+	"workbench.editor.customLabels.patterns": {
+		".github/**/action.yml": "${dirname}/action.${extname}",
+		"**/src/index.*": "${dirname(1)}/src/index.${extname}",
+		"**/index.*": "${dirname}/index.${extname}",
+		"**/package.json": "${dirname}/package.json",
+		"**/tsconfig*.json": "${dirname}/${filename}.json",
+		"**/.eslintrc.*": "${dirname}/.eslintrc.${extname}",
+		"**/esbuild.ts": "${dirname}/esbuild.ts",
+		"**/turbo.json": "${dirname}/turbo.json",
+		"**/.gitignore": "${dirname}/.gitignore",
+		"**/.nvmrc": "${dirname}/.nvmrc",
+		"**/vitest.config.ts": "${dirname}/vitest.config.ts",
+		"**/vite.config.ts": "${dirname}/vite.config.ts"
 	},
 	"github-actions.workflows.pinned.refresh.enabled": true,
 	"cSpell.spellCheckOnlyWorkspaceFiles": true,

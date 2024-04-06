@@ -1,9 +1,14 @@
 {
 	"extends": "../tsconfig.base.json",
-	"compilerOptions": {
-		"types": ["node"],
-		"module": "ESNext",
-	},
-	"files": ["esbuild.ts"],
-	"include": ["../script/src/**/*.ts"],
+	"compilerOptions": {},
+	"include": [],
+	"files": [],
+	"references": [
+		{
+			"path": "./tsconfig.lib.json"
+		},
+		{
+			"path": "./tsconfig.tools.json"
+		}
+	]
 }

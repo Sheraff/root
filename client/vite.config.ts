@@ -220,6 +220,8 @@ export default defineConfig({
 			"client/": `${normalizePath(__dirname)}/src/`,
 			// allow imports from "server" to resolve to the server folder, despite tsconfig aliases
 			"server/": `${normalizePath(__dirname)}/../server/src/`,
+			// allow imports from "assets" to resolve to the assets folder, despite tsconfig aliases
+			"assets/": `${normalizePath(__dirname)}/../assets/src/`,
 		},
 	},
 	server: {

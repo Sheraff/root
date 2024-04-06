@@ -7,7 +7,7 @@ import { WorkerDemo } from "client/components/WorkerDemo"
 import { DbDemo } from "client/components/DbDemo"
 import { Hero } from "client/components/Hero/Hero"
 import styles from "client/App.module.css"
-import { DrizzleTest } from "client/components/drizzle/Test"
+// import { DrizzleTest } from "client/components/drizzle/Test"
 
 fooBar()
 
@@ -38,9 +38,9 @@ export default function App() {
 				<Cell row>
 					<DbDemo />
 				</Cell>
-				<Cell row>
+				{/* <Cell row>
 					<DrizzleTest />
-				</Cell>
+				</Cell> */}
 			</Grid>
 		</main>
 	)

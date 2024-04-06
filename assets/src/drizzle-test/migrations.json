@@ -1,0 +1,13 @@
+[
+  {
+    "sql": [
+      "CREATE TABLE `list` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`content` text,\n\t`position` text\n);",
+      "SELECT\n\tcrsql_as_crr ('list');",
+      "SELECT\n\tcrsql_fract_as_ordered ('list', 'position');",
+      "CREATE INDEX `positionIdx` ON `list` (`position`);"
+    ],
+    "bps": true,
+    "folderMillis": 1711879378057,
+    "hash": "3b557ab5472a1772140cca199e8f1f61933d42d7dd4c578fb42032f214213036"
+  }
+]

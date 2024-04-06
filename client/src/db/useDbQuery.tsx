@@ -6,12 +6,14 @@ import {
 	type QueryCache,
 } from "@tanstack/react-query"
 import { useDb, type Ctx } from "client/db/DbProvider"
+import type { Query } from "drizzle-orm"
+import type { CRSQLitePreparedQuery, CRSQLiteSession } from "drizzle-orm-crsqlite-wasm"
+import type { SQLitePreparedQuery } from "drizzle-orm/sqlite-core"
 import { useLayoutEffect } from "react"
 
 export const UNIQUE_KEY = "__vlcn__cache_manager__"
 
-type DB = Ctx["db"]
-type StmtAsync = Awaited<ReturnType<DB["prepare"]>>
+type DB = Ctx["client"]
 
 type UpdateType =
 	/** INSERT */
@@ -23,23 +25,18 @@ type UpdateType =
 
 const ALL_UPDATES = [18, 23, 9] as const
 
+type Binding = string | number | null | undefined
+
 export type DbQueryKey = readonly [
 	typeof UNIQUE_KEY,
-	dbName: string,
+	dbName: number,
 	sql: string,
+	bindings: readonly Binding[],
 	updateTypes: Record<UpdateType, boolean>,
-	bindings: readonly string[],
 ]
 
-/**
- * Not really useful, this is just to increase the cache hit rate.
- */
-function sqlToKey(sql: string) {
-	return sql.replace(/\s+/g, " ")
-}
-
 type QueryEntry = {
-	dbName: string
+	dbName: number
 	/** how many react-query cache entries match this key */
 	count: number
 	/** how many react-query cache entries match this key and are actively being used */
@@ -49,7 +46,7 @@ type QueryEntry = {
 	 * This is stored as a promise to avoid race condition when multiple queries (≠ queryKey, but same SQL)
 	 * are mounted at the same time, and would thus try to prepare the same statement.
 	 */
-	statement: Promise<StmtAsync> | null
+	statement: CRSQLitePreparedQuery | null
 	/**
 	 * Array<`dbName, table`>
 	 * The result of querying for tables used by the SQL.
@@ -64,7 +61,7 @@ type QueryEntry = {
 }
 
 const queryStore = new Map<
-	/** dbName, sql */
+	/** dbName, sql, bindings */
 	string,
 	QueryEntry
 >()
@@ -73,7 +70,7 @@ const tableStore = new Map<
 	/** dbName, table */
 	string,
 	{
-		dbName: string
+		dbName: number
 		queries: Map<
 			/** dbName, sql */
 			string,
@@ -93,9 +90,10 @@ function cleanupQuery({
 }: {
 	q: QueryEntry
 	cacheManager: QueryCache
-	queryKey: readonly [dbName: string, sql: string]
+	queryKey: readonly [dbName: number, sql: string, bindings: Binding[]]
+	/** dbName, sql, bindings */
 	hash: string
-	dbName: string
+	dbName: number
 }) {
 	// make sure no other queryKey is using that same SQL query and is still considered fresh
 	const filterKey = [UNIQUE_KEY, ...queryKey] as const
@@ -112,7 +110,6 @@ function cleanupQuery({
 
 	console.log("cleanup query, finalizing statement", hash)
 	queryStore.delete(hash)
-	q.statement?.then((s) => s.finalize(null), console.error)
 	q.statement = null
 
 	// stop listening to table changes
@@ -147,15 +144,21 @@ function cleanupQuery({
 	q.tables = null
 }
 
-export function start(dbName: string, ctx: Ctx, client: QueryClient) {
+export function start(dbName: number, ctx: Ctx, client: QueryClient) {
 	console.log("~~~ start cache manager ~~~", dbName)
 
 	const cacheManager = client.getQueryCache()
 	const unsubscribe = cacheManager.subscribe((event) => {
 		const k = event.query.queryKey as readonly unknown[]
 		if (k[0] !== UNIQUE_KEY) return
+		if (k[1] !== dbName) return
 		const eventQueryKey = k as DbQueryKey
-		const queryKey = [eventQueryKey[1], eventQueryKey[2]] as [dbName: string, sql: string]
+		const queryKey = [eventQueryKey[1], eventQueryKey[2], eventQueryKey[3]] as [
+			dbName: number,
+			sql: string,
+			bindings: Binding[],
+		]
+		/** dbName, sql, bindings */
 		const hash = hashKey(queryKey)
 
 		/**
@@ -194,13 +197,10 @@ export function start(dbName: string, ctx: Ctx, client: QueryClient) {
 				}
 				queryStore.set(hash, q)
 			}
-			if (!q.statement) {
-				q.statement = ctx.db.prepare(eventQueryKey[2])
-			}
 			if (q.activeCount !== 1) return
 			if (q.listening) return
 			q.listening = true
-			getUsedTables(ctx.db, queryKey[1], (tables) => {
+			getUsedTables(ctx.client, queryKey[1], (tables) => {
 				if (!q.listening) return
 				q.tables = tables
 				for (const table of tables) {
@@ -318,18 +318,17 @@ export function start(dbName: string, ctx: Ctx, client: QueryClient) {
 
 	return () => {
 		unsubscribe()
-		tableStore.forEach((t) => {
+		for (const [key, t] of tableStore.entries()) {
 			if (t.dbName === dbName) {
 				t.unsubscribe()
-				tableStore.delete(t.dbName)
+				tableStore.delete(key)
 			}
-		})
-		queryStore.forEach((q) => {
+		}
+		for (const [key, q] of queryStore.entries()) {
 			if (q.dbName === dbName) {
-				q.statement?.then((s) => s.finalize(null), console.error)
-				queryStore.delete(q.dbName)
+				queryStore.delete(key)
 			}
-		})
+		}
 	}
 }
 
@@ -346,90 +345,69 @@ export function useCacheManager(dbName?: string) {
 	const client = useQueryClient()
 	const ctx = useDb(dbName)
 
-	// only in dev
 	useLayoutEffect(() => {
 		if (!ctx || !dbName) return
-		start(dbName, ctx, client)
+		start(ctx.client.db, ctx, client)
 	}, [dbName, ctx, client])
 }
-
-let queryId = 0
 
 export function useDbQuery<
 	TQueryFnData = unknown,
 	// TError = DefaultError, // TODO
 	TData = TQueryFnData[],
->({
-	dbName,
-	query,
-	select,
-	bindings = [],
-	updateTypes = ALL_UPDATES,
-	enabled = true,
-}: {
-	dbName: string
-	query: string
-	select?: (data: TQueryFnData[]) => TData
-	bindings?: readonly string[]
-	updateTypes?: readonly UpdateType[]
-	enabled?: boolean
-}) {
-	const ctx = useDb(dbName)
+>(
+	query:
+		| {
+				toSQL(): Query
+				prepare(): SQLitePreparedQuery<{
+					all: TQueryFnData[]
+					type: "async"
+					run: void
+					get: any
+					values: any
+					execute: any
+				}>
+				session?: CRSQLiteSession<any, any>
+		  }
+		| undefined,
+	{
+		select,
+		updateTypes = ALL_UPDATES,
+		enabled = true,
+	}: {
+		select?: (data: TQueryFnData[]) => TData
+		updateTypes?: readonly UpdateType[]
+		enabled?: boolean
+	} = {}
+) {
+	const sqlParams = query?.toSQL()
 
 	const queryKey = [
 		UNIQUE_KEY,
-		dbName,
-		sqlToKey(query),
+		//@ts-expect-error -- these are exposed by `drizzle-orm-crsqlite-wasm` but not at the type level
+		query?.session.client.db,
+		sqlParams?.sql,
+		sqlParams?.params,
 		Object.fromEntries(updateTypes.map((t) => [t, true])) as Record<UpdateType, boolean>,
-		bindings,
 	] as DbQueryKey
 
 	return useQuery({
-		enabled: Boolean(ctx?.db && enabled),
+		enabled: Boolean(enabled && query),
 		queryKey,
-		queryFn: async ({ signal }) => {
+		queryFn: async () => {
 			console.debug("::::::queryFn")
-			const partialKey = [queryKey[1], queryKey[2]] as const
+			const partialKey = [queryKey[1], queryKey[2], queryKey[3]] as const
 			const key = hashKey(partialKey)
-
 			const q = queryStore.get(key)
+			console.log("query", key, q)
 			if (!q) {
 				throw new Error("Query not in store when trying to execute queryFn")
 			}
 			if (!q.statement) {
-				throw new Error("Query statement did not exist when trying to execute queryFn")
+				q.statement = query!.prepare() as unknown as CRSQLitePreparedQuery
 			}
-			const statement = await q.statement
-			if (signal.aborted) return Promise.reject(new Error("Request aborted"))
-
-			statement.bind(bindings)
-			const [releaser, transaction] = await ctx!.db.imperativeTx()
-			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- could have changed since last check because of the `await`
-			if (signal.aborted) {
-				releaser()
-				return Promise.reject(new Error("Request aborted"))
-			}
-			if (!(q.statement as Promise<StmtAsync> | null)) {
-				releaser()
-				throw new Error("Query statement was finalized before being executed")
-			}
-			const transactionId = queryId++
-			transaction.exec(/*sql*/ `SAVEPOINT use_query_${transactionId};`).catch((e) => {
-				throw new Error("useQuery transaction failed before SAVEPOINT", { cause: e })
-			})
-			statement.raw(false)
-			try {
-				const data = (await statement.all(transaction)) as TQueryFnData[]
-				transaction
-					.exec(/*sql*/ `RELEASE use_query_${transactionId};`)
-					.then(releaser, releaser)
-				return data
-			} catch (e) {
-				transaction
-					.exec(/*sql*/ `ROLLBACK TO use_query_${transactionId};`)
-					.then(releaser, releaser)
-				throw e
-			}
+			console.log("executing query", key)
+			return q.statement.all() as Promise<TQueryFnData[]>
 		},
 		select,
 		refetchOnReconnect: false, // local db, never disconnected
@@ -445,7 +423,7 @@ export function useDbQuery<
 /** leaky cache, seems ok though */
 const usedTableCache = new Map<string, string[]>()
 async function getUsedTables(db: DB, query: string, callback: (tables: string[]) => void) {
-	const cacheKey = hashKey([db.filename, query])
+	const cacheKey = hashKey([db.db, query])
 	const cached = usedTableCache.get(cacheKey)
 	if (cached) return callback(cached)
 	const sanitized = query.replaceAll("'", "''")

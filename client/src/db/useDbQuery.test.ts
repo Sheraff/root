@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, test, vi } from "vitest"
+import { afterAll, beforeAll, describe, expect, test, vi, beforeEach } from "vitest"
 import { QueryClient, QueryObserver, type QueryCache } from "@tanstack/react-query"
 import { UNIQUE_KEY, start, type DbQueryKey } from "client/db/useDbQuery"
 import type { Ctx } from "client/db/DbProvider"
@@ -22,15 +22,15 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 		cache = client.getQueryCache()
 		unsubscribeCache = cache.subscribe((event) => {
 			const key = event.query.queryKey as DbQueryKey
-			let label = key[4][0] + " > " + event.type
+			let label = key[3][0] + " > " + event.type
 			if (event.type === "updated") {
 				label += "::" + event.action.type
 			}
 			events.push(label)
 		})
 		const ctx = {
-			db: {
-				filename: "foo",
+			client: {
+				db: 1,
 				tablesUsedStmt: { all: () => [["foo_table"]] },
 				prepare: () => Promise.resolve({ finalize: () => {} }),
 			},
@@ -39,7 +39,7 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 			},
 		}
 
-		stop = start("foo", ctx as unknown as Ctx, client)
+		stop = start(1, ctx as unknown as Ctx, client)
 	})
 
 	afterAll(() => {
@@ -47,14 +47,18 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 		stop()
 	})
 
+	beforeEach(() => {
+		events.length = 0
+	})
+
 	test("Mount 1st query", async () => {
 		const observer = new QueryObserver(client, {
 			queryKey: [
 				UNIQUE_KEY,
-				"foo",
+				1,
 				"SELECT * FROM foo",
-				{ 18: true, 23: true, 9: true },
 				["first"],
+				{ 18: true, 23: true, 9: true },
 			],
 			queryFn: () => "data",
 			staleTime: 0,
@@ -63,7 +67,6 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 		expect(events).toMatchInlineSnapshot(`
 			[
 			  "first > added",
-			  "first > observerOptionsUpdated",
 			  "first > observerResultsUpdated",
 			  "first > observerAdded",
 			  "first > observerResultsUpdated",
@@ -83,17 +86,16 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 			  "first > updated::success",
 			]
 		`)
-		events.length = 0
 	})
 
 	test("Mount 2nd query with a matching key (same DB, same SQL)", async () => {
 		const observer = new QueryObserver(client, {
 			queryKey: [
 				UNIQUE_KEY,
-				"foo",
+				1,
 				"SELECT * FROM foo",
-				{ 18: true, 23: true, 90: true },
 				["second"],
+				{ 18: true, 23: true, 90: true },
 			],
 			queryFn: () => "data",
 			staleTime: 0,
@@ -102,7 +104,6 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 		expect(events).toMatchInlineSnapshot(`
 			[
 			  "second > added",
-			  "second > observerOptionsUpdated",
 			  "second > observerResultsUpdated",
 			  "second > observerAdded",
 			  "second > observerResultsUpdated",
@@ -119,7 +120,6 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 			  "second > updated::success",
 			]
 		`)
-		events.length = 0
 	})
 
 	test("Simulate a 'live query' triggering an update on a table used by those 2 queries", async () => {
@@ -130,9 +130,9 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 		expect(events).toMatchInlineSnapshot(`
 			[
 			  "first > updated::invalidate",
-			  "second > updated::invalidate",
 			  "first > observerResultsUpdated",
 			  "first > updated::fetch",
+			  "second > updated::invalidate",
 			  "second > observerResultsUpdated",
 			  "second > updated::fetch",
 			  "first > observerResultsUpdated",
@@ -141,7 +141,6 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 			  "second > updated::success",
 			]
 		`)
-		events.length = 0
 	})
 
 	test("Simulate a 'live query' triggering an update on a table used by only 1 query", async () => {
@@ -158,7 +157,6 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 			  "first > updated::success",
 			]
 		`)
-		events.length = 0
 	})
 
 	test("Unmount 2nd query", async () => {
@@ -171,7 +169,6 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 			  "second > observerRemoved",
 			]
 		`)
-		events.length = 0
 	})
 
 	test("Unmount 1st query", async () => {
@@ -184,7 +181,6 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 			  "first > observerRemoved",
 			]
 		`)
-		events.length = 0
 
 		await new Promise(nextTick)
 		expect(onRange).toHaveBeenCalledTimes(1)
@@ -194,10 +190,10 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 		const unsubScribeObserver = new QueryObserver(client, {
 			queryKey: [
 				UNIQUE_KEY,
-				"foo",
+				1,
 				"SELECT * FROM foo",
-				{ 18: true, 23: true, 9: true },
 				["third"],
+				{ 18: true, 23: true, 9: true },
 			],
 			queryFn: () => "data",
 			staleTime: 0,
@@ -206,7 +202,6 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 		expect(events).toMatchInlineSnapshot(`
 			[
 			  "third > added",
-			  "third > observerOptionsUpdated",
 			  "third > observerResultsUpdated",
 			  "third > observerAdded",
 			  "third > observerResultsUpdated",
@@ -234,7 +229,6 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 			  "third > observerRemoved",
 			]
 		`)
-		events.length = 0
 
 		expect(onRange).toHaveBeenCalledTimes(1)
 	})
@@ -252,7 +246,6 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 			  "third > updated::invalidate",
 			]
 		`)
-		events.length = 0
 
 		expect(onRange).toHaveBeenCalledTimes(1)
 	})
@@ -261,10 +254,10 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 		const unsubScribeObserver = new QueryObserver(client, {
 			queryKey: [
 				UNIQUE_KEY,
-				"foo",
+				1,
 				"SELECT * FROM foo",
-				{ 18: true, 23: true, 9: true },
 				["fourth"],
+				{ 18: true, 23: true, 9: true },
 			],
 			queryFn: () => "data",
 			staleTime: 0,
@@ -273,7 +266,6 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 		expect(events).toMatchInlineSnapshot(`
 			[
 			  "fourth > added",
-			  "fourth > observerOptionsUpdated",
 			  "fourth > observerResultsUpdated",
 			  "fourth > observerAdded",
 			  "fourth > observerResultsUpdated",

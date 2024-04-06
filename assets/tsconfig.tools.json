@@ -1,0 +1,9 @@
+{
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"types": ["node"],
+		"module": "ESNext"
+	},
+	"files": ["esbuild.ts"],
+	"include": ["../script/src/**/*.ts", "**/*.drizzle.config.ts"]
+}

@@ -37,6 +37,9 @@
 		"@typescript-eslint/consistent-type-definitions": "off",
 		"@typescript-eslint/no-empty-function": "off",
 		"@typescript-eslint/no-unused-vars": ["error", { "varsIgnorePattern": "^_" }],
+		"@typescript-eslint/restrict-template-expressions": "off", // good rule in theory, but doesn't work
+		"@typescript-eslint/restrict-plus-operands": "off", // good rule in theory, but doesn't work
+		"@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
 		"no-empty": "off",
 		"react-refresh/only-export-components": ["error", { "allowConstantExport": true }],
 		"no-unused-labels": "off",

@@ -1,0 +1,8 @@
+{
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"types": []
+	},
+	"exclude": ["**/*.drizzle.config.ts"],
+	"include": ["src/*/schema.ts", "src/*/index.ts", "types/*", "../types/*.d.ts"]
+}

@@ -1,30 +1,55 @@
+import chalk from "chalk"
 import { watch as chokidar } from "chokidar"
-import { writeFile } from "node:fs/promises"
-import { basename, dirname, join, relative } from "node:path"
+import { createHash } from "node:crypto"
+import { type Stats } from "node:fs"
+import { writeFile, readFile } from "node:fs/promises"
+import { dirname, join } from "node:path"
 import { walkFsTree } from "script/walkFsTree"
 
-function dTsTemplate(name: string) {
-	return `declare const query: string; export = query //# sourceMappingURL=${name}.d.ts.map`
-}
-
-function dTsMapTemplate(name: string) {
-	return `{"version":3,"file":"${name}.d.ts","sourceRoot":"","sources":["${name}"],"names":[],"mappings":";AAAA"}`
-}
-
-async function buildMap(path: string) {
-	const name = basename(path)
-	const promise = Promise.all([
-		writeFile(`${path}.d.ts`, dTsTemplate(name)),
-		writeFile(`${path}.d.ts.map`, dTsMapTemplate(name)),
-	])
-	void promise.then(() => {
-		console.log("Built TS maps for:", path)
-	})
-	return promise
+function onChange(path: string, stats: Stats | undefined) {
+	// read all files in the directory
+	const dir = stats?.isFile() ? dirname(path) : path
+	readFile(join(dir, "meta", "_journal.json"), "utf8").then((data) => {
+		const journal = JSON.parse(data) as {
+			entries: Array<{
+				idx: number
+				version: string
+				when: number
+				tag: string
+				breakpoints: boolean
+			}>
+		}
+		Promise.all(
+			journal.entries.map((entry) =>
+				readFile(join(dir, entry.tag + ".sql"), "utf8").then((data) => ({
+					sql: data
+						.split("--> statement-breakpoint")
+						.map((s) => s.trim())
+						.filter(Boolean),
+					bps: entry.breakpoints,
+					folderMillis: entry.when,
+					hash: createHash("sha256").update(data).digest("hex"),
+				}))
+			)
+		).then((migrations) => {
+			const result = JSON.stringify(migrations, null, 2)
+			const resultPath = join(dir, "..", "migrations.json")
+			writeFile(resultPath, result).then(() => {
+				console.log(chalk.gray("compiled migrations:"), chalk.green(resultPath))
+				for (const entry of journal.entries) {
+					console.log(
+						chalk.gray("  -"),
+						chalk.white(`${entry.tag}.sql`),
+						chalk.gray(`#${entry.idx} v${entry.version} @${entry.when}`)
+					)
+				}
+			}, console.error)
+		}, console.error)
+	}, console.error)
 }
 
 function watch() {
-	const watcher = chokidar("./src/*.sql", {
+	const watcher = chokidar("./src/*/migrations/*.sql", {
 		ignoreInitial: false,
 		persistent: true,
 		atomic: true,
@@ -32,11 +57,11 @@ function watch() {
 			stabilityThreshold: 50,
 		},
 	})
-	watcher.on("add", (path, stats) => {
-		if (stats?.isFile()) {
-			void buildMap(path)
-		}
-	})
+
+	watcher.on("add", onChange)
+	watcher.on("change", onChange)
+	watcher.on("unlink", onChange)
+
 	// eslint-disable-next-line @typescript-eslint/no-misused-promises
 	process.on("SIGINT", async () => {
 		console.log("\nStopping assets watcher...")
@@ -50,10 +75,9 @@ async function build() {
 	const current = dirname(new URL(import.meta.url).pathname)
 	const promises: Array<Promise<any>> = []
 	await walkFsTree(join(current, "src"), ({ path, stats }) => {
-		if (!path.endsWith(".sql")) return
-		if (stats.isFile()) {
-			const rel = relative(current, path)
-			promises.push(buildMap(rel))
+		if (!stats.isDirectory()) return
+		if (path.match(/src\/[^/]+\/migrations$/)) {
+			onChange(path, stats)
 		}
 	})
 	return promises

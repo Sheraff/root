@@ -7,5 +7,5 @@
 		"module": "ESNext"
 	},
 	"include": [],
-	"files": ["vitest.workspace.ts", "drizzle.config.ts"]
+	"files": ["vitest.workspace.ts"]
 }
