@@ -9,12 +9,13 @@ import { useDb } from "client/db/DbProvider"
 import { useSync } from "client/db/Sync"
 import { useDbMutation } from "client/db/useDbMutation"
 import { useDbQuery } from "client/db/useDbQuery"
-import { sql } from "drizzle-orm"
-import { useEffect } from "react"
+import { desc, sql } from "drizzle-orm"
+import { useEffect, useState } from "react"
 // import { sql } from "shared/sql"
 
 export function DbDemo() {
 	const auth = useAuthContext()
+	const [flag, setFlag] = useState(false)
 	if (auth.type !== "signed-in") {
 		return <p>User DB only available to signed-in users</p>
 	}
@@ -25,7 +26,8 @@ export function DbDemo() {
 				title="Database"
 			/>
 			<Divider full />
-			<Content name={auth.userId} />
+			<Button onClick={() => setFlag(!flag)}>Toggle</Button>
+			{flag && <Content name={auth.userId} />}
 		</>
 	)
 }
@@ -48,7 +50,7 @@ function Content({ name }: { name: string }) {
 	// }, [sync])
 
 	const list = useDbQuery(
-		ctx?.db.select().from(schema.list).orderBy(schema.list.position, schema.list.id)
+		ctx?.db.select().from(schema.list).orderBy(desc(schema.list.position), schema.list.id)
 	)
 
 	console.log("list", list.data)
