@@ -5,16 +5,16 @@ import type {
 	RawRequestDefaultExpression,
 } from "fastify/types/utils"
 import type { FromSchema } from "json-schema-to-ts"
-import type { JSONSchema7 } from "json-schema-to-ts/lib/types/definitions"
+import type { JSONSchema } from "json-schema-to-ts/lib/types/definitions"
 import type { NoInfer, Prettify } from "shared/typeHelpers"
 
 export type BaseSchema = {
-	body?: JSONSchema7 & { type: "object" }
-	querystring?: JSONSchema7 & { type: "object" }
-	params?: JSONSchema7 & { type: "object" }
-	headers?: JSONSchema7 & { type: "object" }
+	body?: JSONSchema & { type: "object" }
+	querystring?: JSONSchema & { type: "object" }
+	params?: JSONSchema & { type: "object" }
+	headers?: JSONSchema & { type: "object" }
 	response?: {
-		[key in HttpKeys]?: JSONSchema7 & { type: "object" | "string" | "array" }
+		[key in HttpKeys]?: JSONSchema & { type: "object" | "string" | "array" }
 	}
 }
 
@@ -49,7 +49,7 @@ type SchemaToRouteGeneric<Schema extends BaseSchema> = {
 						: never
 				}
 			: never
-		: Schema[Key] extends JSONSchema7
+		: Schema[Key] extends JSONSchema
 			? FromSchema<Schema[Key]>
 			: never
 }
