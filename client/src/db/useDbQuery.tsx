@@ -61,7 +61,7 @@ type QueryEntry = {
 }
 
 const queryStore = new Map<
-	/** dbName, sql */
+	/** dbName, sql, bindings */
 	string,
 	QueryEntry
 >()
@@ -91,6 +91,7 @@ function cleanupQuery({
 	q: QueryEntry
 	cacheManager: QueryCache
 	queryKey: readonly [dbName: number, sql: string, bindings: Binding[]]
+	/** dbName, sql, bindings */
 	hash: string
 	dbName: number
 }) {
@@ -109,7 +110,6 @@ function cleanupQuery({
 
 	console.log("cleanup query, finalizing statement", hash)
 	queryStore.delete(hash)
-	q.statement?.finalize().catch(console.error)
 	q.statement = null
 
 	// stop listening to table changes
@@ -158,6 +158,7 @@ export function start(dbName: number, ctx: Ctx, client: QueryClient) {
 			sql: string,
 			bindings: Binding[],
 		]
+		/** dbName, sql, bindings */
 		const hash = hashKey(queryKey)
 
 		/**
@@ -325,7 +326,6 @@ export function start(dbName: number, ctx: Ctx, client: QueryClient) {
 		}
 		for (const [key, q] of queryStore.entries()) {
 			if (q.dbName === dbName) {
-				q.statement?.finalize().catch(console.error)
 				queryStore.delete(key)
 			}
 		}
@@ -382,8 +382,6 @@ export function useDbQuery<
 ) {
 	const sqlParams = query?.toSQL()
 
-	console.log(query, sqlParams)
-
 	const queryKey = [
 		UNIQUE_KEY,
 		//@ts-expect-error -- these are exposed by `drizzle-orm-crsqlite-wasm` but not at the type level
@@ -425,7 +423,7 @@ export function useDbQuery<
 /** leaky cache, seems ok though */
 const usedTableCache = new Map<string, string[]>()
 async function getUsedTables(db: DB, query: string, callback: (tables: string[]) => void) {
-	const cacheKey = hashKey([db.filename, query])
+	const cacheKey = hashKey([db.db, query])
 	const cached = usedTableCache.get(cacheKey)
 	if (cached) return callback(cached)
 	const sanitized = query.replaceAll("'", "''")

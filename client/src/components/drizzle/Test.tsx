@@ -68,8 +68,6 @@ function TestChild() {
 			const data = await prep.all()
 			console.log("data", data)
 			await new Promise((resolve) => setTimeout(resolve, 1000))
-			await prep.finalize()
-			console.log("finalized")
 		})()
 	}, [data])
 	return <div>Test</div>
