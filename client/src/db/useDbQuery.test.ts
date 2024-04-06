@@ -22,15 +22,15 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 		cache = client.getQueryCache()
 		unsubscribeCache = cache.subscribe((event) => {
 			const key = event.query.queryKey as DbQueryKey
-			let label = key[4][0] + " > " + event.type
+			let label = key[3][0] + " > " + event.type
 			if (event.type === "updated") {
 				label += "::" + event.action.type
 			}
 			events.push(label)
 		})
 		const ctx = {
-			db: {
-				filename: "foo",
+			client: {
+				db: 1,
 				tablesUsedStmt: { all: () => [["foo_table"]] },
 				prepare: () => Promise.resolve({ finalize: () => {} }),
 			},
@@ -39,7 +39,7 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 			},
 		}
 
-		stop = start("foo", ctx as unknown as Ctx, client)
+		stop = start(1, ctx as unknown as Ctx, client)
 	})
 
 	afterAll(() => {
@@ -55,10 +55,10 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 		const observer = new QueryObserver(client, {
 			queryKey: [
 				UNIQUE_KEY,
-				"foo",
+				1,
 				"SELECT * FROM foo",
-				{ 18: true, 23: true, 9: true },
 				["first"],
+				{ 18: true, 23: true, 9: true },
 			],
 			queryFn: () => "data",
 			staleTime: 0,
@@ -92,10 +92,10 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 		const observer = new QueryObserver(client, {
 			queryKey: [
 				UNIQUE_KEY,
-				"foo",
+				1,
 				"SELECT * FROM foo",
-				{ 18: true, 23: true, 90: true },
 				["second"],
+				{ 18: true, 23: true, 90: true },
 			],
 			queryFn: () => "data",
 			staleTime: 0,
@@ -130,9 +130,9 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 		expect(events).toMatchInlineSnapshot(`
 			[
 			  "first > updated::invalidate",
-			  "second > updated::invalidate",
 			  "first > observerResultsUpdated",
 			  "first > updated::fetch",
+			  "second > updated::invalidate",
 			  "second > observerResultsUpdated",
 			  "second > updated::fetch",
 			  "first > observerResultsUpdated",
@@ -190,10 +190,10 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 		const unsubScribeObserver = new QueryObserver(client, {
 			queryKey: [
 				UNIQUE_KEY,
-				"foo",
+				1,
 				"SELECT * FROM foo",
-				{ 18: true, 23: true, 9: true },
 				["third"],
+				{ 18: true, 23: true, 9: true },
 			],
 			queryFn: () => "data",
 			staleTime: 0,
@@ -254,10 +254,10 @@ describe.sequential("'start' listening to QueryCache for live SQL queries", () =
 		const unsubScribeObserver = new QueryObserver(client, {
 			queryKey: [
 				UNIQUE_KEY,
-				"foo",
+				1,
 				"SELECT * FROM foo",
-				{ 18: true, 23: true, 9: true },
 				["fourth"],
+				{ 18: true, 23: true, 9: true },
 			],
 			queryFn: () => "data",
 			staleTime: 0,
